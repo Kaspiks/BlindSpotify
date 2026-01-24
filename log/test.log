@@ -424,3 +424,308 @@ Migrating to AddQrGenerationFieldsToPlaylists (20260124170000)
   [1m[35m (0.1ms)[0m  [1m[34mSELECT pg_advisory_unlock(4587663999923531730)[0m
   [1m[36mActiveRecord::SchemaMigration Load (0.2ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
   [1m[36mActiveRecord::SchemaMigration Load (0.4ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[35mSQL (0.1ms)[0m  [1m[35mSET search_path TO public[0m
+  [1m[35m (43.7ms)[0m  [1m[35mCREATE DATABASE "blind_spotify_test_test" ENCODING = 'unicode'[0m
+  [1m[35mSQL (0.2ms)[0m  [1m[35mCREATE EXTENSION IF NOT EXISTS "plpgsql" SCHEMA pg_catalog[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE IF EXISTS "classification_values" CASCADE[0m
+  [1m[35m (2.7ms)[0m  [1m[35mCREATE TABLE "classification_values" ("id" bigserial primary key, "classification_id" bigint NOT NULL, "value" character varying NOT NULL, "description" text, "sort_order" integer DEFAULT 0 NOT NULL, "active" boolean DEFAULT TRUE NOT NULL, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (1.7ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_classification_values_on_classification_id_and_value" ON "classification_values" ("classification_id", "value")[0m
+  [1m[35m (1.2ms)[0m  [1m[35mCREATE INDEX "index_classification_values_on_classification_id" ON "classification_values" ("classification_id")[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE IF EXISTS "classifications" CASCADE[0m
+  [1m[35m (4.3ms)[0m  [1m[35mCREATE TABLE "classifications" ("id" bigserial primary key, "name" character varying NOT NULL, "code" character varying NOT NULL, "description" text, "active" boolean DEFAULT TRUE NOT NULL, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (1.4ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_classifications_on_code" ON "classifications" ("code")[0m
+  [1m[35m (0.7ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_classifications_on_name" ON "classifications" ("name")[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE IF EXISTS "games" CASCADE[0m
+  [1m[35m (3.0ms)[0m  [1m[35mCREATE TABLE "games" ("id" bigserial primary key, "user_id" bigint NOT NULL, "playlist_id" bigint NOT NULL, "status" character varying DEFAULT 'active' NOT NULL, "current_track_index" integer DEFAULT 0, "tracks_played" integer DEFAULT 0, "tracks_revealed" integer DEFAULT 0, "track_order" jsonb DEFAULT '[]', "started_at" timestamp(6), "completed_at" timestamp(6), "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (0.9ms)[0m  [1m[35mCREATE INDEX "index_games_on_playlist_id" ON "games" ("playlist_id")[0m
+  [1m[35m (0.7ms)[0m  [1m[35mCREATE INDEX "index_games_on_status" ON "games" ("status")[0m
+  [1m[35m (1.6ms)[0m  [1m[35mCREATE INDEX "index_games_on_user_id" ON "games" ("user_id")[0m
+  [1m[35m (1.1ms)[0m  [1m[35mDROP TABLE IF EXISTS "permissions" CASCADE[0m
+  [1m[35m (2.0ms)[0m  [1m[35mCREATE TABLE "permissions" ("id" bigserial primary key, "code" character varying NOT NULL, "description" text NOT NULL, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (0.9ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_permissions_on_code" ON "permissions" ("code")[0m
+  [1m[35m (0.5ms)[0m  [1m[35mDROP TABLE IF EXISTS "permissions_roles" CASCADE[0m
+  [1m[35m (0.7ms)[0m  [1m[35mCREATE TABLE "permissions_roles" ("permission_id" bigint NOT NULL, "role_id" bigint NOT NULL)[0m
+  [1m[35m (0.8ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_permissions_roles_on_permission_id_and_role_id" ON "permissions_roles" ("permission_id", "role_id")[0m
+  [1m[35m (0.6ms)[0m  [1m[35mCREATE INDEX "index_permissions_roles_on_permission_id" ON "permissions_roles" ("permission_id")[0m
+  [1m[35m (0.9ms)[0m  [1m[35mCREATE INDEX "index_permissions_roles_on_role_id" ON "permissions_roles" ("role_id")[0m
+  [1m[35m (0.3ms)[0m  [1m[35mDROP TABLE IF EXISTS "playlists" CASCADE[0m
+  [1m[35m (1.7ms)[0m  [1m[35mCREATE TABLE "playlists" ("id" bigserial primary key, "name" character varying NOT NULL, "deezer_id" character varying, "deezer_url" character varying, "image_url" character varying, "description" text, "tracks_count" integer DEFAULT 0 NOT NULL, "imported_tracks_count" integer DEFAULT 0 NOT NULL, "import_status" character varying DEFAULT 'pending' NOT NULL, "import_error" text, "user_id" bigint NOT NULL, "genre_id" bigint, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL, "qr_status" character varying DEFAULT 'pending' NOT NULL, "qr_generated_count" integer DEFAULT 0 NOT NULL, "qr_error" text)[0m
+  [1m[35m (0.9ms)[0m  [1m[35mCREATE INDEX "index_playlists_on_deezer_id" ON "playlists" ("deezer_id")[0m
+  [1m[35m (2.1ms)[0m  [1m[35mCREATE INDEX "index_playlists_on_genre_id" ON "playlists" ("genre_id")[0m
+  [1m[35m (0.7ms)[0m  [1m[35mCREATE INDEX "index_playlists_on_import_status" ON "playlists" ("import_status")[0m
+  [1m[35m (4.4ms)[0m  [1m[35mCREATE INDEX "index_playlists_on_qr_status" ON "playlists" ("qr_status")[0m
+  [1m[35m (1.0ms)[0m  [1m[35mCREATE INDEX "index_playlists_on_user_id" ON "playlists" ("user_id")[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE IF EXISTS "roles" CASCADE[0m
+  [1m[35m (1.5ms)[0m  [1m[35mCREATE TABLE "roles" ("id" bigserial primary key, "name" character varying NOT NULL, "description" text, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (1.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_roles_on_name" ON "roles" ("name")[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE IF EXISTS "settings" CASCADE[0m
+  [1m[35m (2.9ms)[0m  [1m[35mCREATE TABLE "settings" ("id" bigserial primary key, "key" character varying NOT NULL, "value" text, "value_type" character varying DEFAULT 'string' NOT NULL, "group" character varying DEFAULT 'general', "description" text, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (1.2ms)[0m  [1m[35mCREATE INDEX "index_settings_on_group" ON "settings" ("group")[0m
+  [1m[35m (1.8ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_settings_on_key" ON "settings" ("key")[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE IF EXISTS "tracks" CASCADE[0m
+  [1m[35m (2.0ms)[0m  [1m[35mCREATE TABLE "tracks" ("id" bigserial primary key, "playlist_id" bigint NOT NULL, "deezer_id" character varying NOT NULL, "title" character varying NOT NULL, "artist_name" character varying NOT NULL, "album_name" character varying, "album_cover_url" character varying, "preview_url" character varying, "duration_seconds" integer, "release_year" integer, "token" character varying NOT NULL, "qr_generated" boolean DEFAULT FALSE NOT NULL, "position" integer NOT NULL, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL, "isrc" character varying, "deezer_album_id" character varying, "preview_url_expires_at" timestamp(6))[0m
+  [1m[35m (0.6ms)[0m  [1m[35mCREATE INDEX "index_tracks_on_deezer_id" ON "tracks" ("deezer_id")[0m
+  [1m[35m (0.7ms)[0m  [1m[35mCREATE INDEX "index_tracks_on_playlist_id_and_position" ON "tracks" ("playlist_id", "position")[0m
+  [1m[35m (0.5ms)[0m  [1m[35mCREATE INDEX "index_tracks_on_playlist_id" ON "tracks" ("playlist_id")[0m
+  [1m[35m (1.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_tracks_on_token" ON "tracks" ("token")[0m
+  [1m[35m (0.2ms)[0m  [1m[35mCOMMENT ON COLUMN "tracks"."isrc" IS 'ISRC information for the track'[0m
+  [1m[35m (0.5ms)[0m  [1m[35mDROP TABLE IF EXISTS "users" CASCADE[0m
+  [1m[35m (3.5ms)[0m  [1m[35mCREATE TABLE "users" ("id" bigserial primary key, "email" character varying, "encrypted_password" character varying, "remember_created_at" timestamp(6), "admin" boolean DEFAULT FALSE NOT NULL, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL, "role_id" bigint, "provider" character varying, "uid" character varying, "spotify_access_token" text, "spotify_refresh_token" text, "spotify_token_expires_at" timestamp(6), "name" character varying, "image_url" character varying, "spotify_product" character varying, "spotify_country" character varying)[0m
+  [1m[35m (1.9ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_users_on_email" ON "users" ("email")[0m
+  [1m[35m (3.7ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_users_on_provider_and_uid" ON "users" ("provider", "uid")[0m
+  [1m[35m (1.5ms)[0m  [1m[35mCREATE INDEX "index_users_on_role_id" ON "users" ("role_id")[0m
+  [1m[35m (0.7ms)[0m  [1m[35mALTER TABLE "classification_values" ADD CONSTRAINT "fk_rails_cf1585f16e"
+FOREIGN KEY ("classification_id")
+  REFERENCES "classifications" ("id")
+[0m
+  [1m[35m (0.7ms)[0m  [1m[35mALTER TABLE "games" ADD CONSTRAINT "fk_rails_afc83aa97c"
+FOREIGN KEY ("playlist_id")
+  REFERENCES "playlists" ("id")
+[0m
+  [1m[35m (0.5ms)[0m  [1m[35mALTER TABLE "games" ADD CONSTRAINT "fk_rails_de9e6ea7f7"
+FOREIGN KEY ("user_id")
+  REFERENCES "users" ("id")
+[0m
+  [1m[35m (1.2ms)[0m  [1m[35mALTER TABLE "permissions_roles" ADD CONSTRAINT "fk_rails_7cc0b02d7d"
+FOREIGN KEY ("permission_id")
+  REFERENCES "permissions" ("id")
+[0m
+  [1m[35m (0.6ms)[0m  [1m[35mALTER TABLE "permissions_roles" ADD CONSTRAINT "fk_rails_211043a277"
+FOREIGN KEY ("role_id")
+  REFERENCES "roles" ("id")
+[0m
+  [1m[35m (0.6ms)[0m  [1m[35mALTER TABLE "playlists" ADD CONSTRAINT "fk_rails_9bd3e17748"
+FOREIGN KEY ("genre_id")
+  REFERENCES "classification_values" ("id")
+[0m
+  [1m[35m (0.3ms)[0m  [1m[35mALTER TABLE "playlists" ADD CONSTRAINT "fk_rails_d67ef1eb45"
+FOREIGN KEY ("user_id")
+  REFERENCES "users" ("id")
+[0m
+  [1m[35m (0.7ms)[0m  [1m[35mALTER TABLE "tracks" ADD CONSTRAINT "fk_rails_af105a5ca8"
+FOREIGN KEY ("playlist_id")
+  REFERENCES "playlists" ("id")
+[0m
+  [1m[35m (0.5ms)[0m  [1m[35mALTER TABLE "users" ADD CONSTRAINT "fk_rails_642f17018b"
+FOREIGN KEY ("role_id")
+  REFERENCES "roles" ("id")
+[0m
+  [1m[35m (2.1ms)[0m  [1m[35mCREATE TABLE "schema_migrations" ("version" character varying NOT NULL PRIMARY KEY)[0m
+  [1m[36mActiveRecord::SchemaMigration Load (1.6ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[35m (0.4ms)[0m  [1m[32mINSERT INTO "schema_migrations" (version) VALUES (20260124170000)[0m
+  [1m[35m (0.6ms)[0m  [1m[32mINSERT INTO "schema_migrations" (version) VALUES
+(20260124160000),
+(20260124142257),
+(20260124130422),
+(20260124000012),
+(20260124000011),
+(20260124000010),
+(20260124000009),
+(20260124000008),
+(20260124000007),
+(20260124000006),
+(20260124000005),
+(20260124000004),
+(20260124000003),
+(20260124000002),
+(20260124000001);[0m
+  [1m[35m (1.4ms)[0m  [1m[35mCREATE TABLE "ar_internal_metadata" ("key" character varying NOT NULL PRIMARY KEY, "value" character varying, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.3ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+  [1m[36mActiveRecord::InternalMetadata Create (0.2ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ('environment', 'test', '2026-01-24 17:12:50.112115', '2026-01-24 17:12:50.112116') RETURNING "key"[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.1ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+  [1m[36mActiveRecord::InternalMetadata Load (0.1ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "schema_sha1"]]
+  [1m[36mActiveRecord::InternalMetadata Create (0.2ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ('schema_sha1', '5aa883d1d359b8d8a9b8684799eb695de33a0358', '2026-01-24 17:12:50.113793', '2026-01-24 17:12:50.113794') RETURNING "key"[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mPermission Load (0.2ms)[0m  [1m[34mSELECT "permissions".* FROM "permissions" WHERE "permissions"."code" = $1 LIMIT $2[0m  [["code", "users.read"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mPermission Exists? (1.2ms)[0m  [1m[34mSELECT 1 AS one FROM "permissions" WHERE "permissions"."code" = $1 LIMIT $2[0m  [["code", "users.read"], ["LIMIT", 1]]
+  [1m[36mPermission Create (2.1ms)[0m  [1m[32mINSERT INTO "permissions" ("code", "description", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["code", "users.read"], ["description", "View users"], ["created_at", "2026-01-24 17:12:50.147045"], ["updated_at", "2026-01-24 17:12:50.147045"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mPermission Load (0.1ms)[0m  [1m[34mSELECT "permissions".* FROM "permissions" WHERE "permissions"."code" = $1 LIMIT $2[0m  [["code", "users.write"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mPermission Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "permissions" WHERE "permissions"."code" = $1 LIMIT $2[0m  [["code", "users.write"], ["LIMIT", 1]]
+  [1m[36mPermission Create (0.1ms)[0m  [1m[32mINSERT INTO "permissions" ("code", "description", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["code", "users.write"], ["description", "Create and edit users"], ["created_at", "2026-01-24 17:12:50.152813"], ["updated_at", "2026-01-24 17:12:50.152813"]]
+  [1m[36mTRANSACTION (0.6ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mPermission Load (0.1ms)[0m  [1m[34mSELECT "permissions".* FROM "permissions" WHERE "permissions"."code" = $1 LIMIT $2[0m  [["code", "users.delete"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.5ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mPermission Exists? (0.8ms)[0m  [1m[34mSELECT 1 AS one FROM "permissions" WHERE "permissions"."code" = $1 LIMIT $2[0m  [["code", "users.delete"], ["LIMIT", 1]]
+  [1m[36mPermission Create (0.1ms)[0m  [1m[32mINSERT INTO "permissions" ("code", "description", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["code", "users.delete"], ["description", "Delete users"], ["created_at", "2026-01-24 17:12:50.155921"], ["updated_at", "2026-01-24 17:12:50.155921"]]
+  [1m[36mTRANSACTION (0.7ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mPermission Load (0.3ms)[0m  [1m[34mSELECT "permissions".* FROM "permissions" WHERE "permissions"."code" = $1 LIMIT $2[0m  [["code", "roles.read"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mPermission Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "permissions" WHERE "permissions"."code" = $1 LIMIT $2[0m  [["code", "roles.read"], ["LIMIT", 1]]
+  [1m[36mPermission Create (0.2ms)[0m  [1m[32mINSERT INTO "permissions" ("code", "description", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["code", "roles.read"], ["description", "View roles"], ["created_at", "2026-01-24 17:12:50.162523"], ["updated_at", "2026-01-24 17:12:50.162523"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mPermission Load (0.1ms)[0m  [1m[34mSELECT "permissions".* FROM "permissions" WHERE "permissions"."code" = $1 LIMIT $2[0m  [["code", "roles.write"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mPermission Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "permissions" WHERE "permissions"."code" = $1 LIMIT $2[0m  [["code", "roles.write"], ["LIMIT", 1]]
+  [1m[36mPermission Create (0.1ms)[0m  [1m[32mINSERT INTO "permissions" ("code", "description", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["code", "roles.write"], ["description", "Create and edit roles"], ["created_at", "2026-01-24 17:12:50.165865"], ["updated_at", "2026-01-24 17:12:50.165865"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mPermission Load (0.1ms)[0m  [1m[34mSELECT "permissions".* FROM "permissions" WHERE "permissions"."code" = $1 LIMIT $2[0m  [["code", "settings.read"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.5ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mPermission Exists? (0.7ms)[0m  [1m[34mSELECT 1 AS one FROM "permissions" WHERE "permissions"."code" = $1 LIMIT $2[0m  [["code", "settings.read"], ["LIMIT", 1]]
+  [1m[36mPermission Create (0.1ms)[0m  [1m[32mINSERT INTO "permissions" ("code", "description", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["code", "settings.read"], ["description", "View settings"], ["created_at", "2026-01-24 17:12:50.168138"], ["updated_at", "2026-01-24 17:12:50.168138"]]
+  [1m[36mTRANSACTION (0.8ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mPermission Load (0.3ms)[0m  [1m[34mSELECT "permissions".* FROM "permissions" WHERE "permissions"."code" = $1 LIMIT $2[0m  [["code", "settings.write"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mPermission Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "permissions" WHERE "permissions"."code" = $1 LIMIT $2[0m  [["code", "settings.write"], ["LIMIT", 1]]
+  [1m[36mPermission Create (0.1ms)[0m  [1m[32mINSERT INTO "permissions" ("code", "description", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["code", "settings.write"], ["description", "Edit settings"], ["created_at", "2026-01-24 17:12:50.173720"], ["updated_at", "2026-01-24 17:12:50.173720"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mPermission Load (0.1ms)[0m  [1m[34mSELECT "permissions".* FROM "permissions" WHERE "permissions"."code" = $1 LIMIT $2[0m  [["code", "playlists.read"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mPermission Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "permissions" WHERE "permissions"."code" = $1 LIMIT $2[0m  [["code", "playlists.read"], ["LIMIT", 1]]
+  [1m[36mPermission Create (0.6ms)[0m  [1m[32mINSERT INTO "permissions" ("code", "description", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["code", "playlists.read"], ["description", "View playlists"], ["created_at", "2026-01-24 17:12:50.178447"], ["updated_at", "2026-01-24 17:12:50.178447"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mPermission Load (0.1ms)[0m  [1m[34mSELECT "permissions".* FROM "permissions" WHERE "permissions"."code" = $1 LIMIT $2[0m  [["code", "playlists.write"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mPermission Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "permissions" WHERE "permissions"."code" = $1 LIMIT $2[0m  [["code", "playlists.write"], ["LIMIT", 1]]
+  [1m[36mPermission Create (0.1ms)[0m  [1m[32mINSERT INTO "permissions" ("code", "description", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["code", "playlists.write"], ["description", "Create and edit playlists"], ["created_at", "2026-01-24 17:12:50.188718"], ["updated_at", "2026-01-24 17:12:50.188718"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mPermission Load (0.1ms)[0m  [1m[34mSELECT "permissions".* FROM "permissions" WHERE "permissions"."code" = $1 LIMIT $2[0m  [["code", "playlists.delete"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mPermission Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "permissions" WHERE "permissions"."code" = $1 LIMIT $2[0m  [["code", "playlists.delete"], ["LIMIT", 1]]
+  [1m[36mPermission Create (0.1ms)[0m  [1m[32mINSERT INTO "permissions" ("code", "description", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["code", "playlists.delete"], ["description", "Delete playlists"], ["created_at", "2026-01-24 17:12:50.191044"], ["updated_at", "2026-01-24 17:12:50.191044"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mPermission Count (0.7ms)[0m  [1m[34mSELECT COUNT(*) FROM "permissions"[0m
+  [1m[36mRole Load (0.8ms)[0m  [1m[34mSELECT "roles".* FROM "roles" WHERE "roles"."name" = $1 LIMIT $2[0m  [["name", "administrator"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mRole Exists? (0.1ms)[0m  [1m[34mSELECT 1 AS one FROM "roles" WHERE "roles"."name" = $1 LIMIT $2[0m  [["name", "administrator"], ["LIMIT", 1]]
+  [1m[36mRole Create (0.1ms)[0m  [1m[32mINSERT INTO "roles" ("name", "description", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["name", "administrator"], ["description", "Full system access"], ["created_at", "2026-01-24 17:12:50.209672"], ["updated_at", "2026-01-24 17:12:50.209672"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mPermission Load (0.1ms)[0m  [1m[34mSELECT "permissions".* FROM "permissions"[0m
+  [1m[36mPermission Load (0.9ms)[0m  [1m[34mSELECT "permissions".* FROM "permissions" INNER JOIN "permissions_roles" ON "permissions"."id" = "permissions_roles"."permission_id" WHERE "permissions_roles"."role_id" = $1[0m  [["role_id", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mRole::HABTM_Permissions Create (0.2ms)[0m  [1m[32mINSERT INTO "permissions_roles" ("permission_id", "role_id") VALUES ($1, $2)[0m  [["permission_id", 1], ["role_id", 1]]
+  [1m[36mRole::HABTM_Permissions Create (0.1ms)[0m  [1m[32mINSERT INTO "permissions_roles" ("permission_id", "role_id") VALUES ($1, $2)[0m  [["permission_id", 2], ["role_id", 1]]
+  [1m[36mRole::HABTM_Permissions Create (0.1ms)[0m  [1m[32mINSERT INTO "permissions_roles" ("permission_id", "role_id") VALUES ($1, $2)[0m  [["permission_id", 3], ["role_id", 1]]
+  [1m[36mRole::HABTM_Permissions Create (0.1ms)[0m  [1m[32mINSERT INTO "permissions_roles" ("permission_id", "role_id") VALUES ($1, $2)[0m  [["permission_id", 4], ["role_id", 1]]
+  [1m[36mRole::HABTM_Permissions Create (0.1ms)[0m  [1m[32mINSERT INTO "permissions_roles" ("permission_id", "role_id") VALUES ($1, $2)[0m  [["permission_id", 5], ["role_id", 1]]
+  [1m[36mRole::HABTM_Permissions Create (0.7ms)[0m  [1m[32mINSERT INTO "permissions_roles" ("permission_id", "role_id") VALUES ($1, $2)[0m  [["permission_id", 6], ["role_id", 1]]
+  [1m[36mRole::HABTM_Permissions Create (0.4ms)[0m  [1m[32mINSERT INTO "permissions_roles" ("permission_id", "role_id") VALUES ($1, $2)[0m  [["permission_id", 7], ["role_id", 1]]
+  [1m[36mRole::HABTM_Permissions Create (0.7ms)[0m  [1m[32mINSERT INTO "permissions_roles" ("permission_id", "role_id") VALUES ($1, $2)[0m  [["permission_id", 8], ["role_id", 1]]
+  [1m[36mRole::HABTM_Permissions Create (0.1ms)[0m  [1m[32mINSERT INTO "permissions_roles" ("permission_id", "role_id") VALUES ($1, $2)[0m  [["permission_id", 9], ["role_id", 1]]
+  [1m[36mRole::HABTM_Permissions Create (0.2ms)[0m  [1m[32mINSERT INTO "permissions_roles" ("permission_id", "role_id") VALUES ($1, $2)[0m  [["permission_id", 10], ["role_id", 1]]
+  [1m[36mTRANSACTION (0.5ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mPermission Count (1.0ms)[0m  [1m[34mSELECT COUNT(*) FROM "permissions" INNER JOIN "permissions_roles" ON "permissions"."id" = "permissions_roles"."permission_id" WHERE "permissions_roles"."role_id" = $1[0m  [["role_id", 1]]
+  [1m[36mRole Load (0.6ms)[0m  [1m[34mSELECT "roles".* FROM "roles" WHERE "roles"."name" = $1 LIMIT $2[0m  [["name", "curator"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.5ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mRole Exists? (1.2ms)[0m  [1m[34mSELECT 1 AS one FROM "roles" WHERE "roles"."name" = $1 LIMIT $2[0m  [["name", "curator"], ["LIMIT", 1]]
+  [1m[36mRole Create (0.1ms)[0m  [1m[32mINSERT INTO "roles" ("name", "description", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["name", "curator"], ["description", "Can manage playlists and content"], ["created_at", "2026-01-24 17:12:50.247665"], ["updated_at", "2026-01-24 17:12:50.247665"]]
+  [1m[36mTRANSACTION (0.7ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mPermission Load (0.8ms)[0m  [1m[34mSELECT "permissions".* FROM "permissions" WHERE (code LIKE $1)[0m  [[nil, "playlists.%"]]
+  [1m[36mPermission Load (0.1ms)[0m  [1m[34mSELECT "permissions".* FROM "permissions" INNER JOIN "permissions_roles" ON "permissions"."id" = "permissions_roles"."permission_id" WHERE "permissions_roles"."role_id" = $1[0m  [["role_id", 2]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mRole::HABTM_Permissions Create (1.1ms)[0m  [1m[32mINSERT INTO "permissions_roles" ("permission_id", "role_id") VALUES ($1, $2)[0m  [["permission_id", 8], ["role_id", 2]]
+  [1m[36mRole::HABTM_Permissions Create (0.4ms)[0m  [1m[32mINSERT INTO "permissions_roles" ("permission_id", "role_id") VALUES ($1, $2)[0m  [["permission_id", 9], ["role_id", 2]]
+  [1m[36mRole::HABTM_Permissions Create (0.1ms)[0m  [1m[32mINSERT INTO "permissions_roles" ("permission_id", "role_id") VALUES ($1, $2)[0m  [["permission_id", 10], ["role_id", 2]]
+  [1m[36mTRANSACTION (0.6ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mPermission Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "permissions" INNER JOIN "permissions_roles" ON "permissions"."id" = "permissions_roles"."permission_id" WHERE "permissions_roles"."role_id" = $1[0m  [["role_id", 2]]
+  [1m[36mRole Load (0.7ms)[0m  [1m[34mSELECT "roles".* FROM "roles" WHERE "roles"."name" = $1 LIMIT $2[0m  [["name", "viewer"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mRole Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "roles" WHERE "roles"."name" = $1 LIMIT $2[0m  [["name", "viewer"], ["LIMIT", 1]]
+  [1m[36mRole Create (0.1ms)[0m  [1m[32mINSERT INTO "roles" ("name", "description", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["name", "viewer"], ["description", "Read-only access"], ["created_at", "2026-01-24 17:12:50.266960"], ["updated_at", "2026-01-24 17:12:50.266960"]]
+  [1m[36mTRANSACTION (0.6ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mPermission Load (0.4ms)[0m  [1m[34mSELECT "permissions".* FROM "permissions" WHERE (code LIKE $1)[0m  [[nil, "%.read"]]
+  [1m[36mPermission Load (0.1ms)[0m  [1m[34mSELECT "permissions".* FROM "permissions" INNER JOIN "permissions_roles" ON "permissions"."id" = "permissions_roles"."permission_id" WHERE "permissions_roles"."role_id" = $1[0m  [["role_id", 3]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mRole::HABTM_Permissions Create (1.1ms)[0m  [1m[32mINSERT INTO "permissions_roles" ("permission_id", "role_id") VALUES ($1, $2)[0m  [["permission_id", 1], ["role_id", 3]]
+  [1m[36mRole::HABTM_Permissions Create (0.1ms)[0m  [1m[32mINSERT INTO "permissions_roles" ("permission_id", "role_id") VALUES ($1, $2)[0m  [["permission_id", 4], ["role_id", 3]]
+  [1m[36mRole::HABTM_Permissions Create (1.1ms)[0m  [1m[32mINSERT INTO "permissions_roles" ("permission_id", "role_id") VALUES ($1, $2)[0m  [["permission_id", 6], ["role_id", 3]]
+  [1m[36mRole::HABTM_Permissions Create (0.4ms)[0m  [1m[32mINSERT INTO "permissions_roles" ("permission_id", "role_id") VALUES ($1, $2)[0m  [["permission_id", 8], ["role_id", 3]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mPermission Count (0.6ms)[0m  [1m[34mSELECT COUNT(*) FROM "permissions" INNER JOIN "permissions_roles" ON "permissions"."id" = "permissions_roles"."permission_id" WHERE "permissions_roles"."role_id" = $1[0m  [["role_id", 3]]
+  [1m[36mSetting Load (0.6ms)[0m  [1m[34mSELECT "settings".* FROM "settings" WHERE "settings"."key" = $1 LIMIT $2[0m  [["key", "app.name"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mSetting Exists? (0.1ms)[0m  [1m[34mSELECT 1 AS one FROM "settings" WHERE "settings"."key" = $1 LIMIT $2[0m  [["key", "app.name"], ["LIMIT", 1]]
+  [1m[36mSetting Create (0.2ms)[0m  [1m[32mINSERT INTO "settings" ("key", "value", "value_type", "group", "description", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["key", "app.name"], ["value", "Blind Spotify"], ["value_type", "string"], ["group", "general"], ["description", "Application name"], ["created_at", "2026-01-24 17:12:50.294314"], ["updated_at", "2026-01-24 17:12:50.294314"]]
+  [1m[36mTRANSACTION (0.5ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mSetting Load (0.7ms)[0m  [1m[34mSELECT "settings".* FROM "settings" WHERE "settings"."key" = $1 LIMIT $2[0m  [["key", "app.maintenance_mode"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mSetting Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "settings" WHERE "settings"."key" = $1 LIMIT $2[0m  [["key", "app.maintenance_mode"], ["LIMIT", 1]]
+  [1m[36mSetting Create (0.1ms)[0m  [1m[32mINSERT INTO "settings" ("key", "value", "value_type", "group", "description", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["key", "app.maintenance_mode"], ["value", "false"], ["value_type", "boolean"], ["group", "general"], ["description", "Enable maintenance mode"], ["created_at", "2026-01-24 17:12:50.298791"], ["updated_at", "2026-01-24 17:12:50.298791"]]
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mSetting Load (0.1ms)[0m  [1m[34mSELECT "settings".* FROM "settings" WHERE "settings"."key" = $1 LIMIT $2[0m  [["key", "playlist.max_tracks"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mSetting Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "settings" WHERE "settings"."key" = $1 LIMIT $2[0m  [["key", "playlist.max_tracks"], ["LIMIT", 1]]
+  [1m[36mSetting Create (0.1ms)[0m  [1m[32mINSERT INTO "settings" ("key", "value", "value_type", "group", "description", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["key", "playlist.max_tracks"], ["value", "100"], ["value_type", "integer"], ["group", "playlists"], ["description", "Maximum tracks per playlist"], ["created_at", "2026-01-24 17:12:50.302806"], ["updated_at", "2026-01-24 17:12:50.302806"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mSetting Load (0.1ms)[0m  [1m[34mSELECT "settings".* FROM "settings" WHERE "settings"."key" = $1 LIMIT $2[0m  [["key", "qr.default_size"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mSetting Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "settings" WHERE "settings"."key" = $1 LIMIT $2[0m  [["key", "qr.default_size"], ["LIMIT", 1]]
+  [1m[36mSetting Create (0.1ms)[0m  [1m[32mINSERT INTO "settings" ("key", "value", "value_type", "group", "description", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["key", "qr.default_size"], ["value", "300"], ["value_type", "integer"], ["group", "qr_codes"], ["description", "Default QR code size in pixels"], ["created_at", "2026-01-24 17:12:50.304633"], ["updated_at", "2026-01-24 17:12:50.304633"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mSetting Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "settings"[0m
+  [1m[36mClassification Load (0.2ms)[0m  [1m[34mSELECT "classifications".* FROM "classifications" WHERE "classifications"."code" = $1 LIMIT $2[0m  [["code", "genre"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mClassification Exists? (0.1ms)[0m  [1m[34mSELECT 1 AS one FROM "classifications" WHERE "classifications"."name" = $1 LIMIT $2[0m  [["name", "Genre"], ["LIMIT", 1]]
+  [1m[36mClassification Exists? (0.1ms)[0m  [1m[34mSELECT 1 AS one FROM "classifications" WHERE "classifications"."code" = $1 LIMIT $2[0m  [["code", "genre"], ["LIMIT", 1]]
+  [1m[36mClassification Create (0.2ms)[0m  [1m[32mINSERT INTO "classifications" ("name", "code", "description", "active", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6) RETURNING "id"[0m  [["name", "Genre"], ["code", "genre"], ["description", "Music genres for categorization"], ["active", true], ["created_at", "2026-01-24 17:12:50.316483"], ["updated_at", "2026-01-24 17:12:50.316483"]]
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mClassificationValue Load (0.2ms)[0m  [1m[34mSELECT "classification_values".* FROM "classification_values" WHERE "classification_values"."classification_id" = $1 AND "classification_values"."value" = $2 LIMIT $3[0m  [["classification_id", 1], ["value", "Rock"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mClassificationValue Exists? (1.0ms)[0m  [1m[34mSELECT 1 AS one FROM "classification_values" WHERE "classification_values"."value" = $1 AND "classification_values"."classification_id" = $2 LIMIT $3[0m  [["value", "Rock"], ["classification_id", 1], ["LIMIT", 1]]
+  [1m[36mClassificationValue Create (1.1ms)[0m  [1m[32mINSERT INTO "classification_values" ("classification_id", "value", "description", "sort_order", "active", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["classification_id", 1], ["value", "Rock"], ["description", nil], ["sort_order", 0], ["active", true], ["created_at", "2026-01-24 17:12:50.334325"], ["updated_at", "2026-01-24 17:12:50.334325"]]
+  [1m[36mTRANSACTION (0.6ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mClassificationValue Load (0.2ms)[0m  [1m[34mSELECT "classification_values".* FROM "classification_values" WHERE "classification_values"."classification_id" = $1 AND "classification_values"."value" = $2 LIMIT $3[0m  [["classification_id", 1], ["value", "Pop"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mClassificationValue Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "classification_values" WHERE "classification_values"."value" = $1 AND "classification_values"."classification_id" = $2 LIMIT $3[0m  [["value", "Pop"], ["classification_id", 1], ["LIMIT", 1]]
+  [1m[36mClassificationValue Create (0.1ms)[0m  [1m[32mINSERT INTO "classification_values" ("classification_id", "value", "description", "sort_order", "active", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["classification_id", 1], ["value", "Pop"], ["description", nil], ["sort_order", 1], ["active", true], ["created_at", "2026-01-24 17:12:50.349804"], ["updated_at", "2026-01-24 17:12:50.349804"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mClassificationValue Load (0.1ms)[0m  [1m[34mSELECT "classification_values".* FROM "classification_values" WHERE "classification_values"."classification_id" = $1 AND "classification_values"."value" = $2 LIMIT $3[0m  [["classification_id", 1], ["value", "Jazz"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mClassificationValue Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "classification_values" WHERE "classification_values"."value" = $1 AND "classification_values"."classification_id" = $2 LIMIT $3[0m  [["value", "Jazz"], ["classification_id", 1], ["LIMIT", 1]]
+  [1m[36mClassificationValue Create (0.1ms)[0m  [1m[32mINSERT INTO "classification_values" ("classification_id", "value", "description", "sort_order", "active", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["classification_id", 1], ["value", "Jazz"], ["description", nil], ["sort_order", 2], ["active", true], ["created_at", "2026-01-24 17:12:50.351740"], ["updated_at", "2026-01-24 17:12:50.351740"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mClassificationValue Load (0.1ms)[0m  [1m[34mSELECT "classification_values".* FROM "classification_values" WHERE "classification_values"."classification_id" = $1 AND "classification_values"."value" = $2 LIMIT $3[0m  [["classification_id", 1], ["value", "Classical"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mClassificationValue Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "classification_values" WHERE "classification_values"."value" = $1 AND "classification_values"."classification_id" = $2 LIMIT $3[0m  [["value", "Classical"], ["classification_id", 1], ["LIMIT", 1]]
+  [1m[36mClassificationValue Create (0.1ms)[0m  [1m[32mINSERT INTO "classification_values" ("classification_id", "value", "description", "sort_order", "active", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["classification_id", 1], ["value", "Classical"], ["description", nil], ["sort_order", 3], ["active", true], ["created_at", "2026-01-24 17:12:50.356090"], ["updated_at", "2026-01-24 17:12:50.356090"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mClassificationValue Load (0.1ms)[0m  [1m[34mSELECT "classification_values".* FROM "classification_values" WHERE "classification_values"."classification_id" = $1 AND "classification_values"."value" = $2 LIMIT $3[0m  [["classification_id", 1], ["value", "Hip-Hop"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mClassificationValue Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "classification_values" WHERE "classification_values"."value" = $1 AND "classification_values"."classification_id" = $2 LIMIT $3[0m  [["value", "Hip-Hop"], ["classification_id", 1], ["LIMIT", 1]]
+  [1m[36mClassificationValue Create (0.1ms)[0m  [1m[32mINSERT INTO "classification_values" ("classification_id", "value", "description", "sort_order", "active", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["classification_id", 1], ["value", "Hip-Hop"], ["description", nil], ["sort_order", 4], ["active", true], ["created_at", "2026-01-24 17:12:50.358730"], ["updated_at", "2026-01-24 17:12:50.358730"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mClassificationValue Load (0.1ms)[0m  [1m[34mSELECT "classification_values".* FROM "classification_values" WHERE "classification_values"."classification_id" = $1 AND "classification_values"."value" = $2 LIMIT $3[0m  [["classification_id", 1], ["value", "Electronic"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mClassificationValue Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "classification_values" WHERE "classification_values"."value" = $1 AND "classification_values"."classification_id" = $2 LIMIT $3[0m  [["value", "Electronic"], ["classification_id", 1], ["LIMIT", 1]]
+  [1m[36mClassificationValue Create (0.1ms)[0m  [1m[32mINSERT INTO "classification_values" ("classification_id", "value", "description", "sort_order", "active", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["classification_id", 1], ["value", "Electronic"], ["description", nil], ["sort_order", 5], ["active", true], ["created_at", "2026-01-24 17:12:50.360020"], ["updated_at", "2026-01-24 17:12:50.360020"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mClassificationValue Load (0.0ms)[0m  [1m[34mSELECT "classification_values".* FROM "classification_values" WHERE "classification_values"."classification_id" = $1 AND "classification_values"."value" = $2 LIMIT $3[0m  [["classification_id", 1], ["value", "Country"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mClassificationValue Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "classification_values" WHERE "classification_values"."value" = $1 AND "classification_values"."classification_id" = $2 LIMIT $3[0m  [["value", "Country"], ["classification_id", 1], ["LIMIT", 1]]
+  [1m[36mClassificationValue Create (0.1ms)[0m  [1m[32mINSERT INTO "classification_values" ("classification_id", "value", "description", "sort_order", "active", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["classification_id", 1], ["value", "Country"], ["description", nil], ["sort_order", 6], ["active", true], ["created_at", "2026-01-24 17:12:50.361169"], ["updated_at", "2026-01-24 17:12:50.361169"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mClassificationValue Load (0.1ms)[0m  [1m[34mSELECT "classification_values".* FROM "classification_values" WHERE "classification_values"."classification_id" = $1 AND "classification_values"."value" = $2 LIMIT $3[0m  [["classification_id", 1], ["value", "R&B"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mClassificationValue Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "classification_values" WHERE "classification_values"."value" = $1 AND "classification_values"."classification_id" = $2 LIMIT $3[0m  [["value", "R&B"], ["classification_id", 1], ["LIMIT", 1]]
+  [1m[36mClassificationValue Create (0.1ms)[0m  [1m[32mINSERT INTO "classification_values" ("classification_id", "value", "description", "sort_order", "active", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["classification_id", 1], ["value", "R&B"], ["description", nil], ["sort_order", 7], ["active", true], ["created_at", "2026-01-24 17:12:50.363313"], ["updated_at", "2026-01-24 17:12:50.363313"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mClassificationValue Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "classification_values" WHERE "classification_values"."classification_id" = $1[0m  [["classification_id", 1]]
+  [1m[36mClassification Load (0.1ms)[0m  [1m[34mSELECT "classifications".* FROM "classifications" WHERE "classifications"."code" = $1 LIMIT $2[0m  [["code", "difficulty"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mClassification Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "classifications" WHERE "classifications"."name" = $1 LIMIT $2[0m  [["name", "Difficulty"], ["LIMIT", 1]]
+  [1m[36mClassification Exists? (0.1ms)[0m  [1m[34mSELECT 1 AS one FROM "classifications" WHERE "classifications"."code" = $1 LIMIT $2[0m  [["code", "difficulty"], ["LIMIT", 1]]
+  [1m[36mClassification Create (0.1ms)[0m  [1m[32mINSERT INTO "classifications" ("name", "code", "description", "active", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6) RETURNING "id"[0m  [["name", "Difficulty"], ["code", "difficulty"], ["description", "Difficulty levels for blind listening challenges"], ["active", true], ["created_at", "2026-01-24 17:12:50.365558"], ["updated_at", "2026-01-24 17:12:50.365558"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mClassificationValue Load (0.1ms)[0m  [1m[34mSELECT "classification_values".* FROM "classification_values" WHERE "classification_values"."classification_id" = $1 AND "classification_values"."value" = $2 LIMIT $3[0m  [["classification_id", 2], ["value", "Easy"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mClassificationValue Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "classification_values" WHERE "classification_values"."value" = $1 AND "classification_values"."classification_id" = $2 LIMIT $3[0m  [["value", "Easy"], ["classification_id", 2], ["LIMIT", 1]]
+  [1m[36mClassificationValue Create (0.1ms)[0m  [1m[32mINSERT INTO "classification_values" ("classification_id", "value", "description", "sort_order", "active", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["classification_id", 2], ["value", "Easy"], ["description", nil], ["sort_order", 1], ["active", true], ["created_at", "2026-01-24 17:12:50.367679"], ["updated_at", "2026-01-24 17:12:50.367679"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mClassificationValue Load (0.0ms)[0m  [1m[34mSELECT "classification_values".* FROM "classification_values" WHERE "classification_values"."classification_id" = $1 AND "classification_values"."value" = $2 LIMIT $3[0m  [["classification_id", 2], ["value", "Medium"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mClassificationValue Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "classification_values" WHERE "classification_values"."value" = $1 AND "classification_values"."classification_id" = $2 LIMIT $3[0m  [["value", "Medium"], ["classification_id", 2], ["LIMIT", 1]]
+  [1m[36mClassificationValue Create (0.1ms)[0m  [1m[32mINSERT INTO "classification_values" ("classification_id", "value", "description", "sort_order", "active", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["classification_id", 2], ["value", "Medium"], ["description", nil], ["sort_order", 2], ["active", true], ["created_at", "2026-01-24 17:12:50.369402"], ["updated_at", "2026-01-24 17:12:50.369402"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mClassificationValue Load (0.0ms)[0m  [1m[34mSELECT "classification_values".* FROM "classification_values" WHERE "classification_values"."classification_id" = $1 AND "classification_values"."value" = $2 LIMIT $3[0m  [["classification_id", 2], ["value", "Hard"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mClassificationValue Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "classification_values" WHERE "classification_values"."value" = $1 AND "classification_values"."classification_id" = $2 LIMIT $3[0m  [["value", "Hard"], ["classification_id", 2], ["LIMIT", 1]]
+  [1m[36mClassificationValue Create (0.1ms)[0m  [1m[32mINSERT INTO "classification_values" ("classification_id", "value", "description", "sort_order", "active", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["classification_id", 2], ["value", "Hard"], ["description", nil], ["sort_order", 3], ["active", true], ["created_at", "2026-01-24 17:12:50.371092"], ["updated_at", "2026-01-24 17:12:50.371092"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mClassificationValue Load (0.1ms)[0m  [1m[34mSELECT "classification_values".* FROM "classification_values" WHERE "classification_values"."classification_id" = $1 AND "classification_values"."value" = $2 LIMIT $3[0m  [["classification_id", 2], ["value", "Expert"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mClassificationValue Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "classification_values" WHERE "classification_values"."value" = $1 AND "classification_values"."classification_id" = $2 LIMIT $3[0m  [["value", "Expert"], ["classification_id", 2], ["LIMIT", 1]]
+  [1m[36mClassificationValue Create (0.1ms)[0m  [1m[32mINSERT INTO "classification_values" ("classification_id", "value", "description", "sort_order", "active", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["classification_id", 2], ["value", "Expert"], ["description", nil], ["sort_order", 4], ["active", true], ["created_at", "2026-01-24 17:12:50.372850"], ["updated_at", "2026-01-24 17:12:50.372850"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mClassificationValue Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "classification_values" WHERE "classification_values"."classification_id" = $1[0m  [["classification_id", 2]]
