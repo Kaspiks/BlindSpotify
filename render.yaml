@@ -66,8 +66,7 @@ services:
     ipAllowList: []
 
 databases:
-  # PostgreSQL Database
   - name: hitster-db
-    plan: starter
+    plan: free
     databaseName: hitster
     user: hitster
