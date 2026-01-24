@@ -1,0 +1,5 @@
+div id="game-area"
+  - if game.finished?
+    = render "games/finished", game: game, presenter: presenter
+  - else
+    = render "games/track_card", track: game.current_track, revealed: revealed, game: game, presenter: presenter

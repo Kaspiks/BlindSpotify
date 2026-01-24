@@ -1,0 +1,35 @@
+.flex.items-center.gap-4.px-6.py-4.hover:bg-slate-700/50.transition-colors
+  / Track number
+  .w-8.text-center.text-sm.text-slate-500.font-medium= index + 1
+
+  / Album art
+  .w-12.h-12.flex-shrink-0.rounded.overflow-hidden.bg-slate-700
+    - if track.album_cover_url.present?
+      img src=track.album_cover_url alt="" class="w-full h-full object-cover"
+    - else
+      .w-full.h-full.flex.items-center.justify-center
+        = icon("music", class: "w-5 h-5 text-slate-500")
+
+  / Track info
+  .flex-1.min-w-0
+    h4.text-white.font-medium.truncate= track.title
+    p.text-sm.text-slate-400.truncate= track.artist_name
+
+  / Duration
+  .text-sm.text-slate-500.w-16.text-right= track.duration_formatted
+
+  / Preview button
+  - if track.preview_url.present?
+    div data-controller="audio-preview" data-audio-preview-url-value=track.preview_url
+      button.w-10.h-10.rounded-full.bg-slate-700.hover:bg-purple-600.text-slate-300.hover:text-white.flex.items-center.justify-center.transition-all(
+        type="button"
+        data-action="click->audio-preview#toggle"
+      )
+        span data-audio-preview-target="playIcon"
+          = icon("player-play", class: "w-5 h-5")
+        span.hidden data-audio-preview-target="pauseIcon"
+          = icon("player-pause", class: "w-5 h-5")
+  - else
+    / No preview available
+    .w-10.h-10.rounded-full.bg-slate-800.text-slate-600.flex.items-center.justify-center title="No preview available"
+      = icon("music-off", class: "w-5 h-5")

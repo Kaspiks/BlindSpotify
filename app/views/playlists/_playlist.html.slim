@@ -1,0 +1,29 @@
+div id="playlist_#{playlist.id}"
+  = link_to playlist_path(playlist), class: "block bg-slate-800 hover:bg-slate-700 rounded-xl overflow-hidden transition-colors group" do
+    / Playlist image
+    .aspect-video.relative.bg-slate-700
+      - if playlist.image_url.present?
+        img src=playlist.image_url alt=playlist.name class="w-full h-full object-cover"
+      - else
+        .w-full.h-full.flex.items-center.justify-center
+          = icon("playlist", class: "w-16 h-16 text-slate-500")
+      
+      / Genre badge
+      - if playlist.genre.present?
+        .absolute.top-3.left-3
+          span.px-2.py-1.bg-purple-600.text-white.text-xs.font-medium.rounded-full= playlist.genre.value
+
+      / Import status badge
+      - unless playlist.completed?
+        .absolute.top-3.right-3
+          - status_class = playlist.importing? ? 'bg-amber-600' : 'bg-slate-600'
+          - status_label = { 'pending' => 'Pending', 'importing' => 'Importing...', 'failed' => 'Failed' }[playlist.import_status] || playlist.import_status.titleize
+          span.px-2.py-1.text-xs.font-medium.rounded-full.text-white class=status_class
+            = status_label
+
+    .p-4
+      h3.text-white.font-semibold.truncate.group-hover:text-purple-400.transition-colors= playlist.name
+      .flex.items-center.gap-2.text-sm.text-slate-400.mt-1
+        = icon("music", class: "w-4 h-4")
+        - track_count = playlist.tracks.size
+        span= "#{track_count} #{track_count == 1 ? 'track' : 'tracks'}"

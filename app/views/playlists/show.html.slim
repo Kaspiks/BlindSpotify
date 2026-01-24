@@ -1,0 +1,56 @@
+- content_for :title, show_presenter.page_title
+
+= turbo_stream_from "playlist_#{@playlist.id}"
+
+.max-w-4xl.mx-auto.px-4.py-8
+  / Back link
+  .mb-6
+    = link_to playlists_path, class: "flex items-center gap-2 text-slate-400 hover:text-white transition-colors" do
+      = icon("arrow-left", class: "w-5 h-5")
+      span= show_presenter.back_label
+
+  / Playlist header
+  .flex.gap-6.mb-8
+    / Playlist image
+    .w-48.h-48.flex-shrink-0.rounded-xl.overflow-hidden.bg-slate-700
+      - if show_presenter.image_url.present?
+        img src=show_presenter.image_url alt=show_presenter.page_title class="w-full h-full object-cover"
+      - else
+        .w-full.h-full.flex.items-center.justify-center
+          = icon("playlist", class: "w-16 h-16 text-slate-500")
+
+    .flex-1
+      / Genre badge
+      - if show_presenter.genre.present?
+        span.inline-block.px-3.py-1.bg-purple-600.text-white.text-sm.font-medium.rounded-full.mb-3= show_presenter.genre.value
+
+      h1.text-3xl.font-bold.text-white.mb-2= show_presenter.page_title
+
+      .flex.items-center.gap-4.text-slate-400.mb-4
+        .flex.items-center.gap-2
+          = icon("music", class: "w-5 h-5")
+          span= "#{@tracks.size} tracks"
+        
+        - if show_presenter.deezer_url.present?
+          = link_to show_presenter.deezer_url, target: "_blank", class: "flex items-center gap-2 text-purple-400 hover:text-purple-300 transition-colors" do
+            = icon("external-link", class: "w-5 h-5")
+            span= show_presenter.view_on_deezer_label
+
+      / Actions
+      .flex.items-center.gap-3
+        - if policy(@playlist).import?
+          = button_to import_playlist_path(@playlist), method: :post, class: "inline-flex items-center gap-2 px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white font-medium rounded-lg transition-colors" do
+            = icon("refresh", class: "w-5 h-5")
+            span= show_presenter.reimport_label
+
+        = button_to playlist_path(@playlist), method: :delete, class: "inline-flex items-center gap-2 px-4 py-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 font-medium rounded-lg transition-colors", data: { turbo_confirm: show_presenter.delete_confirmation } do
+          = icon("trash", class: "w-5 h-5")
+          span= show_presenter.delete_label
+
+  / Import progress
+  div id="playlist_#{@playlist.id}_progress"
+    = render "playlists/progress", playlist: @playlist, presenter: show_presenter
+
+  / Tracks list
+  div id="playlist_#{@playlist.id}_tracks"
+    = render "playlists/tracks_list", playlist: @playlist, tracks: @tracks

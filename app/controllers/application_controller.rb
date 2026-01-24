@@ -30,7 +30,7 @@ class ApplicationController < ActionController::Base
 
   def error_message_list(object, **t_kwargs)
     view_context.message_list(
-      object.errors(:base),
+      object.errors.full_messages,
       default_message: t_context(".failure", **t_kwargs)
     )
   end

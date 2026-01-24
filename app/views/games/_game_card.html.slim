@@ -1,0 +1,25 @@
+= link_to game_path(game), class: "block bg-slate-800 hover:bg-slate-700 rounded-xl p-4 transition-colors group" do
+  .flex.items-center.gap-4
+    / Playlist image
+    .w-16.h-16.rounded-lg.overflow-hidden.bg-slate-700.flex-shrink-0
+      - if game.playlist.image_url.present?
+        img src=game.playlist.image_url alt="" class="w-full h-full object-cover"
+      - else
+        .w-full.h-full.flex.items-center.justify-center
+          = icon("playlist", class: "w-8 h-8 text-slate-500")
+
+    .flex-1.min-w-0
+      .flex.items-center.gap-2.mb-1
+        h3.text-white.font-semibold.truncate.group-hover:text-purple-400.transition-colors= game.playlist.name
+        span class="px-2 py-0.5 text-xs rounded-full #{presenter.status_class(game.status)}"
+          = presenter.status_label(game.status)
+      
+      .flex.items-center.gap-4.text-sm.text-slate-400
+        span= "#{game.tracks_played} / #{game.total_tracks} tracks"
+        span= "#{game.tracks_revealed} revealed"
+        span= time_ago_in_words(game.created_at) + " ago"
+
+    / Progress indicator
+    .w-16.text-right
+      .text-lg.font-bold.text-purple-400= "#{game.progress_percentage}%"
+      .text-xs.text-slate-500 complete

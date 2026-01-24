@@ -1,0 +1,49 @@
+en:
+  activerecord:
+    models:
+      game:
+        one: Game
+        other: Games
+      playlist:
+        one: Playlist
+        other: Playlists
+      track:
+        one: Track
+        other: Tracks
+
+    attributes:
+      game:
+        playlist: Playlist
+        playlist_id: Playlist
+        status: Status
+        current_track_index: Current track
+        tracks_played: Tracks played
+        tracks_revealed: Tracks revealed
+        track_order: Track order
+        started_at: Started at
+        completed_at: Completed at
+
+      playlist:
+        name: Name
+        genre: Genre
+        genre_id: Genre
+        description: Description
+        deezer_id: Deezer ID
+        deezer_url: Deezer URL
+        image_url: Image
+        tracks_count: Tracks count
+        imported_tracks_count: Imported tracks
+        import_status: Import status
+        import_error: Import error
+
+      track:
+        title: Title
+        artist_name: Artist
+        album_name: Album
+        album_cover_url: Album cover
+        preview_url: Preview URL
+        duration_seconds: Duration
+        release_year: Release year
+        token: Token
+        qr_generated: QR generated
+        position: Position

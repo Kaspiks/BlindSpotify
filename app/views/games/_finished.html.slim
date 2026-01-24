@@ -1,0 +1,31 @@
+/ Game finished view
+.bg-slate-800.rounded-2xl.p-8.text-center
+  .w-24.h-24.rounded-full.bg-gradient-to-br.from-purple-600.to-pink-500.flex.items-center.justify-center.mx-auto.mb-6
+    = icon("trophy", class: "w-12 h-12 text-white")
+  
+  h2.text-3xl.font-bold.text-white.mb-2= presenter.finished_title
+  p.text-slate-400.mb-8= presenter.finished_description
+
+  / Stats
+  .grid.grid-cols-3.gap-4.mb-8
+    .bg-slate-700.rounded-xl.p-4
+      .text-3xl.font-bold.text-purple-400= game.tracks_played
+      .text-sm.text-slate-400= presenter.stats_played_label
+
+    .bg-slate-700.rounded-xl.p-4
+      .text-3xl.font-bold.text-green-400= game.tracks_revealed
+      .text-sm.text-slate-400= presenter.stats_revealed_label
+
+    .bg-slate-700.rounded-xl.p-4
+      .text-3xl.font-bold.text-slate-300= game.total_tracks
+      .text-sm.text-slate-400= presenter.stats_total_label
+
+  / Actions
+  .flex.gap-4.justify-center
+    = link_to new_game_path, class: "px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-xl flex items-center gap-2 transition-colors" do
+      = icon("refresh", class: "w-5 h-5")
+      span= presenter.play_again_label
+
+    = link_to games_path, class: "px-6 py-3 bg-slate-700 hover:bg-slate-600 text-white font-semibold rounded-xl flex items-center gap-2 transition-colors" do
+      = icon("list", class: "w-5 h-5")
+      span= presenter.view_history_label

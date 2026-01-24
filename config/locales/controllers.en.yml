@@ -1,0 +1,33 @@
+en:
+  controllers:
+    global:
+      create:
+        success: "Successfully created."
+        failure: "Could not create. Please check the errors below."
+      update:
+        success: "Successfully updated."
+        failure: "Could not update. Please check the errors below."
+      destroy:
+        success: "Successfully deleted."
+        failure: "Could not delete."
+
+    games:
+      create:
+        success: "Game started! Good luck!"
+        failure: "Could not start game."
+      next_track:
+        completed: "Game completed! Well done!"
+      reveal:
+        success: "Track revealed!"
+      abandon:
+        success: "Game abandoned."
+
+    playlists:
+      create:
+        success: "Playlist created."
+        success_importing: "Playlist created! Import started..."
+        failure: "Could not create playlist."
+      destroy:
+        success: "Playlist deleted."
+      import:
+        success: "Re-import started..."

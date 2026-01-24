@@ -1,0 +1,44 @@
+- if playlist.pending? || playlist.importing?
+  .bg-slate-800.rounded-xl.p-6.mb-8 data-controller="import-progress" data-import-progress-playlist-id-value=playlist.id
+    .flex.items-center.gap-4
+      - if playlist.importing?
+        .w-10.h-10.rounded-full.bg-purple-600.flex.items-center.justify-center.animate-pulse
+          = icon("refresh", class: "w-5 h-5 text-white animate-spin")
+      - else
+        .w-10.h-10.rounded-full.bg-slate-700.flex.items-center.justify-center
+          = icon("clock", class: "w-5 h-5 text-slate-400")
+
+      .flex-1
+        h3.text-white.font-semibold
+          - if playlist.importing?
+            | Importing tracks...
+          - else
+            | Waiting to import
+        p.text-sm.text-slate-400
+          - if playlist.importing?
+            | Please wait while we import your playlist
+          - else
+            | Import will start shortly
+
+    .mt-4
+      - if playlist.tracks_count.to_i > 0
+        .h-2.bg-slate-700.rounded-full.overflow-hidden data-import-progress-target="progressBar"
+          .h-full.bg-purple-600.transition-all.duration-300 style="width: #{playlist.import_progress_percentage}%"
+        .text-xs.text-slate-500.mt-2.text-right data-import-progress-target="progressText"
+          = "#{playlist.imported_tracks_count} / #{playlist.tracks_count} tracks imported"
+      - else
+        .h-2.bg-slate-700.rounded-full.overflow-hidden
+          .h-full.bg-purple-600.animate-pulse style="width: 30%"
+        .text-xs.text-slate-500.mt-2.text-right
+          | Fetching playlist info...
+
+- elsif playlist.failed?
+  .bg-red-900/20.border.border-red-500/30.rounded-xl.p-6.mb-8
+    .flex.items-center.gap-4
+      .w-10.h-10.rounded-full.bg-red-600.flex.items-center.justify-center
+        = icon("alert-circle", class: "w-5 h-5 text-white")
+      .flex-1
+        h3.text-red-400.font-semibold Import failed
+        p.text-sm.text-red-300= playlist.import_error || "There was an error importing this playlist"
+
+/- Completed state: no UI needed, tracks list shows the results

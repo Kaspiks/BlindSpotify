@@ -11,10 +11,26 @@ html
     = yield :head
 
     link rel="icon" href="/icon.svg" type="image/svg+xml"
-    link rel="apple-touch-icon" href="/icon.png"
+    / Apple touch icon - using SVG fallback (browsers will ignore if they don't support)
+    link rel="apple-touch-icon" href="/icon.svg"
 
     script src="https://cdn.tailwindcss.com"
     = javascript_importmap_tags
+
+    css:
+      /* SVG Icon styles */
+      .iconset { display: none; }
+      .icon {
+        stroke: currentColor;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        fill: none;
+      }
+      .icon--sm { stroke-width: 2.5; }
+      .icon--lg { stroke-width: 1.5; }
+      .icon--bold { stroke-width: 2.5; }
+      .icon--filled { fill: currentColor; stroke: none; }
 
   body.min-h-screen class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900"
     = render_svg_icons

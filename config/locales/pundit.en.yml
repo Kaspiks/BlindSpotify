@@ -9,6 +9,19 @@ en:
       destroy?: "You are not authorized to delete this user."
       block?: "You are not authorized to block this user."
       unblock?: "You are not authorized to unblock this user."
+    game_policy:
+      index?: "You must be signed in to view games."
+      show?: "You can only view your own games."
+      create?: "You must be signed in to start a game."
+      next_track?: "You can only control your own active games."
+      reveal?: "You can only reveal tracks in your own active games."
+      abandon?: "You can only abandon your own active games."
+    playlist_policy:
+      index?: "You must be signed in to view playlists."
+      show?: "You can only view your own playlists."
+      create?: "You must be signed in to create playlists."
+      destroy?: "You can only delete your own playlists."
+      import?: "You can only import to your own playlists."
 
 
 

@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-
 FactoryBot.define do
   factory :setting do
     sequence(:key) { |n| "setting.key_#{n}" }
@@ -24,3 +23,22 @@ FactoryBot.define do
     end
   end
 end
+
+# == Schema Information
+#
+# Table name: settings
+#
+#  id          :bigint           not null, primary key
+#  description :text
+#  group       :string           default("general")
+#  key         :string           not null
+#  value       :text
+#  value_type  :string           default("string"), not null
+#  created_at  :datetime         not null
+#  updated_at  :datetime         not null
+#
+# Indexes
+#
+#  index_settings_on_group  (group)
+#  index_settings_on_key    (key) UNIQUE
+#

@@ -16,7 +16,9 @@ gem "slim-rails"
 gem "devise"
 gem "omniauth"
 gem "omniauth-spotify"
+gem "omniauth-deezer"
 gem "omniauth-rails_csrf_protection"
+gem "multi_json" # Required by omniauth-deezer
 
 gem "pundit"
 

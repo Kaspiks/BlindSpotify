@@ -1,0 +1,12 @@
+.bg-slate-800.rounded-xl.overflow-hidden
+  .px-6.py-4.border-b.border-slate-700
+    h2.text-lg.font-semibold.text-white= "#{tracks.size} Tracks"
+
+  - if tracks.any?
+    .divide-y.divide-slate-700
+      - tracks.each_with_index do |track, index|
+        = render "playlists/track", track: track, index: index
+  - else
+    .p-8.text-center.text-slate-400
+      = icon("music", class: "w-12 h-12 mx-auto mb-2 text-slate-600")
+      p No tracks imported yet

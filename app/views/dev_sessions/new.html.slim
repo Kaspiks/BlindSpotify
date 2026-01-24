@@ -1,0 +1,46 @@
+.max-w-md.mx-auto.px-4.py-12
+  .text-center.mb-8
+    .w-16.h-16.mx-auto.rounded-2xl.flex.items-center.justify-center.mb-4 class="bg-amber-500/20"
+      = icon(:settings, width: 32, height: 32, class: "text-amber-400")
+    h1.text-2xl.font-bold.text-white Development Login
+    p.text-slate-400.mt-2 OAuth providers unavailable - use dev mode to test
+
+  .rounded-2xl.border.p-6.mb-6 class="bg-slate-800/50 border-white/10"
+    h2.text-lg.font-semibold.text-white.mb-4 Create New Dev User
+
+    = form_tag dev_sessions_path, method: :post, class: "space-y-4" do
+      div
+        label.block.text-sm.font-medium.text-slate-300.mb-2 for="name" Name (optional)
+        input.w-full.px-4.py-3.rounded-lg.bg-slate-700.border.border-slate-600.text-white.placeholder-slate-400 type="text" name="name" id="name" placeholder="Dev User"
+
+      div
+        label.block.text-sm.font-medium.text-slate-300.mb-2 for="email" Email (optional)
+        input.w-full.px-4.py-3.rounded-lg.bg-slate-700.border.border-slate-600.text-white.placeholder-slate-400 type="email" name="email" id="email" placeholder="dev@example.com"
+
+      button.w-full.px-4.py-3.rounded-lg.font-medium.text-black.bg-amber-400.hover:bg-amber-300.transition-colors.cursor-pointer type="submit"
+        | Create & Sign In
+
+  - if @users.any?
+    .rounded-2xl.border.p-6 class="bg-slate-800/50 border-white/10"
+      h2.text-lg.font-semibold.text-white.mb-4 Or Sign In As Existing User
+
+      .space-y-2
+        - @users.each do |user|
+          = button_to dev_sessions_path(user_id: user.id), method: :post, class: "w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left hover:bg-white/5 transition-colors" do
+            - if user.image_url.present?
+              img.w-10.h-10.rounded-full src=user.image_url alt=user.display_name
+            - else
+              .w-10.h-10.rounded-full.flex.items-center.justify-center class="bg-slate-700"
+                = icon(:user, width: 20, height: 20, class: "text-slate-400")
+            div.flex-1
+              .text-white.font-medium = user.display_name
+              .text-xs.text-slate-500 = user.email
+            .flex.items-center.gap-2
+              - if user.admin?
+                span.px-2.py-0.5.text-xs.rounded-full class="bg-red-500/20 text-red-400" Admin
+              span.px-2.py-0.5.text-xs.rounded-full class="bg-slate-500/20 text-slate-400"
+                = user.provider.titleize
+
+  .text-center.mt-6
+    = link_to root_path, class: "text-sm text-slate-400 hover:text-white transition-colors" do
+      | ← Back to Home

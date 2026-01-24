@@ -20,3 +20,21 @@ class Classification < ApplicationRecord
     name
   end
 end
+
+# == Schema Information
+#
+# Table name: classifications
+#
+#  id          :bigint           not null, primary key
+#  active      :boolean          default(TRUE), not null
+#  code        :string           not null
+#  description :text
+#  name        :string           not null
+#  created_at  :datetime         not null
+#  updated_at  :datetime         not null
+#
+# Indexes
+#
+#  index_classifications_on_code  (code) UNIQUE
+#  index_classifications_on_name  (name) UNIQUE
+#

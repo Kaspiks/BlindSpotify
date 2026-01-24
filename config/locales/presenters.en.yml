@@ -2,3 +2,126 @@ en:
   presenters:
     title:
       inactive: inactive
+
+    games:
+      index:
+        page_title: "Game History"
+        empty_state:
+          title: "No games yet"
+          description: "Start your first game to see your history here."
+        actions:
+          new_game: "New Game"
+        status:
+          active: "In Progress"
+          completed: "Completed"
+          abandoned: "Abandoned"
+
+      show:
+        page_title: "Playing: %{playlist_name}"
+        track_counter: "Track %{current} / %{total}"
+        progress:
+          played: "%{count} played"
+          remaining: "%{count} remaining"
+        mystery:
+          title: "???"
+          hint: "Listen and guess..."
+        actions:
+          reveal: "Reveal Track"
+          skip: "Skip"
+          next: "Next Track"
+          abandon: "Abandon"
+        confirmations:
+          abandon: "Are you sure you want to abandon this game?"
+        navigation:
+          back: "Back to Games"
+        playlist_info:
+          playing_from: "Playing from"
+        no_preview: "No preview available for this track"
+        finished:
+          completed_title: "Game Complete!"
+          ended_title: "Game Ended"
+          description: "You've finished this playlist"
+          stats:
+            played: "Tracks Played"
+            revealed: "Revealed"
+            total: "Total Tracks"
+          actions:
+            play_again: "Play Again"
+            view_history: "View History"
+
+      form:
+        page_title: "Start New Game"
+        page_description: "Select a playlist to begin. Tracks will be shuffled and played blind."
+        empty_state:
+          title: "No playlists available"
+          description: "Import some playlists first to start playing."
+          import_action: "Import Playlist"
+        playlist_count:
+          one: "1 playlist"
+          other: "%{count} playlists"
+        tracks_count:
+          one: "1 track"
+          other: "%{count} tracks"
+        actions:
+          play: "Play this playlist"
+        uncategorized: "Uncategorized"
+
+    playlists:
+      index:
+        page_title: "My Playlists"
+        page_description: "Manage your imported playlists"
+        empty_state:
+          title: "No playlists yet"
+          description: "Import your first playlist from Deezer to get started."
+        actions:
+          new_playlist: "Import Playlist"
+        tracks_count:
+          one: "1 track"
+          other: "%{count} tracks"
+        import_status:
+          pending: "Pending"
+          importing: "Importing..."
+          completed: "Imported"
+          failed: "Failed"
+
+      show:
+        navigation:
+          back: "Back to Playlists"
+        actions:
+          view_on_deezer: "View on Deezer"
+          delete: "Delete"
+          reimport: "Re-import"
+        confirmations:
+          delete: "Are you sure you want to delete this playlist and all its tracks?"
+        tracks:
+          header:
+            one: "1 Track"
+            other: "%{count} Tracks"
+          empty: "No tracks in this playlist yet."
+        import:
+          status:
+            pending:
+              title: "Waiting to import"
+              description: "Import will start shortly"
+            importing:
+              title: "Importing tracks..."
+              description: "Please wait while we import your playlist"
+            completed:
+              title: "Import complete"
+              description: "All tracks have been imported"
+            failed:
+              title: "Import failed"
+              description: "There was an error importing this playlist"
+          progress: "%{imported} / %{total} tracks imported"
+
+      form:
+        new_title: "Import Playlist"
+        edit_title: "Edit Playlist"
+        description: "Import a playlist from Deezer"
+        actions:
+          create: "Import Playlist"
+          update: "Update Playlist"
+          cancel: "Cancel"
+        hints:
+          deezer_url: "Paste a Deezer playlist URL or just the playlist ID"
+          genre: "Categorize this playlist by genre"

@@ -1,0 +1,46 @@
+en:
+  forms:
+    games:
+      importing_name: "Importing..."
+
+    playlists:
+      importing_name: "Importing..."
+
+  activemodel:
+    errors:
+      models:
+        games/form:
+          attributes:
+            playlist_id:
+              blank: "Please select a playlist"
+              not_found: "Playlist not found"
+              no_tracks: "This playlist has no tracks to play"
+
+        playlists/form:
+          attributes:
+            genre_id:
+              blank: "Please select a genre"
+            deezer_url:
+              invalid: "Invalid Deezer URL or playlist ID"
+
+  simple_form:
+    labels:
+      game:
+        playlist_id: "Select a playlist"
+
+      playlist:
+        name: "Playlist name"
+        genre_id: "Genre"
+        description: "Description (optional)"
+        deezer_url: "Deezer playlist URL or ID"
+
+    hints:
+      playlist:
+        deezer_url: "Paste a Deezer playlist URL or just the playlist ID"
+        genre_id: "Categorize this playlist by genre"
+
+    placeholders:
+      playlist:
+        name: "My awesome playlist"
+        deezer_url: "https://www.deezer.com/playlist/4676818664"
+        description: "A brief description of this playlist"

@@ -11,7 +11,7 @@
       tr.border-b class="border-white/10"
         th.px-6.py-4.text-left.text-sm.font-medium.text-slate-400 User
         th.px-6.py-4.text-left.text-sm.font-medium.text-slate-400 Role
-        th.px-6.py-4.text-left.text-sm.font-medium.text-slate-400 Spotify
+        th.px-6.py-4.text-left.text-sm.font-medium.text-slate-400 Provider
         th.px-6.py-4.text-left.text-sm.font-medium.text-slate-400 Status
         th.px-6.py-4.text-left.text-sm.font-medium.text-slate-400 Joined
         th.px-6.py-4.text-right.text-sm.font-medium.text-slate-400 Actions
@@ -31,11 +31,12 @@
                 .text-xs.text-slate-500 = user.email
           td.px-6.py-4.text-slate-400 = user.role_name
           td.px-6.py-4
-            - if user.spotify_product.present?
-              span.px-2.py-1.text-xs.rounded-full class="bg-green-500/20 text-green-400"
-                = user.spotify_product.capitalize
+            - if user.deezer?
+              span.px-2.py-1.text-xs.rounded-full class="bg-amber-500/20 text-amber-400" Deezer
+            - elsif user.spotify?
+              span.px-2.py-1.text-xs.rounded-full class="bg-green-500/20 text-green-400" Spotify
             - else
-              span.text-slate-500 -
+              span.text-slate-500 = user.provider&.titleize || "-"
           td.px-6.py-4
             - if user.admin?
               span.px-2.py-1.text-xs.rounded-full class="bg-red-500/20 text-red-400" Admin

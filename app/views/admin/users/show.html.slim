@@ -57,20 +57,28 @@
         dd.text-white.mt-1 = @user.created_at.strftime("%B %d, %Y at %I:%M %p")
 
   .rounded-2xl.border.p-6 class="bg-slate-800/50 border-white/10"
-    h2.text-lg.font-semibold.text-white.mb-4 Spotify Information
+    h2.text-lg.font-semibold.text-white.mb-4 OAuth Provider Information
     dl.space-y-4
       div
-        dt.text-sm.text-slate-400 Spotify ID
-        dd.text-white.mt-1.font-mono.text-sm = @user.uid
+        dt.text-sm.text-slate-400 Provider
+        dd.mt-1
+          - if @user.deezer?
+            span.px-2.py-1.text-xs.rounded-full class="bg-amber-500/20 text-amber-400" Deezer
+          - elsif @user.spotify?
+            span.px-2.py-1.text-xs.rounded-full class="bg-green-500/20 text-green-400" Spotify
+          - else
+            span.text-white = @user.provider&.titleize || "-"
 
       div
-        dt.text-sm.text-slate-400 Subscription
-        dd.mt-1
-          - if @user.spotify_product.present?
+        dt.text-sm.text-slate-400 Provider User ID
+        dd.text-white.mt-1.font-mono.text-sm = @user.uid
+
+      - if @user.spotify? && @user.spotify_product.present?
+        div
+          dt.text-sm.text-slate-400 Subscription
+          dd.mt-1
             span.px-2.py-1.text-xs.rounded-full class="bg-green-500/20 text-green-400"
               = @user.spotify_product.capitalize
-          - else
-            span.text-slate-500 Unknown
 
       div
         dt.text-sm.text-slate-400 Country
@@ -79,14 +87,14 @@
       div
         dt.text-sm.text-slate-400 Token Status
         dd.mt-1
-          - if @user.spotify_token_expired?
+          - if @user.access_token_expired?
             span.px-2.py-1.text-xs.rounded-full class="bg-red-500/20 text-red-400" Expired
-          - elsif @user.spotify_token_expiring_soon?
+          - elsif @user.access_token_expiring_soon?
             span.px-2.py-1.text-xs.rounded-full class="bg-amber-500/20 text-amber-400" Expiring Soon
           - else
             span.px-2.py-1.text-xs.rounded-full class="bg-green-500/20 text-green-400" Valid
 
-      - if @user.spotify_token_expires_at.present?
+      - if @user.token_expires_at.present?
         div
           dt.text-sm.text-slate-400 Token Expires
-          dd.text-white.mt-1 = @user.spotify_token_expires_at.strftime("%B %d, %Y at %I:%M %p")
+          dd.text-white.mt-1 = @user.token_expires_at.strftime("%B %d, %Y at %I:%M %p")

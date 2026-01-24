@@ -1,0 +1,50 @@
+- content_for :title, form_presenter.page_title
+
+.max-w-6xl.mx-auto.px-4.py-8
+  h1.text-3xl.font-bold.text-white.mb-2= form_presenter.page_title
+  p.text-slate-400.mb-8= form_presenter.page_description
+
+  - playlists_by_genre = form_presenter.form.available_playlists_by_genre(current_user)
+
+  - if playlists_by_genre.empty?
+    .bg-slate-800.rounded-xl.p-12.text-center
+      = icon("playlist", class: "w-16 h-16 text-slate-500 mx-auto mb-4")
+      h3.text-xl.text-white.mb-2= form_presenter.empty_state_title
+      p.text-slate-400.mb-6= form_presenter.empty_state_description
+      = link_to new_playlist_path, class: "inline-flex items-center gap-2 px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-lg transition-colors" do
+        = icon("plus", class: "w-5 h-5")
+        span= form_presenter.import_playlist_label
+
+  - else
+    - playlists_by_genre.each do |genre, playlists|
+      .mb-10
+        .flex.items-center.gap-3.mb-4
+          - if genre
+            span.px-3.py-1.bg-purple-600.text-white.text-sm.font-medium.rounded-full= genre.value
+          - else
+            span.px-3.py-1.bg-slate-600.text-white.text-sm.font-medium.rounded-full= form_presenter.uncategorized_label
+          span.text-slate-500.text-sm= form_presenter.playlist_count_label(playlists.size)
+
+        .grid.grid-cols-1.sm:grid-cols-2.lg:grid-cols-3.xl:grid-cols-4.gap-4
+          - playlists.each do |playlist|
+            = form_with model: Game.new, url: games_path, method: :post, class: "group" do |f|
+              = f.hidden_field :playlist_id, value: playlist.id
+              button.w-full.bg-slate-800.hover:bg-slate-700.rounded-xl.p-4.text-left.transition-all.hover:ring-2.hover:ring-purple-500 type="submit"
+                .flex.gap-4
+                  / Playlist image
+                  .w-20.h-20.flex-shrink-0.rounded-lg.overflow-hidden.bg-slate-700
+                    - if playlist.image_url.present?
+                      img src=playlist.image_url alt=playlist.name class="w-full h-full object-cover"
+                    - else
+                      .w-full.h-full.flex.items-center.justify-center
+                        = icon("playlist", class: "w-8 h-8 text-slate-500")
+
+                  .flex-1.min-w-0
+                    h3.text-white.font-semibold.truncate.group-hover:text-purple-400.transition-colors= playlist.name
+                    .flex.items-center.gap-2.text-sm.text-slate-400.mt-1
+                      = icon("music", class: "w-4 h-4")
+                      span= form_presenter.tracks_count_label(playlist.tracks.size)
+                    
+                    .mt-3.flex.items-center.gap-2.text-purple-400.text-sm.font-medium.opacity-0.group-hover:opacity-100.transition-opacity
+                      = icon("player-play", class: "w-4 h-4")
+                      span= form_presenter.play_button_label

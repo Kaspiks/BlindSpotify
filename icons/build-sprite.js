@@ -13,6 +13,7 @@ const includedIcons = [
   "award",
   "bell",
   "bookmark",
+  "brand-spotify",
   "calendar",
   "camera",
   "check",
@@ -23,6 +24,7 @@ const includedIcons = [
   "circle-plus",
   "clock",
   "copy",
+  "device-gamepad-2",
   "edit",
   "external-link",
   "eye",
@@ -31,8 +33,10 @@ const includedIcons = [
   "folder",
   "gift",
   "heart",
+  "history",
   "home",
   "info-circle",
+  "list",
   "lock",
   "login",
   "logout",
@@ -41,12 +45,20 @@ const includedIcons = [
   "menu-2",
   "message",
   "minus",
+  "music",
+  "music-off",
   "package",
   "photo",
+  "player-pause",
+  "player-play",
+  "playlist",
   "plus",
+  "qrcode",
+  "refresh",
   "search",
   "settings",
   "share",
+  "shield",
   "shopping-cart",
   "star",
   "target",
@@ -61,14 +73,23 @@ const includedIcons = [
   "tag",
 ];
 
-// Path to Tabler SVGs (outline style)
-const tablerIconsPath = path.join(
+// Paths to Tabler SVGs
+const tablerOutlinePath = path.join(
   __dirname,
   'node_modules',
   '@tabler',
   'icons',
   'icons',
   'outline'
+);
+
+const tablerFilledPath = path.join(
+  __dirname,
+  'node_modules',
+  '@tabler',
+  'icons',
+  'icons',
+  'filled'
 );
 
 const outputPath = path.join(
@@ -91,7 +112,11 @@ let spriteContent =
 let iconsAdded = 0;
 
 includedIcons.forEach(iconName => {
-  const iconPath = path.join(tablerIconsPath, `${iconName}.svg`);
+  // Try outline first, then filled (for brand icons)
+  let iconPath = path.join(tablerOutlinePath, `${iconName}.svg`);
+  if (!fs.existsSync(iconPath)) {
+    iconPath = path.join(tablerFilledPath, `${iconName}.svg`);
+  }
 
   if (!fs.existsSync(iconPath)) {
     console.warn(`⚠ Icon not found: ${iconName}.svg`);

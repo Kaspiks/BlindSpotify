@@ -1,0 +1,25 @@
+- content_for :title, index_presenter.page_title
+
+.max-w-4xl.mx-auto.px-4.py-8
+  .flex.items-center.justify-between.mb-8
+    div
+      h1.text-3xl.font-bold.text-white= index_presenter.page_title
+      p.text-slate-400= t("presenters.games/index.page_description", default: "Your recent games")
+
+    = link_to new_game_path, class: "inline-flex items-center gap-2 px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-lg transition-colors" do
+      = icon("player-play", class: "w-5 h-5")
+      span= index_presenter.new_game_label
+
+  - if index_presenter.collection.empty?
+    .bg-slate-800.rounded-xl.p-12.text-center
+      = icon("device-gamepad-2", class: "w-16 h-16 text-slate-500 mx-auto mb-4")
+      h3.text-xl.text-white.mb-2= index_presenter.empty_state_title
+      p.text-slate-400.mb-6= index_presenter.empty_state_description
+      = link_to new_game_path, class: "inline-flex items-center gap-2 px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-lg transition-colors" do
+        = icon("player-play", class: "w-5 h-5")
+        span= index_presenter.new_game_label
+
+  - else
+    .space-y-4
+      - index_presenter.collection.each do |game|
+        = render "games/game_card", game: game, presenter: index_presenter

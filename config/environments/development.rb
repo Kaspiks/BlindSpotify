@@ -55,6 +55,10 @@ Rails.application.configure do
   # Highlight code that enqueued background job in logs.
   config.active_job.verbose_enqueue_logs = true
 
+  # Run background jobs inline for simpler development
+  # Change to :async if you want jobs to run in background threads
+  config.active_job.queue_adapter = :async
+
   # Raises error for missing translations.
   # config.i18n.raise_on_missing_translations = true
 

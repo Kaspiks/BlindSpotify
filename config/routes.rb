@@ -1,10 +1,21 @@
 # frozen_string_literal: true
 
 Rails.application.routes.draw do
-  # Spotify OAuth via Devise
+  # Development-only login bypass (when OAuth providers unavailable)
+  if Rails.env.development?
+    get "dev/login", to: "dev_sessions#new", as: :dev_login
+    post "dev/login", to: "dev_sessions#create", as: :dev_sessions
+  end
+
+  # OAuth via Devise (Deezer active, Spotify disabled)
   devise_for :users, controllers: {
     omniauth_callbacks: "users/omniauth_callbacks"
   }
+
+  # Sign out route (Devise doesn't generate this without database_authenticatable)
+  devise_scope :user do
+    delete "users/sign_out", to: "devise/sessions#destroy", as: :destroy_user_session
+  end
 
   # Admin namespace for curator/admin functionality
   namespace :admin do
@@ -28,12 +39,28 @@ Rails.application.routes.draw do
     # end
   end
 
+  # Playlists
+  resources :playlists, only: [:index, :show, :new, :create, :destroy] do
+    member do
+      post :import
+      get :status
+    end
+  end
+
+  # Game mode - blind track guessing
+  resources :games, only: [:index, :new, :create, :show] do
+    member do
+      post :next_track
+      post :reveal
+      patch :abandon
+    end
+  end
+
+  # Track playback via QR code token
+  get "q/:token", to: "tracks#play", as: :track_qr
+
   # Health check for deployment
   get "up" => "rails/health#show", as: :rails_health_check
-
-  # Placeholder routes for the new project
-  # resources :playlists, only: [:index, :show, :new, :create]
-  # get "q/:token", to: "tracks#play", as: :track_qr
 
   root "home#index"
 end

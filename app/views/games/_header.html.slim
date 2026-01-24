@@ -1,0 +1,10 @@
+div id="game-header" class="flex items-center justify-between mb-8"
+  = link_to games_path, class: "flex items-center gap-2 text-slate-400 hover:text-white transition-colors" do
+    = icon("arrow-left", class: "w-5 h-5")
+    span= presenter.back_label
+
+  .flex.items-center.gap-4
+    .text-sm.text-slate-400= presenter.track_counter
+    
+    = button_to abandon_game_path(game), method: :patch, class: "text-red-400 hover:text-red-300 text-sm", data: { turbo_confirm: presenter.abandon_confirmation } do
+      span= presenter.abandon_button_label

@@ -10,7 +10,19 @@ nav.border-b class="border-white/10 bg-slate-900/50 backdrop-blur-xl sticky top-
       / Desktop navigation
       .hidden.md:flex.items-center.gap-4
         - if user_signed_in?
-          .flex.items-center.gap-3
+          = link_to new_game_path, class: "inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-white bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-500 hover:to-pink-400 transition-all duration-200 shadow-lg shadow-purple-500/25" do
+            = icon("player-play", width: 16, height: 16)
+            span Play Game
+
+          = link_to playlists_path, class: "inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-slate-300 hover:text-white hover:bg-white/10 transition-all duration-200" do
+            = icon(:playlist, width: 16, height: 16)
+            span Playlists
+
+          = link_to games_path, class: "inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-slate-300 hover:text-white hover:bg-white/10 transition-all duration-200" do
+            = icon(:history, width: 16, height: 16)
+            span History
+
+          .flex.items-center.gap-3.ml-2
             - if current_user.image_url.present?
               img.w-8.h-8.rounded-full src=current_user.image_url alt=current_user.display_name
             span.text-sm.text-slate-400
@@ -25,9 +37,14 @@ nav.border-b class="border-white/10 bg-slate-900/50 backdrop-blur-xl sticky top-
             = icon(:logout, width: 16, height: 16)
             span Sign out
         - else
-          = button_to user_spotify_omniauth_authorize_path, method: :post, data: { turbo: false }, class: "inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-white bg-green-600 hover:bg-green-500 transition-all duration-200" do
-            = icon(:brand_spotify, width: 18, height: 18)
-            span Sign in with Spotify
+          - if Rails.env.development?
+            = link_to dev_login_path, class: "inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-black bg-amber-400 hover:bg-amber-300 transition-all duration-200" do
+              = icon(:settings, width: 18, height: 18)
+              span Dev Login
+          - else
+            = button_to user_deezer_omniauth_authorize_path, method: :post, data: { turbo: false }, class: "inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-black bg-amber-400 hover:bg-amber-300 transition-all duration-200" do
+              = icon(:music, width: 18, height: 18)
+              span Sign in with Deezer
 
       / Mobile menu button
       .flex.items-center.gap-3.md:hidden
@@ -44,6 +61,20 @@ nav.border-b class="border-white/10 bg-slate-900/50 backdrop-blur-xl sticky top-
           span Home
 
       - if user_signed_in?
+        .border-t.border-white/10.pt-3
+          = link_to new_game_path, class: "flex items-center gap-3 px-3 py-2 rounded-lg text-white bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-500 hover:to-pink-400 transition-colors" do
+            = icon("player-play", width: 20, height: 20)
+            span Play Game
+
+        .border-t.border-white/10.pt-3
+          = link_to playlists_path, class: "flex items-center gap-3 px-3 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-white/10 transition-colors" do
+            = icon(:playlist, width: 20, height: 20)
+            span Playlists
+
+          = link_to games_path, class: "flex items-center gap-3 px-3 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-white/10 transition-colors" do
+            = icon(:history, width: 20, height: 20)
+            span Game History
+
         .border-t.border-white/10.pt-3
           .flex.items-center.gap-3.px-3.py-2
             - if current_user.image_url.present?
@@ -62,6 +93,11 @@ nav.border-b class="border-white/10 bg-slate-900/50 backdrop-blur-xl sticky top-
             span Sign out
       - else
         .border-t.border-white/10.pt-3
-          = button_to user_spotify_omniauth_authorize_path, method: :post, data: { turbo: false }, class: "flex items-center gap-3 px-3 py-2 rounded-lg text-green-400 hover:text-green-300 hover:bg-green-500/10 transition-colors w-full" do
-            = icon(:brand_spotify, width: 20, height: 20)
-            span Sign in with Spotify
+          - if Rails.env.development?
+            = link_to dev_login_path, class: "flex items-center gap-3 px-3 py-2 rounded-lg text-amber-400 hover:text-amber-300 hover:bg-amber-500/10 transition-colors w-full" do
+              = icon(:settings, width: 20, height: 20)
+              span Dev Login
+          - else
+            = button_to user_deezer_omniauth_authorize_path, method: :post, data: { turbo: false }, class: "flex items-center gap-3 px-3 py-2 rounded-lg text-amber-400 hover:text-amber-300 hover:bg-amber-500/10 transition-colors w-full" do
+              = icon(:music, width: 20, height: 20)
+              span Sign in with Deezer

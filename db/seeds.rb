@@ -96,68 +96,74 @@ end
 puts "  Created Difficulty classification with #{difficulty.classification_values.count} values"
 
 # Development-only seeds
-# NOTE: In production, users are created via Spotify OAuth
+# NOTE: In production, users are created via OAuth (Deezer or Spotify)
 # These seed users are for local development/testing only
 if Rails.env.development?
-  puts "Seeding development users (mock Spotify OAuth)..."
+  puts "Seeding development users (mock OAuth)..."
 
-  # Mock admin user
-  admin_user = User.find_or_initialize_by(provider: "spotify", uid: "dev_admin_001")
-  unless admin_user.persisted?
-    admin_user.assign_attributes(
-      email: "admin@example.com",
-      name: "Dev Admin",
-      admin: true,
-      role: admin_role,
-      spotify_access_token: "mock_dev_token_admin",
-      spotify_refresh_token: "mock_dev_refresh_admin",
-      spotify_token_expires_at: 1.year.from_now,
-      spotify_product: "premium",
-      spotify_country: "US"
-    )
-    admin_user.save!
-    puts "  Created mock admin: admin@example.com (Spotify ID: dev_admin_001)"
+  # Helper to find or create dev users (handles email uniqueness)
+  def find_or_create_dev_user(email:, uid:, name:, admin:, role:)
+    # Try to find by email first, then by provider+uid
+    user = User.find_by(email: email) || User.find_by(provider: "deezer", uid: uid)
+
+    if user
+      # Update existing user to ensure correct attributes
+      user.update!(
+        provider: "deezer",
+        uid: uid,
+        name: name,
+        admin: admin,
+        role: role,
+        spotify_access_token: "mock_dev_token_#{uid}",
+        spotify_country: "US"
+      )
+      puts "  Updated: #{email} (Deezer ID: #{uid})"
+    else
+      # Create new user
+      user = User.create!(
+        provider: "deezer",
+        uid: uid,
+        email: email,
+        name: name,
+        admin: admin,
+        role: role,
+        spotify_access_token: "mock_dev_token_#{uid}",
+        spotify_country: "US"
+      )
+      puts "  Created: #{email} (Deezer ID: #{uid})"
+    end
+
+    user
   end
 
-  # Mock curator user
-  curator_user = User.find_or_initialize_by(provider: "spotify", uid: "dev_curator_001")
-  unless curator_user.persisted?
-    curator_user.assign_attributes(
-      email: "curator@example.com",
-      name: "Dev Curator",
-      admin: false,
-      role: curator_role,
-      spotify_access_token: "mock_dev_token_curator",
-      spotify_refresh_token: "mock_dev_refresh_curator",
-      spotify_token_expires_at: 1.year.from_now,
-      spotify_product: "premium",
-      spotify_country: "US"
-    )
-    curator_user.save!
-    puts "  Created mock curator: curator@example.com (Spotify ID: dev_curator_001)"
-  end
+  find_or_create_dev_user(
+    email: "admin@example.com",
+    uid: "dev_admin_001",
+    name: "Dev Admin",
+    admin: true,
+    role: admin_role
+  )
 
-  # Mock regular user
-  regular_user = User.find_or_initialize_by(provider: "spotify", uid: "dev_user_001")
-  unless regular_user.persisted?
-    regular_user.assign_attributes(
-      email: "user@example.com",
-      name: "Dev User",
-      admin: false,
-      role: viewer_role,
-      spotify_access_token: "mock_dev_token_user",
-      spotify_refresh_token: "mock_dev_refresh_user",
-      spotify_token_expires_at: 1.year.from_now,
-      spotify_product: "free",
-      spotify_country: "US"
-    )
-    regular_user.save!
-    puts "  Created mock user: user@example.com (Spotify ID: dev_user_001)"
-  end
+  find_or_create_dev_user(
+    email: "curator@example.com",
+    uid: "dev_curator_001",
+    name: "Dev Curator",
+    admin: false,
+    role: curator_role
+  )
+
+  find_or_create_dev_user(
+    email: "user@example.com",
+    uid: "dev_user_001",
+    name: "Dev User",
+    admin: false,
+    role: viewer_role
+  )
 
   puts ""
   puts "  NOTE: These are mock users for development. In production,"
-  puts "  users are created automatically via Spotify OAuth."
+  puts "  users are created automatically via Deezer OAuth."
+  puts "  Spotify OAuth is currently disabled but will be enabled later."
 end
 
 puts "Seeds completed!"

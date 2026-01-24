@@ -1,0 +1,6 @@
+div id="game-progress" class="mb-8"
+  .h-2.bg-slate-700.rounded-full.overflow-hidden
+    .h-full.bg-gradient-to-r.from-purple-600.to-pink-500.transition-all.duration-300 style="width: #{presenter.progress_percentage}%"
+  .flex.justify-between.text-xs.text-slate-500.mt-2
+    span= presenter.progress_label
+    span= presenter.remaining_label

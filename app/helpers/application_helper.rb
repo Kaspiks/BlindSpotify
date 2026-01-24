@@ -27,6 +27,6 @@ module ApplicationHelper
   def message_list(errors, default_message: nil)
     return default_message if errors.blank?
 
-    safe_join(errors.map { |e| tag.div(e.message) })
+    safe_join(errors.map { |e| tag.div(e.respond_to?(:message) ? e.message : e.to_s) })
   end
 end
