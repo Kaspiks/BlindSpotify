@@ -37,9 +37,12 @@ Rails.application.configure do
   # Make template changes take effect immediately.
   config.action_mailer.perform_caching = false
 
-  # Set localhost to be used by links generated in mailer templates.
-  # Also used for QR code generation - change to your local IP for phone access
-  config.action_mailer.default_url_options = { host: "172.20.10.5", port: 3000 }
+  # Set localhost to be used by links generated in mailer templates and QR codes.
+  # For phone testing, set APP_HOST env var to your local IP (e.g., 172.20.10.5)
+  config.action_mailer.default_url_options = { 
+    host: ENV.fetch("APP_HOST", "localhost"), 
+    port: ENV.fetch("APP_PORT", 3000).to_i
+  }
 
   # Print deprecation notices to the Rails logger.
   config.active_support.deprecation = :log

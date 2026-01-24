@@ -1,0 +1,73 @@
+# Render Blueprint - Infrastructure as Code
+# https://render.com/docs/blueprint-spec
+
+services:
+  # Web Service
+  - type: web
+    name: hitster
+    runtime: ruby
+    plan: starter
+    buildCommand: ./bin/render-build.sh
+    startCommand: bundle exec puma -C config/puma.rb
+    healthCheckPath: /up
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: hitster-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          name: hitster-redis
+          type: redis
+          property: connectionString
+      - key: RAILS_MASTER_KEY
+        sync: false
+      - key: RAILS_ENV
+        value: production
+      - key: RAILS_LOG_TO_STDOUT
+        value: "true"
+      - key: RAILS_SERVE_STATIC_FILES
+        value: "true"
+      - key: APP_HOST
+        sync: false
+      - key: DEEZER_APP_ID
+        sync: false
+      - key: DEEZER_APP_SECRET
+        sync: false
+
+  # Background Worker (for QR code generation)
+  - type: worker
+    name: hitster-worker
+    runtime: ruby
+    plan: starter
+    buildCommand: ./bin/render-build.sh
+    startCommand: bundle exec rake solid_queue:start
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: hitster-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          name: hitster-redis
+          type: redis
+          property: connectionString
+      - key: RAILS_MASTER_KEY
+        sync: false
+      - key: RAILS_ENV
+        value: production
+      - key: APP_HOST
+        sync: false
+
+  # Redis for ActionCable and caching
+  - type: redis
+    name: hitster-redis
+    plan: starter
+    ipAllowList: []
+
+databases:
+  # PostgreSQL Database
+  - name: hitster-db
+    plan: starter
+    databaseName: hitster
+    user: hitster

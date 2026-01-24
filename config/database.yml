@@ -44,4 +44,8 @@ test:
 
 production:
   <<: *postgres_defaults
-  database: <%= ENV.fetch("DATABASE_NAME", "blind_spotify_production") %>
+  <% if ENV["DATABASE_URL"] %>
+  url: <%= ENV["DATABASE_URL"] %>
+  <% else %>
+  database: <%= ENV.fetch("DATABASE_NAME", "hitster_production") %>
+  <% end %>

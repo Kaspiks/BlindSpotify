@@ -1,5 +1,7 @@
 source "https://rubygems.org"
 
+ruby "3.3.0"
+
 gem "rails", "~> 8.0.0", ">= 8.0.0.1"
 gem "propshaft"
 gem "sqlite3", ">= 2.1"
