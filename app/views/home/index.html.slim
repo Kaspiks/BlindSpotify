@@ -1,0 +1,51 @@
+.max-w-4xl.mx-auto.px-4.sm:px-6.lg:px-8.py-12
+  .text-center.mb-12
+    .w-20.h-20.mx-auto.rounded-2xl.flex.items-center.justify-center.mb-6 class="bg-gradient-to-br from-green-400 to-green-600"
+      = icon(:music, width: 40, height: 40, class: "text-white")
+    
+    h1.text-4xl.font-bold.text-white.mb-4 Blind Spotify
+    p.text-xl.text-slate-400.max-w-2xl.mx-auto
+      | Import Spotify playlists, generate QR codes for tracks, and play music blindly without revealing track info.
+
+  .grid.grid-cols-1.md:grid-cols-3.gap-6.mb-12
+    .rounded-2xl.border.p-6.text-center class="bg-slate-800/50 border-white/10"
+      .w-12.h-12.mx-auto.rounded-lg.flex.items-center.justify-center.mb-4 class="bg-green-500/20"
+        = icon(:playlist, width: 24, height: 24, class: "text-green-400")
+      h3.text-lg.font-semibold.text-white.mb-2 Import Playlists
+      p.text-sm.text-slate-400 Connect your Spotify account and import any playlist
+
+    .rounded-2xl.border.p-6.text-center class="bg-slate-800/50 border-white/10"
+      .w-12.h-12.mx-auto.rounded-lg.flex.items-center.justify-center.mb-4 class="bg-purple-500/20"
+        = icon(:qrcode, width: 24, height: 24, class: "text-purple-400")
+      h3.text-lg.font-semibold.text-white.mb-2 Generate QR Codes
+      p.text-sm.text-slate-400 Create unique QR codes for each track in your playlist
+
+    .rounded-2xl.border.p-6.text-center class="bg-slate-800/50 border-white/10"
+      .w-12.h-12.mx-auto.rounded-lg.flex.items-center.justify-center.mb-4 class="bg-amber-500/20"
+        = icon(:player_play, width: 24, height: 24, class: "text-amber-400")
+      h3.text-lg.font-semibold.text-white.mb-2 Blind Listening
+      p.text-sm.text-slate-400 Play tracks without seeing artist, title, or album art
+
+  .text-center
+    - if user_signed_in?
+      .rounded-2xl.border.p-6.inline-block class="bg-slate-800/50 border-white/10"
+        .flex.items-center.gap-4.mb-4
+          - if current_user.image_url.present?
+            img.w-16.h-16.rounded-full src=current_user.image_url alt=current_user.display_name
+          - else
+            .w-16.h-16.rounded-full.flex.items-center.justify-center class="bg-green-500/20"
+              = icon(:user, width: 32, height: 32, class: "text-green-400")
+          div.text-left
+            p.text-lg.font-semibold.text-white = current_user.display_name
+            p.text-sm.text-slate-400 = current_user.email
+            - if current_user.spotify_product.present?
+              span.mt-1.inline-block.px-2.py-0.5.text-xs.rounded-full class="bg-green-500/20 text-green-400"
+                = current_user.spotify_product.capitalize
+        p.text-sm.text-green-400
+          = icon(:check, width: 16, height: 16, class: "inline mr-1")
+          | Connected to Spotify
+    - else
+      = button_to user_spotify_omniauth_authorize_path, method: :post, data: { turbo: false }, class: "inline-flex items-center gap-3 px-6 py-3 rounded-xl font-medium text-white transition-all bg-gradient-to-r from-green-500 to-green-600 hover:from-green-400 hover:to-green-500 cursor-pointer" do
+        = icon(:brand_spotify, width: 24, height: 24)
+        span Connect with Spotify
+      p.text-sm.text-slate-500.mt-4 Sign in with your Spotify account to get started

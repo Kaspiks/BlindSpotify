@@ -1,0 +1,8 @@
+#!/usr/bin/env ruby
+# Shortcut for: bin/rails db:migrate
+# Usage: bin/m
+
+APP_ROOT = File.expand_path("..", __dir__)
+Dir.chdir(APP_ROOT) do
+  exec "bin/rails", "db:migrate", *ARGV
+end

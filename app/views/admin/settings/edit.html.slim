@@ -1,0 +1,39 @@
+.mb-8
+  = link_to admin_settings_path, class: "inline-flex items-center gap-2 text-slate-400 hover:text-white transition-colors mb-4" do
+    = icon "arrow-left", width: 20, height: 20
+    span Back to Settings
+
+  h1.text-2xl.font-bold.text-white Edit Setting
+
+.rounded-2xl.border.p-6 class="bg-slate-800/50 border-white/10"
+  = simple_form_for [:admin, @setting], html: { class: "space-y-6" } do |f|
+    .space-y-4
+      div
+        label.block.text-sm.font-medium.text-slate-400.mb-2 Setting Key
+        .px-4.py-3.rounded-lg.bg-slate-700.text-slate-300 = @setting.key
+
+      div
+        label.block.text-sm.font-medium.text-slate-400.mb-2 Type
+        .px-4.py-3.rounded-lg.bg-slate-700.text-slate-300 = @setting.value_type
+
+      - if @setting.description.present?
+        div
+          label.block.text-sm.font-medium.text-slate-400.mb-2 Description
+          .px-4.py-3.rounded-lg.bg-slate-700.text-slate-300 = @setting.description
+
+      div
+        = f.label :value, class: "block text-sm font-medium text-slate-300 mb-2"
+        - case @setting.value_type
+        - when "boolean"
+          label.flex.items-center.gap-3
+            = f.check_box :value, { checked: @setting.typed_value }, "true", "false", class: "w-5 h-5 rounded bg-slate-700 border-slate-600 text-green-500 focus:ring-green-500 focus:ring-offset-slate-800"
+            span.text-sm.text-slate-300 Enabled
+        - when "text"
+          = f.text_area :value, rows: 5, class: "w-full px-4 py-3 rounded-lg bg-slate-700 border border-slate-600 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+        - when "integer"
+          = f.number_field :value, class: "w-full px-4 py-3 rounded-lg bg-slate-700 border border-slate-600 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+        - else
+          = f.text_field :value, class: "w-full px-4 py-3 rounded-lg bg-slate-700 border border-slate-600 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+
+    .pt-4
+      = f.submit "Update Setting", class: "w-full px-4 py-3 rounded-lg font-medium text-white bg-green-600 hover:bg-green-500 transition-colors cursor-pointer"

@@ -1,0 +1,119 @@
+x-build: &build
+  build:
+    context: .
+    dockerfile: docker/Development.dockerfile
+    args:
+      UID: ${UID:-1000}
+      GID: ${GID:-1000}
+
+x-app: &app
+  <<: *build
+  stdin_open: true
+  tty: true
+  environment:
+    RAILS_ENV: development
+    DATABASE_ADAPTER: postgresql
+    DATABASE_HOST: db
+    DATABASE_PORT: 5432
+    DATABASE_NAME: ${DATABASE_NAME:-blind_spotify_development}
+    DATABASE_USERNAME: ${DATABASE_USERNAME:-blind_spotify}
+    DATABASE_PASSWORD: ${DATABASE_PASSWORD:-blind_spotify_dev}
+    REDIS_SESSION_STORE_URL: redis://redis:6379/0
+  volumes:
+    - .:/app:cached
+    - bundle_cache:/usr/local/bundle
+    - rails_cache:/app/tmp/cache
+
+x-test: &test
+  <<: *build
+  stdin_open: true
+  tty: true
+  environment:
+    RAILS_ENV: test
+    DATABASE_ADAPTER: postgresql
+    DATABASE_HOST: db
+    DATABASE_PORT: 5432
+    DATABASE_NAME: blind_spotify_test
+    DATABASE_USERNAME: ${DATABASE_USERNAME:-blind_spotify}
+    DATABASE_PASSWORD: ${DATABASE_PASSWORD:-blind_spotify_dev}
+    REDIS_SESSION_STORE_URL: redis://redis:6379/1
+  volumes:
+    - .:/app:cached
+    - bundle_cache:/usr/local/bundle
+  tmpfs:
+    - /app/tmp:mode=1777
+
+services:
+  db:
+    build:
+      context: .
+      dockerfile: docker/Postgres.dockerfile
+    environment:
+      POSTGRES_USER: ${DATABASE_USERNAME:-blind_spotify}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-blind_spotify_dev}
+      POSTGRES_DB: ${DATABASE_NAME:-blind_spotify_development}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DATABASE_USERNAME:-blind_spotify} -d ${DATABASE_NAME:-blind_spotify_development}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+
+  web:
+    <<: *app
+    command: rails server -b 0.0.0.0 -p 3000 -P /tmp/server.pid
+    ports:
+      - "3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  test:
+    <<: *test
+    entrypoint: []
+    command:
+      - sh
+      - -lc
+      - |
+        bundle check || bundle install --jobs 4
+        bundle exec rails db:prepare
+        echo "Test container ready. Run: docker compose exec test bash"
+        tail -f /dev/null
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  node:
+    image: node:20-alpine
+    working_dir: /app/icons
+    volumes:
+      - .:/app:cached
+      - node_modules:/app/icons/node_modules
+
+volumes:
+  postgres_data:
+  bundle_cache:
+  rails_cache:
+  redis_data:
+  node_modules:

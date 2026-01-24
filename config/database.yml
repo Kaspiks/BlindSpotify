@@ -1,0 +1,47 @@
+# Database configuration for Blind Spotify
+# Supports both SQLite (local development) and PostgreSQL (Docker/production)
+#
+# Local development (default): Uses SQLite - no setup required
+# Docker development: Set DATABASE_ADAPTER=postgresql and other env vars
+# Production: Should use PostgreSQL with proper credentials
+
+default: &default
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+
+# SQLite defaults for local development without Docker
+sqlite_defaults: &sqlite_defaults
+  <<: *default
+  adapter: sqlite3
+  timeout: 5000
+
+# PostgreSQL defaults for Docker/production
+postgres_defaults: &postgres_defaults
+  <<: *default
+  adapter: postgresql
+  encoding: unicode
+  host: <%= ENV.fetch("DATABASE_HOST", "localhost") %>
+  port: <%= ENV.fetch("DATABASE_PORT", 5432) %>
+  username: <%= ENV.fetch("DATABASE_USERNAME", "blind_spotify") %>
+  password: <%= ENV.fetch("DATABASE_PASSWORD", "") %>
+
+development:
+  <% if ENV["DATABASE_ADAPTER"] == "postgresql" %>
+  <<: *postgres_defaults
+  database: <%= ENV.fetch("DATABASE_NAME", "blind_spotify_development") %>
+  <% else %>
+  <<: *sqlite_defaults
+  database: storage/development.sqlite3
+  <% end %>
+
+test:
+  <% if ENV["DATABASE_ADAPTER"] == "postgresql" %>
+  <<: *postgres_defaults
+  database: <%= ENV.fetch("DATABASE_NAME", "blind_spotify_test") %>_test
+  <% else %>
+  <<: *sqlite_defaults
+  database: storage/test.sqlite3
+  <% end %>
+
+production:
+  <<: *postgres_defaults
+  database: <%= ENV.fetch("DATABASE_NAME", "blind_spotify_production") %>

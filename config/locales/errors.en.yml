@@ -1,0 +1,15 @@
+en:
+  errors:
+    messages:
+      already_reviewed: "Attempt has already been reviewed"
+      status_not_found: "Status not found in database. Please run seeds."
+      photo_required: "Please upload at least one photo"
+      photo_required_for_field: "%{field_label} requires at least 1 photo"
+      field_required: "%{field_label} is required"
+      invalid_field_type: "field %{index} has invalid type: %{type}"
+      field_label_required: "field %{index} must have a label"
+      location_required: "Location verification required. Please enable location access."
+      invalid_coordinates: "Invalid location coordinates provided."
+      outside_geofence: "You must be within %{radius} meters of %{location_name} to complete this challenge. You are currently %{distance} away."
+      invalid_image_type: "must be a JPEG, PNG, GIF, or WebP"
+      image_too_large: "must be less than 10MB"

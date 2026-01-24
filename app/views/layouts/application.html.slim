@@ -1,0 +1,32 @@
+doctype html
+html
+  head
+    title = content_for(:title) || "Blind Spotify"
+    meta name="viewport" content="width=device-width,initial-scale=1"
+    meta name="apple-mobile-web-app-capable" content="yes"
+    meta name="mobile-web-app-capable" content="yes"
+    = csrf_meta_tags
+    = csp_meta_tag
+
+    = yield :head
+
+    link rel="icon" href="/icon.svg" type="image/svg+xml"
+    link rel="apple-touch-icon" href="/icon.png"
+
+    script src="https://cdn.tailwindcss.com"
+    = javascript_importmap_tags
+
+  body.min-h-screen class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900"
+    = render_svg_icons
+    = render 'shared/navbar'
+
+    - if flash[:notice]
+      .max-w-7xl.mx-auto.px-4.sm:px-6.lg:px-8.pt-4
+        .p-4.rounded-lg.text-sm class="bg-emerald-500/20 text-emerald-200 border border-emerald-500/30"
+          = flash[:notice]
+    - if flash[:alert]
+      .max-w-7xl.mx-auto.px-4.sm:px-6.lg:px-8.pt-4
+        .p-4.rounded-lg.text-sm class="bg-red-500/20 text-red-200 border border-red-500/30"
+          = flash[:alert]
+
+    = yield

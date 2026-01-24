@@ -1,0 +1,21 @@
+.mb-8
+  h1.text-2xl.font-bold.text-white Classifications
+  p.text-slate-400 Manage classification types and their values
+
+.grid.grid-cols-1.md:grid-cols-2.lg:grid-cols-3.gap-6
+  - @classifications.each do |classification|
+    = link_to admin_classification_path(classification), class: "block rounded-2xl border p-6 transition-colors hover:bg-white/5 bg-slate-800/50 border-white/10" do
+      .flex.items-center.gap-4
+        .w-12.h-12.rounded-lg.flex.items-center.justify-center class="bg-purple-500/20"
+          = icon :category, class: "w-6 h-6 text-purple-400"
+        div
+          h3.text-lg.font-semibold.text-white = classification.name
+          p.text-sm.text-slate-400
+            = pluralize(classification.classification_values.count, "value")
+
+- if @classifications.empty?
+  .text-center.py-12
+    .w-16.h-16.mx-auto.rounded-full.flex.items-center.justify-center.mb-4 class="bg-slate-800"
+      = icon :category, class: "w-8 h-8 text-slate-600"
+    p.text-slate-400 No classifications defined yet
+    p.text-sm.text-slate-500.mt-2 Classifications can be added via seeds or migrations

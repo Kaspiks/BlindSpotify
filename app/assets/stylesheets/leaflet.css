@@ -1,0 +1,73 @@
+/* Dark mode customizations for Leaflet - loaded after CDN base styles */
+.leaflet-container {
+  background: #1e293b;
+  font-family: inherit;
+}
+
+.leaflet-control-attribution {
+  background: rgba(30, 41, 59, 0.9) !important;
+  color: #94a3b8 !important;
+}
+
+.leaflet-control-attribution a {
+  color: #10b981 !important;
+}
+
+.leaflet-bar a {
+  background-color: #334155;
+  color: #e2e8f0;
+  border-bottom-color: #475569;
+}
+
+.leaflet-bar a:hover {
+  background-color: #475569;
+  color: #fff;
+}
+
+.leaflet-bar a.leaflet-disabled {
+  background-color: #1e293b;
+  color: #64748b;
+}
+
+/* Custom marker styles */
+.location-marker {
+  background: transparent;
+  border: none;
+}
+
+.location-marker > div {
+  animation: marker-drop 0.3s ease-out;
+}
+
+/* User location marker */
+.user-location-marker {
+  background: transparent;
+  border: none;
+}
+
+.user-location-marker > div {
+  animation: pulse-ring 1.5s ease-out infinite;
+}
+
+@keyframes marker-drop {
+  0% {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse-ring {
+  0% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.5);
+  }
+  70% {
+    box-shadow: 0 0 0 12px rgba(59, 130, 246, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+  }
+}

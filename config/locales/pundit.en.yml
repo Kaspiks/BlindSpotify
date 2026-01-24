@@ -1,0 +1,30 @@
+en:
+  pundit:
+    default: "You are not authorized to perform this action."
+    user_policy:
+      index?: "You are not authorized to view users."
+      show?: "You are not authorized to view this user."
+      create?: "You are not authorized to create users."
+      update?: "You are not authorized to update this user."
+      destroy?: "You are not authorized to delete this user."
+      block?: "You are not authorized to block this user."
+      unblock?: "You are not authorized to unblock this user."
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

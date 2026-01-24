@@ -1,0 +1,28 @@
+.mb-8
+  h1.text-2xl.font-bold.text-white Admin Dashboard
+  p.text-slate-400 Manage your Blind Spotify application
+
+.grid.grid-cols-1.md:grid-cols-2.lg:grid-cols-3.gap-6
+  .rounded-2xl.border.p-6 class="bg-slate-800/50 border-white/10"
+    .flex.items-center.gap-4
+      .w-12.h-12.rounded-lg.flex.items-center.justify-center class="bg-green-500/20"
+        = icon :users, class: "w-6 h-6 text-green-400"
+      div
+        p.text-2xl.font-bold.text-white = User.count
+        p.text-sm.text-slate-400 Total Users
+
+  .rounded-2xl.border.p-6 class="bg-slate-800/50 border-white/10"
+    .flex.items-center.gap-4
+      .w-12.h-12.rounded-lg.flex.items-center.justify-center class="bg-purple-500/20"
+        = icon :playlist, class: "w-6 h-6 text-purple-400"
+      div
+        p.text-2xl.font-bold.text-white 0
+        p.text-sm.text-slate-400 Playlists
+
+  .rounded-2xl.border.p-6 class="bg-slate-800/50 border-white/10"
+    .flex.items-center.gap-4
+      .w-12.h-12.rounded-lg.flex.items-center.justify-center class="bg-amber-500/20"
+        = icon :qrcode, class: "w-6 h-6 text-amber-400"
+      div
+        p.text-2xl.font-bold.text-white 0
+        p.text-sm.text-slate-400 QR Codes Generated

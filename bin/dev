@@ -1,0 +1,21 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# On Windows, run both commands separately:
+# Terminal 1: bundle exec rails tailwindcss:watch
+# Terminal 2: bundle exec rails server
+#
+# Or install foreman: gem install foreman
+# Then run: foreman start -f Procfile.dev
+
+if Gem.win_platform?
+  puts "On Windows, please run in separate terminals:"
+  puts "  Terminal 1: bundle exec rails tailwindcss:watch"
+  puts "  Terminal 2: bundle exec rails server"
+  puts ""
+  puts "Or install foreman (gem install foreman) and run:"
+  puts "  foreman start -f Procfile.dev"
+  exit 1
+else
+  exec "foreman start -f Procfile.dev"
+end
