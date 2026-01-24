@@ -30,13 +30,14 @@ Rails.application.routes.draw do
       resources :classification_values, only: [:new, :create, :edit, :update]
     end
 
-    # TODO: Add playlist management routes
-    # resources :playlists do
-    #   resources :tracks, only: [:index]
-    #   member do
-    #     post :generate_qr_codes
-    #   end
-    # end
+    # Playlist QR code management
+    resources :playlists, only: [:index, :show] do
+      member do
+        post :generate_qr_codes
+        get :download_cards
+        get :qr_status
+      end
+    end
   end
 
   # Playlists

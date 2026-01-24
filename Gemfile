@@ -73,3 +73,8 @@ group :test do
 end
 
 gem "json_schemer"
+
+# QR code and PDF generation for printable cards
+gem "rqrcode", "~> 2.2"
+gem "prawn", "~> 2.5"
+gem "prawn-table", "~> 0.2"

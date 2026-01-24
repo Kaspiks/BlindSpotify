@@ -11,6 +11,10 @@ class Playlist < ApplicationRecord
   IMPORT_STATUSES = %w[pending importing completed failed].freeze
   validates :import_status, inclusion: { in: IMPORT_STATUSES }
 
+  # QR generation statuses
+  QR_STATUSES = %w[pending generating completed failed].freeze
+  validates :qr_status, inclusion: { in: QR_STATUSES }
+
   scope :pending, -> { where(import_status: "pending") }
   scope :importing, -> { where(import_status: "importing") }
   scope :completed, -> { where(import_status: "completed") }
@@ -62,6 +66,50 @@ class Playlist < ApplicationRecord
     increment!(:imported_tracks_count)
   end
 
+  # QR generation state machine
+  def qr_pending?
+    qr_status == "pending"
+  end
+
+  def qr_generating?
+    qr_status == "generating"
+  end
+
+  def qr_completed?
+    qr_status == "completed"
+  end
+
+  def qr_failed?
+    qr_status == "failed"
+  end
+
+  def start_qr_generation!
+    update!(qr_status: "generating", qr_error: nil, qr_generated_count: 0)
+  end
+
+  def complete_qr_generation!
+    update!(qr_status: "completed", qr_generated_count: tracks.count)
+  end
+
+  def fail_qr_generation!(error_message)
+    update!(qr_status: "failed", qr_error: error_message)
+  end
+
+  def increment_qr_generated_count!
+    increment!(:qr_generated_count)
+  end
+
+  def qr_progress_percentage
+    return 0 if tracks_count.zero?
+    return 100 if qr_status == "completed"
+
+    ((qr_generated_count.to_f / tracks_count) * 100).round
+  end
+
+  def can_generate_qr_codes?
+    completed? && tracks.any?
+  end
+
   # Extract Deezer playlist ID from URL or ID string
   def self.extract_deezer_id(input)
     return nil if input.blank?
@@ -89,6 +137,9 @@ end
 #  import_status         :string           default("pending"), not null
 #  imported_tracks_count :integer          default(0), not null
 #  name                  :string           not null
+#  qr_error              :text
+#  qr_generated_count    :integer          default(0), not null
+#  qr_status             :string           default("pending"), not null
 #  tracks_count          :integer          default(0), not null
 #  created_at            :datetime         not null
 #  updated_at            :datetime         not null
@@ -101,6 +152,7 @@ end
 #  index_playlists_on_deezer_id      (deezer_id)
 #  index_playlists_on_genre_id       (genre_id)
 #  index_playlists_on_import_status  (import_status)
+#  index_playlists_on_qr_status      (qr_status)
 #  index_playlists_on_user_id        (user_id)
 #
 # Foreign Keys

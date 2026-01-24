@@ -18,8 +18,38 @@ class Track < ApplicationRecord
   searchable_text_column :title
   searchable_text_column :artist_name
 
+  # Preview URL cache duration (refresh 5 minutes before actual expiry for safety)
+  PREVIEW_URL_CACHE_DURATION = 25.minutes
+
   def display_name
     "#{artist_name} - #{title}"
+  end
+
+  # Returns a fresh preview URL, refreshing from Deezer if cached URL is expired
+  def fresh_preview_url
+    return preview_url if preview_url_valid?
+
+    refresh_preview_url!
+  end
+
+  # Check if the cached preview URL is still valid
+  def preview_url_valid?
+    preview_url.present? &&
+      preview_url_expires_at.present? &&
+      preview_url_expires_at > Time.current
+  end
+
+  # Fetch a fresh preview URL from Deezer and cache it
+  def refresh_preview_url!
+    track_data = Deezer::Client.new.track(deezer_id)
+    fresh_url = track_data["preview"]
+
+    update!(
+      preview_url: fresh_url,
+      preview_url_expires_at: PREVIEW_URL_CACHE_DURATION.from_now
+    )
+
+    fresh_url
   end
 
   def duration_formatted
@@ -53,6 +83,7 @@ end
 #  isrc(ISRC information for the track) :string
 #  position                             :integer          not null
 #  preview_url                          :string
+#  preview_url_expires_at               :datetime
 #  qr_generated                         :boolean          default(FALSE), not null
 #  release_year                         :integer
 #  title                                :string           not null

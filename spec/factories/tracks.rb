@@ -32,6 +32,7 @@ end
 #  isrc(ISRC information for the track) :string
 #  position                             :integer          not null
 #  preview_url                          :string
+#  preview_url_expires_at               :datetime
 #  qr_generated                         :boolean          default(FALSE), not null
 #  release_year                         :integer
 #  title                                :string           not null

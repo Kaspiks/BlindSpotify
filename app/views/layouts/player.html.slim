@@ -1,0 +1,39 @@
+doctype html
+html
+  head
+    title Hitster
+    meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"
+    meta name="apple-mobile-web-app-capable" content="yes"
+    meta name="mobile-web-app-capable" content="yes"
+    = csrf_meta_tags
+    = csp_meta_tag
+
+    script src="https://cdn.tailwindcss.com"
+    = javascript_importmap_tags
+
+    css:
+      /* SVG Icon styles */
+      .iconset { display: none; }
+      .icon {
+        stroke: currentColor;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        fill: none;
+      }
+      
+      /* Pulse animation for play button */
+      @keyframes pulse-ring {
+        0% { transform: scale(0.95); opacity: 1; }
+        50% { transform: scale(1.1); opacity: 0.5; }
+        100% { transform: scale(0.95); opacity: 1; }
+      }
+      .animate-pulse-ring {
+        animation: pulse-ring 2s ease-in-out infinite;
+      }
+
+  body.min-h-screen.flex.flex-col class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900"
+    = render_svg_icons
+    
+    main.flex-1.flex.items-center.justify-center.p-4
+      = yield

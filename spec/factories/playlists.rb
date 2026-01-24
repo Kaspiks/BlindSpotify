@@ -48,6 +48,9 @@ end
 #  import_status         :string           default("pending"), not null
 #  imported_tracks_count :integer          default(0), not null
 #  name                  :string           not null
+#  qr_error              :text
+#  qr_generated_count    :integer          default(0), not null
+#  qr_status             :string           default("pending"), not null
 #  tracks_count          :integer          default(0), not null
 #  created_at            :datetime         not null
 #  updated_at            :datetime         not null
@@ -60,6 +63,7 @@ end
 #  index_playlists_on_deezer_id      (deezer_id)
 #  index_playlists_on_genre_id       (genre_id)
 #  index_playlists_on_import_status  (import_status)
+#  index_playlists_on_qr_status      (qr_status)
 #  index_playlists_on_user_id        (user_id)
 #
 # Foreign Keys

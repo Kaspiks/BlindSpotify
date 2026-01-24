@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_01_24_142257) do
+ActiveRecord::Schema[8.0].define(version: 2026_01_24_170000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -84,9 +84,13 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_24_142257) do
     t.bigint "genre_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "qr_status", default: "pending", null: false
+    t.integer "qr_generated_count", default: 0, null: false
+    t.text "qr_error"
     t.index ["deezer_id"], name: "index_playlists_on_deezer_id"
     t.index ["genre_id"], name: "index_playlists_on_genre_id"
     t.index ["import_status"], name: "index_playlists_on_import_status"
+    t.index ["qr_status"], name: "index_playlists_on_qr_status"
     t.index ["user_id"], name: "index_playlists_on_user_id"
   end
 
@@ -127,6 +131,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_24_142257) do
     t.datetime "updated_at", null: false
     t.string "isrc", comment: "ISRC information for the track"
     t.string "deezer_album_id"
+    t.datetime "preview_url_expires_at"
     t.index ["deezer_id"], name: "index_tracks_on_deezer_id"
     t.index ["playlist_id", "position"], name: "index_tracks_on_playlist_id_and_position"
     t.index ["playlist_id"], name: "index_tracks_on_playlist_id"

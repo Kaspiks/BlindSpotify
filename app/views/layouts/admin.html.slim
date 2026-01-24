@@ -6,7 +6,35 @@ html
     = csrf_meta_tags
     = csp_meta_tag
     script src="https://cdn.tailwindcss.com"
+    javascript:
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              slate: {
+                750: '#293548',
+                850: '#172033'
+              }
+            }
+          }
+        }
+      }
     = javascript_importmap_tags
+
+    css:
+      /* SVG Icon styles */
+      .iconset { display: none; }
+      .icon {
+        stroke: currentColor;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        fill: none;
+      }
+      .icon--sm { stroke-width: 2.5; }
+      .icon--lg { stroke-width: 1.5; }
+      .icon--bold { stroke-width: 2.5; }
+      .icon--filled { fill: currentColor; stroke: none; }
 
   body.min-h-screen.bg-slate-900
     = render_svg_icons
@@ -51,10 +79,10 @@ html
     main.lg:ml-64.min-h-screen
       .p-4.sm:p-6.lg:p-8
         - if flash[:notice]
-          .mb-6.p-4.rounded-lg.text-sm class="bg-emerald-500/20 text-emerald-200 border border-emerald-500/30"
+          .mb-6.p-4.rounded-lg.text-sm.bg-emerald-900.text-emerald-200.border.border-emerald-700
             = flash[:notice]
         - if flash[:alert]
-          .mb-6.p-4.rounded-lg.text-sm class="bg-red-500/20 text-red-200 border border-red-500/30"
+          .mb-6.p-4.rounded-lg.text-sm.bg-red-900.text-red-200.border.border-red-700
             = flash[:alert]
 
         = yield

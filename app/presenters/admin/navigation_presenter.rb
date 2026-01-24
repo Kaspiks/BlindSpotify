@@ -12,6 +12,12 @@ module Admin
           ]
         ),
         build_section(
+          title: "Cards",
+          items: [
+            build_item(title: "Playlists", icon: "playlist", url: view_context.admin_playlists_path, active: active_for?("admin/playlists"))
+          ]
+        ),
+        build_section(
           title: "Configuration",
           items: [
             build_item(title: "Classifications", icon: "category", url: view_context.admin_classification_items_path, active: active_for?("admin/classification")),

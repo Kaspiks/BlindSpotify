@@ -65,6 +65,14 @@ module Deezer
       response
     end
 
+    # Fetch a single track by ID
+    def track(track_id)
+      response = get("/track/#{track_id}")
+      raise NotFoundError, "Track not found" if response["error"]
+
+      response
+    end
+
     private
 
     def get(path, params = {})
