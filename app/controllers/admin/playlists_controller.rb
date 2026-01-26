@@ -5,13 +5,11 @@ module Admin
     before_action :set_playlist, only: %i[show generate_qr_codes download_cards qr_status]
 
     def index
-      @playlists = Playlist.includes(:user, :genre, :tracks)
-                           .where(import_status: "completed")
-                           .order(created_at: :desc)
+      @presenter = build_index_presenter
     end
 
     def show
-      @tracks = @playlist.tracks.ordered
+      @presenter = build_show_presenter
     end
 
     def generate_qr_codes
@@ -34,6 +32,14 @@ module Admin
         return
       end
 
+      # Prefer ActiveStorage attachment if available
+      if @playlist.qr_cards_pdf.attached?
+        redirect_to rails_blob_path(@playlist.qr_cards_pdf, disposition: "attachment",
+          filename: "#{@playlist.name.parameterize}-cards.pdf"), allow_other_host: true
+        return
+      end
+
+      # Fallback to tmp file
       pdf_path = QrCards::GeneratorService.pdf_path(@playlist)
 
       unless File.exist?(pdf_path)
@@ -60,6 +66,20 @@ module Admin
 
     def set_playlist
       @playlist = Playlist.find(params[:id])
+    end
+
+    def build_index_presenter
+      playlists = Playlist.includes(:user, :genre, :tracks)
+                          .where(import_status: "completed")
+                          .order(created_at: :desc)
+
+      Admin::Playlists::IndexPresenter.new(playlists: playlists)
+    end
+
+    def build_show_presenter
+      tracks = @playlist.tracks.ordered.with_attached_qr_code_image
+
+      Admin::Playlists::ShowPresenter.new(playlist: @playlist, tracks: tracks)
     end
   end
 end

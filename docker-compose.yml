@@ -81,6 +81,9 @@ services:
     command: rails server -b 0.0.0.0 -p 3000 -P /tmp/server.pid
     ports:
       - "3000:3000"
+    volumes:
+      - .:/app
+      - rails_storage:/app/storage
     depends_on:
       db:
         condition: service_healthy
@@ -117,3 +120,4 @@ volumes:
   rails_cache:
   redis_data:
   node_modules:
+  rails_storage:

@@ -1,4 +1,4 @@
-.rounded-2xl.border.p-6 class="bg-slate-800/50 border-white/10"
+.rounded-2xl.border.px-6.pb-6 class="bg-slate-800/50 border-white/10"
   = simple_form_for [:admin, @role], html: { class: "space-y-6" } do |f|
     .space-y-4
       div
@@ -22,4 +22,4 @@
                     p.text-xs.text-slate-500 = permission.description
 
     .pt-4
-      = f.submit (@role.persisted? ? "Update Role" : "Create Role"), class: "w-full px-4 py-3 rounded-lg font-medium text-white bg-green-600 hover:bg-green-500 transition-colors cursor-pointer"
+      = f.submit (@role.persisted? ? t('.buttons.update_role') : t('.buttons.create_role')), class: "w-full px-4 py-3 rounded-lg font-medium text-white bg-green-600 hover:bg-green-500 transition-colors cursor-pointer"

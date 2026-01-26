@@ -3,6 +3,10 @@
 class PlaylistImportJob < ApplicationJob
   queue_as :default
 
+  # Retry on network failures
+  retry_on Net::OpenTimeout, Net::ReadTimeout, wait: 5.seconds, attempts: 3
+  retry_on Deezer::Client::RateLimitError, wait: 10.seconds, attempts: 3
+
   def perform(playlist_id)
     playlist = Playlist.find(playlist_id)
     Rails.logger.info "[PlaylistImportJob] Starting import for playlist #{playlist_id}"
@@ -18,6 +22,11 @@ class PlaylistImportJob < ApplicationJob
     else
       Rails.logger.error "[PlaylistImportJob] Import failed for playlist #{playlist_id}: #{result.error}"
     end
+  rescue StandardError => e
+    Rails.logger.error "[PlaylistImportJob] Unexpected error for playlist #{playlist_id}: #{e.class} - #{e.message}"
+    Rails.logger.error e.backtrace.first(10).join("\n")
+    playlist&.fail_import!(e.message)
+    raise
   end
 
   private

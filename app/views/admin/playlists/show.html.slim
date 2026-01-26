@@ -1,95 +1,114 @@
-= turbo_stream_from "admin_playlist_#{@playlist.id}"
+- presenter = @presenter
+- playlist = presenter.playlist
 
-.mb-6
-  = link_to admin_playlists_path, class: "flex items-center gap-2 text-slate-400 hover:text-white transition-colors" do
-    = icon("arrow-left", class: "w-5 h-5")
-    span Back to Playlists
+= turbo_stream_from "admin_playlist_#{playlist.id}"
 
-/ Playlist header
-.flex.items-start.gap-6.mb-8
-  - if @playlist.image_url.present?
-    img.w-32.h-32.rounded-xl.object-cover src=@playlist.image_url alt=@playlist.name
-  - else
-    .w-32.h-32.rounded-xl.flex.items-center.justify-center class="bg-slate-700"
-      = icon(:music, width: 48, height: 48, class: "text-slate-500")
+div data-controller="qr-modal"
+  .mb-6
+    = link_to admin_playlists_path, class: "flex items-center gap-2 text-slate-400 hover:text-white transition-colors" do
+      = icon("arrow-left", class: "w-5 h-5")
+      span = t('.buttons.back_to_playlists')
 
-  .flex-1
-    h1.text-2xl.font-bold.text-white.mb-2 = @playlist.name
-    
-    .flex.items-center.gap-4.text-slate-400.mb-4
-      .flex.items-center.gap-2
-        = icon(:music, class: "w-5 h-5")
-        span = pluralize(@playlist.tracks_count, "track")
-      
-      - if @playlist.genre.present?
+  .flex.items-start.gap-6.mb-8
+    - if presenter.has_image?
+      img.w-32.h-32.rounded-xl.object-cover src=playlist.image_url alt=playlist.name
+    - else
+      .w-32.h-32.rounded-xl.flex.items-center.justify-center class="bg-slate-700"
+        = icon(:music, width: 48, height: 48, class: "text-slate-500")
+
+    .flex-1
+      h1.text-2xl.font-bold.text-white.mb-2 = playlist.name
+
+      .flex.items-center.gap-4.text-slate-400.mb-4
         .flex.items-center.gap-2
-          = icon(:category, class: "w-5 h-5")
-          span = @playlist.genre.value
+          = icon(:music, class: "w-5 h-5")
+          span = presenter.tracks_count_text
 
-      .flex.items-center.gap-2
-        = icon(:user, class: "w-5 h-5")
-        span = @playlist.user.display_name
+        - if presenter.has_genre?
+          .flex.items-center.gap-2
+            = icon(:category, class: "w-5 h-5")
+            span = presenter.genre_name
 
-    / Action buttons
-    .flex.items-center.gap-3
-      - if @playlist.can_generate_qr_codes?
-        = button_to generate_qr_codes_admin_playlist_path(@playlist), method: :post, class: "inline-flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-lg transition-colors", data: { turbo_confirm: @playlist.qr_completed? ? "This will regenerate all QR codes. Continue?" : nil } do
-          = icon(:qrcode, class: "w-5 h-5")
-          span = @playlist.qr_completed? ? "Regenerate QR Codes" : "Generate QR Codes"
+        .flex.items-center.gap-2
+          = icon(:user, class: "w-5 h-5")
+          span = presenter.owner_name
 
-      - if @playlist.qr_completed?
-        = link_to download_cards_admin_playlist_path(@playlist), class: "inline-flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors" do
-          = icon(:download, class: "w-5 h-5")
-          span Download PDF Cards
+      .flex.items-center.gap-3
+        - if presenter.can_generate_qr_codes?
+          = button_to generate_qr_codes_admin_playlist_path(playlist), method: :post, class: "inline-flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-lg transition-colors", data: { turbo_confirm: presenter.qr_completed? ? t('.confirms.regenerate') : nil } do
+            = icon(:qrcode, class: "w-5 h-5")
+            span = presenter.qr_completed? ? t('.buttons.regenerate_qr_codes') : t('.buttons.generate_qr_codes')
 
-/ QR Progress
-div id="playlist_#{@playlist.id}_qr_progress"
-  = render "admin/playlists/qr_progress", playlist: @playlist
+        - if presenter.qr_completed?
+          = link_to download_cards_admin_playlist_path(playlist), class: "inline-flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors" do
+            = icon(:download, class: "w-5 h-5")
+            span = t('.buttons.download_pdf_cards')
 
-/ Tracks list
-.rounded-2xl.border.overflow-hidden.bg-slate-800.border-slate-700
-  .px-6.py-4.border-b.border-slate-700
-    h2.text-lg.font-semibold.text-white Tracks
-  
-  table.w-full
-    thead
-      tr.border-b.border-slate-700
-        th.px-6.py-3.text-left.text-xs.font-medium.text-slate-400.uppercase.tracking-wider #
-        th.px-6.py-3.text-left.text-xs.font-medium.text-slate-400.uppercase.tracking-wider Track
-        th.px-6.py-3.text-left.text-xs.font-medium.text-slate-400.uppercase.tracking-wider Year
-        th.px-6.py-3.text-left.text-xs.font-medium.text-slate-400.uppercase.tracking-wider Duration
-        th.px-6.py-3.text-left.text-xs.font-medium.text-slate-400.uppercase.tracking-wider QR
+  div id="playlist_#{playlist.id}_qr_progress"
+    = render "admin/playlists/qr_progress", playlist: playlist
 
-    tbody
-      - @tracks.each do |track|
-        tr.border-b.border-slate-700.last:border-0.hover:bg-slate-750
-          td.px-6.py-4.text-slate-500 = track.position
-          td.px-6.py-4
-            .flex.items-center.gap-3
-              - if track.album_cover_url.present?
-                img.w-10.h-10.rounded.object-cover src=track.album_cover_url alt=track.album_name
+  .rounded-2xl.border.overflow-hidden.bg-slate-800.border-slate-700
+    .px-6.py-4.border-b.border-slate-700
+      h2.text-lg.font-semibold.text-white = t('.tracks')
+
+    table.w-full
+      thead
+        tr.border-b.border-slate-700
+          th.px-6.py-3.text-left.text-xs.font-medium.text-slate-400.uppercase.tracking-wider #
+          th.px-6.py-3.text-left.text-xs.font-medium.text-slate-400.uppercase.tracking-wider = t('.columns.title')
+          th.px-6.py-3.text-left.text-xs.font-medium.text-slate-400.uppercase.tracking-wider = t('.columns.year')
+          th.px-6.py-3.text-left.text-xs.font-medium.text-slate-400.uppercase.tracking-wider = t('.columns.duration')
+          th.px-6.py-3.text-left.text-xs.font-medium.text-slate-400.uppercase.tracking-wider = t('.columns.qr_code')
+
+      tbody
+        - presenter.tracks.each do |track|
+          tr.border-b.border-slate-700.last:border-0.hover:bg-slate-750
+            td.px-6.py-4.text-slate-500 = track.position
+            td.px-6.py-4
+              .flex.items-center.gap-3
+                - if track.album_cover_url.present?
+                  img.w-10.h-10.rounded.object-cover src=track.album_cover_url alt=track.album_name
+                - else
+                  .w-10.h-10.rounded.flex.items-center.justify-center.bg-slate-700
+                    = icon(:music, width: 16, height: 16, class: "text-slate-500")
+                div
+                  .text-white = track.title
+                  .text-sm.text-slate-400 = track.artist_name
+            td.px-6.py-4.text-slate-400
+              - if track.release_year.present?
+                = track.release_year
               - else
-                .w-10.h-10.rounded.flex.items-center.justify-center.bg-slate-700
-                  = icon(:music, width: 16, height: 16, class: "text-slate-500")
-              div
-                .text-white = track.title
-                .text-sm.text-slate-400 = track.artist_name
-          td.px-6.py-4.text-slate-400
-            - if track.release_year.present?
-              = track.release_year
-            - else
-              span.text-slate-600 -
-          td.px-6.py-4.text-slate-400
-            = track.duration_formatted || "-"
-          td.px-6.py-4
-            - if track.qr_generated?
-              span.px-2.py-1.text-xs.rounded-full.bg-green-900.text-green-400
-                = icon(:check, width: 12, height: 12)
-            - else
-              span.px-2.py-1.text-xs.rounded-full.bg-slate-700.text-slate-500
-                = icon(:minus, width: 12, height: 12)
+                span.text-slate-600 -
+            td.px-6.py-4.text-slate-400
+              = track.duration_formatted || "-"
+            td.px-6.py-4
+              .flex.items-center.gap-2
+                - if track.qr_generated?
+                  span.px-2.py-1.text-xs.rounded-full.bg-green-900.text-green-400
+                    = icon(:check, width: 12, height: 12)
+                - else
+                  span.px-2.py-1.text-xs.rounded-full.bg-slate-700.text-slate-500
+                    = icon(:minus, width: 12, height: 12)
+                - if track.qr_code_image.attached?
+                  button.p-1.5.rounded-lg.hover:bg-slate-700.text-slate-400.hover:text-white.transition-colors type="button" title="View QR Code" data-action="click->qr-modal#open" data-qr-modal-url-param=rails_blob_path(track.qr_code_image, disposition: "inline") data-qr-modal-title-param="#{track.artist_name} - #{track.title}"
+                    = icon(:eye, width: 16, height: 16)
 
-      - if @tracks.empty?
-        tr
-          td.px-6.py-8.text-center.text-slate-500 colspan="5"
-            | No tracks in this playlist
+        - if presenter.tracks.empty?
+          tr
+            td.px-6.py-8.text-center.text-slate-500 colspan="5"
+            = t('.no_tracks')
+
+  div.hidden.fixed.inset-0.z-50.items-center.justify-center.bg-black.bg-opacity-75 data-qr-modal-target="dialog" data-action="click->qr-modal#closeOnBackdrop keydown.esc@window->qr-modal#close"
+    .bg-slate-800.rounded-2xl.p-6.max-w-md.w-full.mx-4.relative
+      button.absolute.top-4.right-4.text-slate-400.hover:text-white.transition-colors type="button" data-action="click->qr-modal#close"
+        = icon(:x, width: 24, height: 24)
+
+      h3.text-lg.font-semibold.text-white.mb-4.pr-8 data-qr-modal-target="title"
+
+      .flex.items-center.justify-center.bg-white.rounded-xl.p-4
+        img.w-64.h-64.object-contain data-qr-modal-target="image" alt="QR Code"
+
+      .mt-4.text-center
+        a.inline-flex.items-center.gap-2.text-sm.text-purple-400.hover:text-purple-300.transition-colors data-qr-modal-target="downloadLink" href="#" download="qr-code.png"
+          = icon(:download, width: 16, height: 16)
+          span = t('.buttons.download_qr_code')

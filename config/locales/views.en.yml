@@ -1,4 +1,208 @@
 en:
   shared:
     navigation:
-      home: "Home"
+      home: Home
+  home:
+    index:
+      tagline: Import Spotify playlists, generate QR codes for tracks, and play music blindly without revealing track info.
+      import_playlists_title: Import Playlists
+      import_playlists_desc: Connect your Spotify account and import any playlist
+      generate_qr_codes_title: Generate QR Codes
+      generate_qr_codes_desc: Create unique QR codes for each track in your playlist
+      blind_listening_title: Blind Listening
+      blind_listening_desc: Play tracks without seeing artist, title, or album art
+      connect_deezer: Connect with Deezer
+      connect_spotify: Connect with Spotify
+      no_api: No API
+      coming_soon: Coming soon
+      oauth_unavailable: OAuth providers unavailable?
+      use_dev_login: Use Dev Login
+      sign_in_prompt: Sign in with your music account to get started
+      connected_to: Connected to %{provider}
+  admin:
+    dashboard:
+      index:
+        page_title: Admin Dashboard
+        page_description: Manage your Hitster application
+        stats:
+          total_users: Total Users
+          total_playlists: Playlists
+          qr_codes_generated: QR Codes Generated
+          total_tracks: Total Tracks
+          total_games: Games Played
+
+    users:
+      index:
+        page_title: Users
+        columns:
+          user: User
+          role: Role
+          provider: Provider
+          status: Status
+          joined: Joined
+          actions: Actions
+        empty_state: No users found. Users are created when they sign in.
+      show:
+        buttons:
+          back_to_users: Back to Users
+          edit: Edit
+        sections:
+          account_information: Account Information
+          oauth_provider: OAuth Provider Information
+        fields:
+          display_name: Display Name
+          email: Email
+          role: Role
+          admin: Admin
+          permissions: Permissions (via role)
+          joined: Joined
+          provider: Provider
+          provider_user_id: Provider User ID
+          subscription: Subscription
+          country: Country
+          token_status: Token Status
+          token_expires: Token Expires
+        values:
+          "yes": "Yes"
+          "no": "No"
+        token_statuses:
+          expired: Expired
+          expiring_soon: Expiring Soon
+          valid: Valid
+      edit:
+        buttons:
+          back_to_user: Back to %{user}
+        edit_user_title: Edit User
+        info_note: User accounts are managed via Spotify OAuth. You can only modify the role and admin status here.
+        admin_label: Administrator (grants full access regardless of role)
+
+    roles:
+      index:
+        page_title: Roles
+        columns:
+          name: Name
+          permissions: Permissions
+          users: Users
+          actions: Actions
+        buttons:
+          new_role: New Role
+        empty_state: No roles found
+      show:
+        buttons:
+          back_to_roles: Back to Roles
+          edit: Edit
+        sections:
+          role_information: Role Information
+          permissions: Permissions
+        fields:
+          name: Name
+          description: Description
+          users_count: Users with this role
+        empty_permissions: No permissions assigned
+      form:
+        buttons:
+          create_role: Create Role
+          update_role: Update Role
+      edit:
+        buttons:
+          back_to_role: Back to %{role}
+        edit_role_title: Edit %{role} role
+      new:
+        buttons:
+          back_to_roles: Back to Roles
+        new_role_title: New Role
+
+    settings:
+      index:
+        page_title: Settings
+        page_description: Manage application settings
+        columns:
+          key: Key
+          value: Value
+          type: Type
+          actions: Actions
+        values:
+          enabled: Enabled
+          disabled: Disabled
+        empty_state:
+          title: No settings defined yet
+          description: Settings can be added via seeds or migrations
+      edit:
+        buttons:
+          back_to_settings: Back to Settings
+        edit_setting_title: Edit %{setting} Setting
+
+    classification_items:
+      index:
+        page_title: Classifications
+        page_description: Manage classification types and their values
+        empty_state:
+          title: No classifications defined yet
+          description: Classifications can be added via seeds or migrations
+
+    classification_values:
+      edit:
+        back_to_classification: Back to %{classification}
+        edit_value_title: Edit %{classification} Value
+        active: Active
+        update_label: Update Value
+      new:
+        back_to_classification: Back to %{classification}
+        new_value_title: New %{classification} Value
+        active: Active
+
+    classifications:
+      show:
+        buttons:
+          back_to_classifications: Back to Classifications
+          new_value: New Value
+        columns:
+          value: Value
+          order: Order
+          status: Status
+          actions: Actions
+        statuses:
+          active: Active
+          inactive: Inactive
+        empty_state: No values defined for this classification
+
+    playlists:
+      index:
+        page_title: Playlists
+        columns:
+          playlist: Playlist
+          owner: Owner
+          tracks: Tracks
+          qr_status: QR Status
+          created: Created
+          actions: Actions
+        statuses:
+          ready_to_generate_qr_codes: " | Ready to generate QR codes"
+          initialising: QR code generation starting
+          generating_qr_codes: Generating...
+          generating_qr_codes_in_progress: Please wait while we generate QR codes for all tracks
+          failed: Failed
+          not_generated: Not generated
+          completed: QR codes generated successfully
+        empty_state: No completed playlists found. Import a playlist first to generate QR codes.
+      show:
+        tracks: Tracks
+        no_tracks: " | No tracks in this playlist."
+        columns:
+          title: Title
+          year: Year
+          duration: Duration
+          qr_code: QR code
+        buttons:
+          back_to_playlists: Back to Playlists
+          generate_qr_codes: Generate QR Codes
+          regenerate_qr_codes: Regenerate QR Codes
+          download_pdf_cards: Download PDF Cards
+          download_qr_code: Download QR Code
+        confirms:
+          regenerate: This will regenerate all QR codes. Continue?
+  games:
+    game_card:
+      progress:
+        completed: Completed
+    track_card:

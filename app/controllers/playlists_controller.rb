@@ -71,6 +71,6 @@ class PlaylistsController < ApplicationController
   end
 
   def playlist_params
-    params.require(:playlist).permit(:name, :genre_id, :description, :deezer_url)
+    params.require(:playlists_form).permit(:name, :genre_id, :description, :deezer_url)
   end
 end

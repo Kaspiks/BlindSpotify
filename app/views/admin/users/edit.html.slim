@@ -1,7 +1,7 @@
 .mb-8
   = link_to admin_user_path(@user), class: "inline-flex items-center gap-2 text-slate-400 hover:text-white transition-colors mb-4" do
     = icon "arrow-left", width: 20, height: 20
-    span Back to User
+    span = t('.buttons.back_to_user', user: @user.display_name)
 
   .flex.items-center.gap-4
     - if @user.image_url.present?
@@ -10,16 +10,16 @@
       .w-12.h-12.rounded-full.flex.items-center.justify-center class="bg-slate-700"
         = icon(:user, width: 24, height: 24, class: "text-slate-400")
     div
-      h1.text-2xl.font-bold.text-white Edit User
+      h1.text-2xl.font-bold.text-white = t('.edit_user_title')
       p.text-slate-400 = @user.display_name
 
-.rounded-2xl.border.p-6 class="bg-slate-800/50 border-white/10"
+.rounded-2xl.border.px-6.pb-6 class="bg-slate-800/50 border-white/10"
   = simple_form_for [:admin, @user], html: { class: "space-y-6" } do |f|
     .space-y-4
       .rounded-lg.p-4 class="bg-slate-700/50"
         p.text-sm.text-slate-400
           = icon(:info_circle, width: 16, height: 16, class: "inline mr-2")
-          | User accounts are managed via Spotify OAuth. You can only modify the role and admin status here.
+          = t('.info_note')
 
       div
         = f.label :role_id, "Role", class: "block text-sm font-medium text-slate-300 mb-2"
@@ -28,7 +28,7 @@
       div
         label.flex.items-center.gap-3
           = f.check_box :admin, class: "w-5 h-5 rounded bg-slate-700 border-slate-600 text-green-500 focus:ring-green-500 focus:ring-offset-slate-800"
-          span.text-sm.text-slate-300 Administrator (grants full access regardless of role)
+          span.text-sm.text-slate-300 = t('.admin_label')
 
     .pt-4
       = f.submit "Update User", class: "w-full px-4 py-3 rounded-lg font-medium text-white bg-green-600 hover:bg-green-500 transition-colors cursor-pointer"

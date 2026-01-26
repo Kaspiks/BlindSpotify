@@ -3,6 +3,8 @@
 class Track < ApplicationRecord
   belongs_to :playlist, counter_cache: true
 
+  has_one_attached :qr_code_image
+
   validates :deezer_id, presence: true
   validates :title, presence: true
   validates :artist_name, presence: true
@@ -84,6 +86,7 @@ end
 #  position                             :integer          not null
 #  preview_url                          :string
 #  preview_url_expires_at               :datetime
+#  qr_code_digest                       :string
 #  qr_generated                         :boolean          default(FALSE), not null
 #  release_year                         :integer
 #  title                                :string           not null

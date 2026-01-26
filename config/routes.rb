@@ -37,6 +37,12 @@ Rails.application.routes.draw do
         get :download_cards
         get :qr_status
       end
+
+      resources :tracks, only: [] do
+        member do
+          get :qr_code
+        end
+      end
     end
   end
 

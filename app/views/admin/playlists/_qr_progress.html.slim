@@ -4,8 +4,8 @@
       .w-10.h-10.rounded-full.bg-purple-600.flex.items-center.justify-center.animate-pulse
         = icon("refresh", class: "w-5 h-5 text-white animate-spin")
       .flex-1
-        h3.text-white.font-semibold Generating QR codes...
-        p.text-sm.text-slate-400 Please wait while we generate QR codes for all tracks
+        h3.text-white.font-semibold = t('.statuses.generating_qr_codes')
+        p.text-sm.text-slate-400 = t('.statuses.generating_qr_codes_in_progress')
 
     .mt-4
       - if playlist.tracks_count.to_i > 0
@@ -17,7 +17,7 @@
         .h-2.bg-slate-700.rounded-full.overflow-hidden
           .h-full.bg-purple-600.animate-pulse style="width: 30%"
         .text-xs.text-slate-500.mt-2.text-right
-          | Starting...
+          | = t('.statuses.initializing')
 
 - elsif playlist.qr_failed?
   .bg-red-950.border.border-red-800.rounded-xl.p-6.mb-8
@@ -25,7 +25,7 @@
       .w-10.h-10.rounded-full.bg-red-600.flex.items-center.justify-center
         = icon("alert-circle", class: "w-5 h-5 text-white")
       .flex-1
-        h3.text-red-400.font-semibold QR generation failed
+        h3.text-red-400.font-semibold = t('.statuses.failed')
         p.text-sm.text-red-300= playlist.qr_error || "There was an error generating QR codes"
 
 - elsif playlist.qr_completed?
@@ -34,6 +34,6 @@
       .w-10.h-10.rounded-full.bg-green-600.flex.items-center.justify-center
         = icon("check", class: "w-5 h-5 text-white")
       .flex-1
-        h3.text-green-400.font-semibold QR codes generated successfully
+        h3.text-green-400.font-semibold = t('.statuses.completed')
         p.text-sm.text-green-300
           = "#{playlist.qr_generated_count} cards ready for printing"

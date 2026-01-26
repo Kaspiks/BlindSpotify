@@ -5,10 +5,11 @@ module Admin
     before_action :set_user, only: [:show, :edit, :update, :destroy]
 
     def index
-      @users = User.includes(:role).order(:created_at)
+      @presenter = build_index_presenter
     end
 
     def show
+      @presenter = build_show_presenter
     end
 
     def edit
@@ -16,15 +17,15 @@ module Admin
 
     def update
       if @user.update(user_params)
-        redirect_to admin_user_path(@user), notice: "User updated successfully."
+        redirect_to admin_user_path(@user), notice: t(".success")
       else
-        render :edit
+        render :edit, status: :unprocessable_entity
       end
     end
 
     def destroy
       @user.destroy
-      redirect_to admin_users_path, notice: "User deleted successfully."
+      redirect_to admin_users_path, notice: t(".success")
     end
 
     private
@@ -34,9 +35,16 @@ module Admin
     end
 
     def user_params
-      # Only allow role and admin status to be changed
-      # User accounts are managed via Spotify OAuth
       params.require(:user).permit(:admin, :role_id)
+    end
+
+    def build_index_presenter
+      users = User.includes(:role).order(:created_at)
+      Admin::Users::IndexPresenter.new(users: users)
+    end
+
+    def build_show_presenter
+      Admin::Users::ShowPresenter.new(user: @user)
     end
   end
 end

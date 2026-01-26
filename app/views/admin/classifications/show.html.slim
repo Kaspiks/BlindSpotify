@@ -1,41 +1,44 @@
+- presenter = @presenter
+- classification = presenter.classification
+
 .mb-8
   = link_to admin_classification_items_path, class: "inline-flex items-center gap-2 text-slate-400 hover:text-white transition-colors mb-4" do
     = icon "arrow-left", width: 20, height: 20
-    span Back to Classifications
+    span = t('.buttons.back_to_classifications')
 
   .flex.items-center.justify-between
     div
-      h1.text-2xl.font-bold.text-white = @classification.name
-      p.text-slate-400 = @classification.description
+      h1.text-2xl.font-bold.text-white = presenter.name
+      p.text-slate-400 = presenter.description
 
-    = link_to new_admin_classification_classification_value_path(@classification), class: "inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-white bg-green-600 hover:bg-green-500 transition-colors" do
+    = link_to new_admin_classification_classification_value_path(classification), class: "inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-white bg-green-600 hover:bg-green-500 transition-colors" do
       = icon :plus, width: 20, height: 20
-      span New Value
+      span = t('.buttons.new_value')
 
 .rounded-2xl.border.overflow-hidden class="bg-slate-800/50 border-white/10"
   table.w-full
     thead
       tr.border-b class="border-white/10"
-        th.px-6.py-4.text-left.text-sm.font-medium.text-slate-400 Value
-        th.px-6.py-4.text-left.text-sm.font-medium.text-slate-400 Order
-        th.px-6.py-4.text-left.text-sm.font-medium.text-slate-400 Status
-        th.px-6.py-4.text-right.text-sm.font-medium.text-slate-400 Actions
+        th.px-6.py-4.text-left.text-sm.font-medium.text-slate-400 = t('.columns.value')
+        th.px-6.py-4.text-left.text-sm.font-medium.text-slate-400 = t('.columns.order')
+        th.px-6.py-4.text-left.text-sm.font-medium.text-slate-400 = t('.columns.status')
+        th.px-6.py-4.text-right.text-sm.font-medium.text-slate-400 = t('.columns.actions')
 
     tbody
-      - @classification_values.each do |value|
+      - presenter.classification_values.each do |value|
         tr.border-b.last:border-0 class="border-white/10 hover:bg-white/5"
           td.px-6.py-4.text-white = value.value
           td.px-6.py-4.text-slate-400 = value.sort_order
           td.px-6.py-4
             - if value.active?
-              span.px-2.py-1.text-xs.rounded-full class="bg-green-500/20 text-green-400" Active
+              span.px-2.py-1.text-xs.rounded-full class="bg-green-500/20 text-green-400" = t('.statuses.active')
             - else
-              span.px-2.py-1.text-xs.rounded-full class="bg-slate-500/20 text-slate-400" Inactive
+              span.px-2.py-1.text-xs.rounded-full class="bg-slate-500/20 text-slate-400" = t('.statuses.inactive')
           td.px-6.py-4.text-right
-            = link_to edit_admin_classification_classification_value_path(@classification, value), class: "p-2 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors inline-flex" do
+            = link_to edit_admin_classification_classification_value_path(classification, value), class: "p-2 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors inline-flex" do
               = icon :edit, width: 18, height: 18
 
-      - if @classification_values.empty?
+      - if presenter.classification_values.empty?
         tr
           td.px-6.py-8.text-center.text-slate-500 colspan="4"
-            | No values defined for this classification
+            = t('.empty_state')

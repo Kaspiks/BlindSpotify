@@ -3,6 +3,41 @@ en:
     title:
       inactive: inactive
 
+    admin:
+      dashboard:
+        index:
+          page_title: Admin Dashboard
+
+      users:
+        index:
+          page_title: Users
+        show:
+          page_title: "%{name}"
+
+      roles:
+        index:
+          page_title: Roles
+        show:
+          page_title: "%{name}"
+
+      settings:
+        index:
+          page_title: Settings
+
+      classification_items:
+        index:
+          page_title: Classifications
+
+      classifications:
+        show:
+          page_title: "%{name}"
+
+      playlists:
+        index:
+          page_title: Playlists
+        show:
+          page_title: "%{name}"
+
     games:
       index:
         page_title: "Game History"

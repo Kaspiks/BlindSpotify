@@ -359,6 +359,9 @@ GEM
       chunky_png (~> 1.0)
       rqrcode_core (~> 1.0)
     rqrcode_core (1.2.0)
+    rqrcode_png (0.1.5)
+      chunky_png
+      rqrcode
     rspec-core (3.13.6)
       rspec-support (~> 3.13.0)
     rspec-expectations (3.13.5)
@@ -540,6 +543,7 @@ DEPENDENCIES
   redis (~> 5.0)
   redis-actionpack (~> 5.4)
   rqrcode (~> 2.2)
+  rqrcode_png
   rspec-rails
   rubocop-rails-omakase
   selenium-webdriver

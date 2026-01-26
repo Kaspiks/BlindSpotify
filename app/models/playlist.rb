@@ -3,15 +3,16 @@
 class Playlist < ApplicationRecord
   belongs_to :user
   belongs_to :genre, class_name: "ClassificationValue", optional: true
+
+  has_one_attached :qr_cards_pdf
+
   has_many :tracks, dependent: :destroy
 
   validates :name, presence: true
 
-  # Import statuses
   IMPORT_STATUSES = %w[pending importing completed failed].freeze
   validates :import_status, inclusion: { in: IMPORT_STATUSES }
 
-  # QR generation statuses
   QR_STATUSES = %w[pending generating completed failed].freeze
   validates :qr_status, inclusion: { in: QR_STATUSES }
 

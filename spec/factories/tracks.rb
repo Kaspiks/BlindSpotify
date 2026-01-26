@@ -33,6 +33,7 @@ end
 #  position                             :integer          not null
 #  preview_url                          :string
 #  preview_url_expires_at               :datetime
+#  qr_code_digest                       :string
 #  qr_generated                         :boolean          default(FALSE), not null
 #  release_year                         :integer
 #  title                                :string           not null

@@ -5,6 +5,13 @@
   p.text-slate-400.mb-8= form_presenter.page_description
 
   .bg-slate-800.rounded-xl.p-6
+    - if @form.errors.any?
+      .mb-6.p-4.bg-red-900.border.border-red-700.rounded-lg
+        h3.text-red-400.font-semibold.mb-2 Please fix the following errors:
+        ul.list-disc.list-inside.text-red-300.text-sm
+          - @form.errors.full_messages.each do |message|
+            li= message
+
     = simple_form_for @form, url: playlists_path, method: :post, html: { class: "space-y-6" } do |f|
       .space-y-4
         / Deezer URL input
@@ -16,8 +23,11 @@
         / Genre select
         div
           = f.label :genre_id, class: "block text-sm font-medium text-slate-300 mb-2"
-          = f.collection_select :genre_id, form_presenter.available_genres, :id, :value, { prompt: "Select a genre..." }, class: "w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-          p.mt-2.text-sm.text-slate-500= form_presenter.genre_hint
+          = f.collection_select :genre_id, form_presenter.available_genres, :id, :value, { prompt: "Select a genre...", selected: @form.genre_id }, class: "w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent #{@form.errors[:genre_id].any? ? 'border-red-500' : ''}"
+          - if @form.errors[:genre_id].any?
+            p.mt-2.text-sm.text-red-400= @form.errors[:genre_id].first
+          - else
+            p.mt-2.text-sm.text-slate-500= form_presenter.genre_hint
 
         / Optional name override
         div

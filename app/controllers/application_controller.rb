@@ -35,14 +35,15 @@ class ApplicationController < ActionController::Base
     )
   end
 
-  def t_context(key, action: action_name)
-    raise "translation key must be relative\nDid you mean?  .#{key}" unless key[0] == "."
+  def t_context(key, **kwargs)
+    raise "translation key must be relative\nDid you mean?  .#{key}" unless key[0] == '.'
 
-    i18n_scope = self.class.to_s.sub(/Controller\z/, "").underscore.tr("/", ".")
+    i18n_scope = self.class.to_s.sub(/Controller\z/, '').underscore.tr('/', '.')
 
     I18n.t(
-      "controllers.#{i18n_scope}.#{action}#{key}",
-      default: :"controllers.global.#{action}#{key}"
+      "controllers.#{i18n_scope}.#{action_name}#{key}",
+      default: :"controllers.global.#{action_name}#{key}",
+      **kwargs
     )
   end
 

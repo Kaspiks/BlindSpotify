@@ -75,22 +75,46 @@ module Deezer
 
     private
 
-    def get(path, params = {})
+    def get(path, params = {}, retries: 3)
       uri = URI("#{BASE_URL}#{path}")
       params[:access_token] = @access_token if @access_token
       uri.query = URI.encode_www_form(params) if params.any?
 
-      response = Net::HTTP.get_response(uri)
+      attempt = 0
+      
+      loop do
+        attempt += 1
+        
+        begin
+          http = Net::HTTP.new(uri.host, uri.port)
+          http.use_ssl = true
+          http.open_timeout = 10
+          http.read_timeout = 30
+          
+          request = Net::HTTP::Get.new(uri)
+          request["User-Agent"] = "Hitster/1.0"
+          
+          response = http.request(request)
 
-      case response.code.to_i
-      when 200
-        JSON.parse(response.body)
-      when 429
-        raise RateLimitError, "Rate limit exceeded"
-      when 404
-        raise NotFoundError, "Resource not found"
-      else
-        raise ApiError, "API error: #{response.code} - #{response.body}"
+          case response.code.to_i
+          when 200
+            return JSON.parse(response.body)
+          when 429
+            raise RateLimitError, "Rate limit exceeded"
+          when 404
+            raise NotFoundError, "Resource not found"
+          else
+            raise ApiError, "API error: #{response.code} - #{response.body}"
+          end
+        rescue RateLimitError, Net::OpenTimeout, Net::ReadTimeout, Errno::ECONNRESET => e
+          if attempt < retries
+            wait_time = 2 ** attempt
+            Rails.logger.warn "[Deezer::Client] #{e.class.name}, waiting #{wait_time}s before retry #{attempt}/#{retries}"
+            sleep(wait_time)
+            next
+          end
+          raise ApiError, "#{e.class.name} after #{retries} retries: #{e.message}"
+        end
       end
     end
   end

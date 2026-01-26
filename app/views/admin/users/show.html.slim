@@ -1,100 +1,103 @@
+- presenter = @presenter
+- user = presenter.user
+
 .mb-8
   = link_to admin_users_path, class: "inline-flex items-center gap-2 text-slate-400 hover:text-white transition-colors mb-4" do
     = icon "arrow-left", width: 20, height: 20
-    span Back to Users
+    span = t('.buttons.back_to_users')
 
   .flex.items-center.justify-between
     .flex.items-center.gap-4
-      - if @user.image_url.present?
-        img.w-16.h-16.rounded-full src=@user.image_url alt=@user.display_name
+      - if user.image_url.present?
+        img.w-16.h-16.rounded-full src=user.image_url alt=user.display_name
       - else
         .w-16.h-16.rounded-full.flex.items-center.justify-center class="bg-slate-700"
           = icon(:user, width: 32, height: 32, class: "text-slate-400")
       div
-        h1.text-2xl.font-bold.text-white = @user.display_name
-        p.text-slate-400 = @user.email
+        h1.text-2xl.font-bold.text-white = presenter.display_name
+        p.text-slate-400 = presenter.email
     .flex.items-center.gap-2
-      = link_to edit_admin_user_path(@user), class: "inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-slate-300 bg-slate-700 hover:bg-slate-600 transition-colors" do
+      = link_to edit_admin_user_path(user), class: "inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-slate-300 bg-slate-700 hover:bg-slate-600 transition-colors" do
         = icon :edit, width: 18, height: 18
-        span Edit
+        span = t('.buttons.edit')
 
 .grid.grid-cols-1.lg:grid-cols-2.gap-6
 
   .rounded-2xl.border.p-6 class="bg-slate-800/50 border-white/10"
-    h2.text-lg.font-semibold.text-white.mb-4 Account Information
+    h2.text-lg.font-semibold.text-white.mb-4 = t('.sections.account_information')
     dl.space-y-4
       div
-        dt.text-sm.text-slate-400 Display Name
-        dd.text-white.mt-1 = @user.name || "-"
+        dt.text-sm.text-slate-400 = t('.fields.display_name')
+        dd.text-white.mt-1 = user.name || "-"
 
       div
-        dt.text-sm.text-slate-400 Email
-        dd.text-white.mt-1 = @user.email || "-"
+        dt.text-sm.text-slate-400 = t('.fields.email')
+        dd.text-white.mt-1 = user.email || "-"
 
       div
-        dt.text-sm.text-slate-400 Role
-        dd.text-white.mt-1 = @user.role_name
+        dt.text-sm.text-slate-400 = t('.fields.role')
+        dd.text-white.mt-1 = presenter.role_name
 
       div
-        dt.text-sm.text-slate-400 Admin
+        dt.text-sm.text-slate-400 = t('.fields.admin')
         dd.mt-1
-          - if @user.admin?
-            span.px-2.py-1.text-xs.rounded-full class="bg-red-500/20 text-red-400" Yes
+          - if presenter.admin?
+            span.px-2.py-1.text-xs.rounded-full class="bg-red-500/20 text-red-400" = t('.values.yes')
           - else
-            span.text-slate-500 No
+            span.text-slate-500 = t('.values.no')
 
-      - if @user.role&.permissions&.any?
+      - if user.role&.permissions&.any?
         div
-          dt.text-sm.text-slate-400 Permissions (via role)
+          dt.text-sm.text-slate-400 = t('.fields.permissions')
           dd.mt-2
             .flex.flex-wrap.gap-2
-              - @user.role.permissions.each do |permission|
+              - user.role.permissions.each do |permission|
                 span.px-2.py-1.text-xs.rounded-full class="bg-green-500/20 text-green-400"
                   = permission.code
 
       div
-        dt.text-sm.text-slate-400 Joined
-        dd.text-white.mt-1 = @user.created_at.strftime("%B %d, %Y at %I:%M %p")
+        dt.text-sm.text-slate-400 = t('.fields.joined')
+        dd.text-white.mt-1 = user.created_at.strftime("%B %d, %Y at %I:%M %p")
 
   .rounded-2xl.border.p-6 class="bg-slate-800/50 border-white/10"
-    h2.text-lg.font-semibold.text-white.mb-4 OAuth Provider Information
+    h2.text-lg.font-semibold.text-white.mb-4 = t('.sections.oauth_provider')
     dl.space-y-4
       div
-        dt.text-sm.text-slate-400 Provider
+        dt.text-sm.text-slate-400 = t('.fields.provider')
         dd.mt-1
-          - if @user.deezer?
+          - if user.deezer?
             span.px-2.py-1.text-xs.rounded-full class="bg-amber-500/20 text-amber-400" Deezer
-          - elsif @user.spotify?
+          - elsif user.spotify?
             span.px-2.py-1.text-xs.rounded-full class="bg-green-500/20 text-green-400" Spotify
           - else
-            span.text-white = @user.provider&.titleize || "-"
+            span.text-white = presenter.provider
 
       div
-        dt.text-sm.text-slate-400 Provider User ID
-        dd.text-white.mt-1.font-mono.text-sm = @user.uid
+        dt.text-sm.text-slate-400 = t('.fields.provider_user_id')
+        dd.text-white.mt-1.font-mono.text-sm = user.uid
 
-      - if @user.spotify? && @user.spotify_product.present?
+      - if user.spotify? && user.spotify_product.present?
         div
-          dt.text-sm.text-slate-400 Subscription
+          dt.text-sm.text-slate-400 = t('.fields.subscription')
           dd.mt-1
             span.px-2.py-1.text-xs.rounded-full class="bg-green-500/20 text-green-400"
-              = @user.spotify_product.capitalize
+              = user.spotify_product.capitalize
 
       div
-        dt.text-sm.text-slate-400 Country
-        dd.text-white.mt-1 = @user.spotify_country || "-"
+        dt.text-sm.text-slate-400 = t('.fields.country')
+        dd.text-white.mt-1 = user.spotify_country || "-"
 
       div
-        dt.text-sm.text-slate-400 Token Status
+        dt.text-sm.text-slate-400 = t('.fields.token_status')
         dd.mt-1
-          - if @user.access_token_expired?
-            span.px-2.py-1.text-xs.rounded-full class="bg-red-500/20 text-red-400" Expired
-          - elsif @user.access_token_expiring_soon?
-            span.px-2.py-1.text-xs.rounded-full class="bg-amber-500/20 text-amber-400" Expiring Soon
+          - if user.access_token_expired?
+            span.px-2.py-1.text-xs.rounded-full class="bg-red-500/20 text-red-400" = t('.token_statuses.expired')
+          - elsif user.access_token_expiring_soon?
+            span.px-2.py-1.text-xs.rounded-full class="bg-amber-500/20 text-amber-400" = t('.token_statuses.expiring_soon')
           - else
-            span.px-2.py-1.text-xs.rounded-full class="bg-green-500/20 text-green-400" Valid
+            span.px-2.py-1.text-xs.rounded-full class="bg-green-500/20 text-green-400" = t('.token_statuses.valid')
 
-      - if @user.token_expires_at.present?
+      - if user.token_expires_at.present?
         div
-          dt.text-sm.text-slate-400 Token Expires
-          dd.text-white.mt-1 = @user.token_expires_at.strftime("%B %d, %Y at %I:%M %p")
+          dt.text-sm.text-slate-400 = t('.fields.token_expires')
+          dd.text-white.mt-1 = user.token_expires_at.strftime("%B %d, %Y at %I:%M %p")

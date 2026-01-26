@@ -2,32 +2,72 @@ en:
   controllers:
     global:
       create:
-        success: "Successfully created."
-        failure: "Could not create. Please check the errors below."
+        success: Successfully created.
+        failure: Could not create. Please check the errors below.
       update:
-        success: "Successfully updated."
-        failure: "Could not update. Please check the errors below."
+        success: Successfully updated.
+        failure: Could not update. Please check the errors below.
       destroy:
-        success: "Successfully deleted."
-        failure: "Could not delete."
+        success: Successfully deleted.
+        failure: Could not delete.
+
+    dev_sessions:
+      create:
+        sign_in_notice: "Signed in as %{user} (Development Mode)"
+
+      dev_login_only_available_in_development: Dev login is only available in development
 
     games:
       create:
-        success: "Game started! Good luck!"
-        failure: "Could not start game."
+        success: Game started! Good luck!
+        failure: Could not start game.
       next_track:
-        completed: "Game completed! Well done!"
+        completed: Game completed! Well done!
       reveal:
-        success: "Track revealed!"
+        success: Track revealed!
       abandon:
-        success: "Game abandoned."
+        success: Game abandoned.
 
     playlists:
       create:
-        success: "Playlist created."
-        success_importing: "Playlist created! Import started..."
-        failure: "Could not create playlist."
+        success: Playlist created.
+        success_importing: Playlist created! Import started...
+        failure: Could not create playlist.
       destroy:
-        success: "Playlist deleted."
+        success: Playlist deleted.
+        failure: Could not delete playlist.
       import:
-        success: "Re-import started..."
+        success: Re-import started...
+        failure: Could not start re-import.
+
+    users:
+      update:
+        success: User updated successfully.
+        failure: Could not update user.
+      destroy:
+        success: User deleted successfully.
+        failure: Could not delete user.
+
+    roles:
+      create:
+        success: Role created successfully.
+        failure: Could not create role.
+      update:
+        success: Role updated successfully.
+        failure: Could not update role.
+      destroy:
+        success: Role deleted successfully.
+        cannot_delete: Cannot delete role that has users assigned.
+
+    settings:
+      update:
+        success: Setting updated successfully.
+        failure: Could not update setting.
+
+    classification_values:
+      create:
+        success: Value created successfully.
+        failure: Could not create value.
+      update:
+        success: Value updated successfully.
+        failure: Could not update value.

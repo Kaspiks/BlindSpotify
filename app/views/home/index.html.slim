@@ -2,29 +2,28 @@
   .text-center.mb-12
     .w-20.h-20.mx-auto.rounded-2xl.flex.items-center.justify-center.mb-6 class="bg-gradient-to-br from-green-400 to-green-600"
       = icon(:music, width: 40, height: 40, class: "text-white")
-    
+
     h1.text-4xl.font-bold.text-white.mb-4 Blind Spotify
     p.text-xl.text-slate-400.max-w-2xl.mx-auto
-      | Import Spotify playlists, generate QR codes for tracks, and play music blindly without revealing track info.
-
+      = t('.tagline')
   .grid.grid-cols-1.md:grid-cols-3.gap-6.mb-12
     .rounded-2xl.border.p-6.text-center class="bg-slate-800/50 border-white/10"
       .w-12.h-12.mx-auto.rounded-lg.flex.items-center.justify-center.mb-4 class="bg-green-500/20"
         = icon(:playlist, width: 24, height: 24, class: "text-green-400")
-      h3.text-lg.font-semibold.text-white.mb-2 Import Playlists
-      p.text-sm.text-slate-400 Connect your Spotify account and import any playlist
+      h3.text-lg.font-semibold.text-white.mb-2 = t('.import_playlists_title')
+      p.text-sm.text-slate-400 = t('.import_playlists_desc')
 
     .rounded-2xl.border.p-6.text-center class="bg-slate-800/50 border-white/10"
       .w-12.h-12.mx-auto.rounded-lg.flex.items-center.justify-center.mb-4 class="bg-purple-500/20"
         = icon(:qrcode, width: 24, height: 24, class: "text-purple-400")
-      h3.text-lg.font-semibold.text-white.mb-2 Generate QR Codes
-      p.text-sm.text-slate-400 Create unique QR codes for each track in your playlist
+      h3.text-lg.font-semibold.text-white.mb-2 = t('.generate_qr_codes_title')
+      p.text-sm.text-slate-400 = t('.generate_qr_codes_desc')
 
     .rounded-2xl.border.p-6.text-center class="bg-slate-800/50 border-white/10"
       .w-12.h-12.mx-auto.rounded-lg.flex.items-center.justify-center.mb-4 class="bg-amber-500/20"
         = icon(:player_play, width: 24, height: 24, class: "text-amber-400")
-      h3.text-lg.font-semibold.text-white.mb-2 Blind Listening
-      p.text-sm.text-slate-400 Play tracks without seeing artist, title, or album art
+      h3.text-lg.font-semibold.text-white.mb-2 = t('.blind_listening_title')
+      p.text-sm.text-slate-400 = t('.blind_listening_desc')
 
   .text-center
     - if user_signed_in?
@@ -42,28 +41,28 @@
               = current_user.provider.titleize
         p.text-sm class="#{current_user.deezer? ? 'text-amber-400' : 'text-green-400'}"
           = icon(:check, width: 16, height: 16, class: "inline mr-1")
-          | Connected to #{current_user.provider.titleize}
+          = t('.connected_to', provider: current_user.provider.titleize)
     - else
       .space-y-4
         / Deezer - Active (but requires app credentials)
         .relative.inline-block
           .inline-flex.items-center.gap-3.px-6.py-3.rounded-xl.font-medium.text-slate-500.bg-slate-700.cursor-not-allowed.opacity-50
             = icon(:music, width: 24, height: 24)
-            span Connect with Deezer
-          span.absolute.-top-2.-right-2.px-2.py-0.5.text-xs.rounded-full.bg-amber-600.text-amber-100 No API
+            span = t('.connect_deezer')
+          span.absolute.-top-2.-right-2.px-2.py-0.5.text-xs.rounded-full.bg-amber-600.text-amber-100 = t('.no_api')
 
         / Spotify - Disabled
         .relative.inline-block
           .inline-flex.items-center.gap-3.px-6.py-3.rounded-xl.font-medium.text-slate-500.bg-slate-700.cursor-not-allowed.opacity-50
             = icon(:brand_spotify, width: 24, height: 24)
-            span Connect with Spotify
-          span.absolute.-top-2.-right-2.px-2.py-0.5.text-xs.rounded-full.bg-slate-600.text-slate-400 Coming soon
+            span = t('.connect_spotify')
+          span.absolute.-top-2.-right-2.px-2.py-0.5.text-xs.rounded-full.bg-slate-600.text-slate-400 = t('.coming_soon')
 
       - if Rails.env.development?
         .mt-6.pt-6.border-t class="border-white/10"
-          p.text-sm.text-slate-500.mb-3 OAuth providers unavailable?
+          p.text-sm.text-slate-500.mb-3 = t('.oauth_unavailable')
           = link_to dev_login_path, class: "inline-flex items-center gap-3 px-6 py-3 rounded-xl font-medium text-black transition-all bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400" do
             = icon(:settings, width: 24, height: 24)
-            span Use Dev Login
+            span = t('.use_dev_login')
       - else
-        p.text-sm.text-slate-500.mt-4 Sign in with your music account to get started
+        p.text-sm.text-slate-500.mt-4 = t('.sign_in_prompt')

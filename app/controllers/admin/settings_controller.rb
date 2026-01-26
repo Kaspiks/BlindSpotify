@@ -5,8 +5,7 @@ module Admin
     before_action :set_setting, only: [:edit, :update]
 
     def index
-      @settings = Setting.ordered
-      @settings_by_group = @settings.group_by(&:group)
+      @presenter = build_index_presenter
     end
 
     def edit
@@ -14,9 +13,9 @@ module Admin
 
     def update
       if @setting.update(setting_params)
-        redirect_to admin_settings_path, notice: "Setting updated successfully."
+        redirect_to admin_settings_path, notice: t(".success")
       else
-        render :edit
+        render :edit, status: :unprocessable_entity
       end
     end
 
@@ -28,6 +27,11 @@ module Admin
 
     def setting_params
       params.require(:setting).permit(:value)
+    end
+
+    def build_index_presenter
+      settings = Setting.ordered
+      Admin::Settings::IndexPresenter.new(settings: settings)
     end
   end
 end

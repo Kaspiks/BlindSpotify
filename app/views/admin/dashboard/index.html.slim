@@ -1,6 +1,8 @@
+- presenter = @presenter
+
 .mb-8
-  h1.text-2xl.font-bold.text-white Admin Dashboard
-  p.text-slate-400 Manage your Blind Spotify application
+  h1.text-2xl.font-bold.text-white = t('.page_title')
+  p.text-slate-400 = t('.page_description')
 
 .grid.grid-cols-1.md:grid-cols-2.lg:grid-cols-3.gap-6
   .rounded-2xl.border.p-6 class="bg-slate-800/50 border-white/10"
@@ -8,21 +10,37 @@
       .w-12.h-12.rounded-lg.flex.items-center.justify-center class="bg-green-500/20"
         = icon :users, class: "w-6 h-6 text-green-400"
       div
-        p.text-2xl.font-bold.text-white = User.count
-        p.text-sm.text-slate-400 Total Users
+        p.text-2xl.font-bold.text-white = presenter.total_users
+        p.text-sm.text-slate-400 = t('.stats.total_users')
 
   .rounded-2xl.border.p-6 class="bg-slate-800/50 border-white/10"
     .flex.items-center.gap-4
       .w-12.h-12.rounded-lg.flex.items-center.justify-center class="bg-purple-500/20"
         = icon :playlist, class: "w-6 h-6 text-purple-400"
       div
-        p.text-2xl.font-bold.text-white 0
-        p.text-sm.text-slate-400 Playlists
+        p.text-2xl.font-bold.text-white = presenter.total_playlists
+        p.text-sm.text-slate-400 = t('.stats.total_playlists')
 
   .rounded-2xl.border.p-6 class="bg-slate-800/50 border-white/10"
     .flex.items-center.gap-4
       .w-12.h-12.rounded-lg.flex.items-center.justify-center class="bg-amber-500/20"
         = icon :qrcode, class: "w-6 h-6 text-amber-400"
       div
-        p.text-2xl.font-bold.text-white 0
-        p.text-sm.text-slate-400 QR Codes Generated
+        p.text-2xl.font-bold.text-white = presenter.playlists_with_qr
+        p.text-sm.text-slate-400 = t('.stats.qr_codes_generated')
+
+  .rounded-2xl.border.p-6 class="bg-slate-800/50 border-white/10"
+    .flex.items-center.gap-4
+      .w-12.h-12.rounded-lg.flex.items-center.justify-center class="bg-blue-500/20"
+        = icon :music, class: "w-6 h-6 text-blue-400"
+      div
+        p.text-2xl.font-bold.text-white = presenter.total_tracks
+        p.text-sm.text-slate-400 = t('.stats.total_tracks')
+
+  .rounded-2xl.border.p-6 class="bg-slate-800/50 border-white/10"
+    .flex.items-center.gap-4
+      .w-12.h-12.rounded-lg.flex.items-center.justify-center class="bg-pink-500/20"
+        = icon "device-gamepad-2", class: "w-6 h-6 text-pink-400"
+      div
+        p.text-2xl.font-bold.text-white = presenter.total_games
+        p.text-sm.text-slate-400 = t('.stats.total_games')

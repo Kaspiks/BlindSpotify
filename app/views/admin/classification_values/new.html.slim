@@ -1,11 +1,11 @@
 .mb-8
   = link_to admin_classification_path(@classification), class: "inline-flex items-center gap-2 text-slate-400 hover:text-white transition-colors mb-4" do
     = icon "arrow-left", width: 20, height: 20
-    span Back to #{@classification.name}
+    span = t('.back_to_classification', classification: @classification.name)
 
-  h1.text-2xl.font-bold.text-white New Value
+  h1.text-2xl.font-bold.text-white = t('.new_value_title', classification: @classification.name)
 
-.rounded-2xl.border.p-6 class="bg-slate-800/50 border-white/10"
+.rounded-2xl.border.px-6.pb-6 class="bg-slate-800/50 border-white/10"
   = simple_form_for [@classification, @classification_value], url: admin_classification_classification_values_path(@classification), html: { class: "space-y-6" } do |f|
     .space-y-4
       div
@@ -23,7 +23,7 @@
       div
         label.flex.items-center.gap-3
           = f.check_box :active, class: "w-5 h-5 rounded bg-slate-700 border-slate-600 text-green-500 focus:ring-green-500 focus:ring-offset-slate-800"
-          span.text-sm.text-slate-300 Active
+          span.text-sm.text-slate-300 = t('.active')
 
     .pt-4
       = f.submit "Create Value", class: "w-full px-4 py-3 rounded-lg font-medium text-white bg-green-600 hover:bg-green-500 transition-colors cursor-pointer"

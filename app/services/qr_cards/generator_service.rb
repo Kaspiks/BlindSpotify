@@ -1,21 +1,28 @@
 # frozen_string_literal: true
 
 require "rqrcode"
+require "rqrcode_png"
 require "prawn"
+require "digest"
+require "stringio"
+require "tempfile"
+require "fileutils"
 
 module QrCards
   class GeneratorService < ApplicationService
-    # Card dimensions in points (72 points = 1 inch)
-    # Using poker card size: 2.5" x 3.5"
-    CARD_WIDTH = 180   # ~2.5 inches
-    CARD_HEIGHT = 252  # ~3.5 inches
+    CARD_WIDTH = 180
+    CARD_HEIGHT = 252
     CARD_MARGIN = 10
     CARDS_PER_ROW = 3
-    CARDS_PER_PAGE = 6  # 3x2 grid
+    CARDS_PER_PAGE = 6
+
+    QR_PNG_PIXEL_SIZE = 600
+    QR_PNG_BORDER_MODULES = 4
 
     def initialize(playlist, on_progress: nil)
       @playlist = playlist
       @on_progress = on_progress
+      @qr_png_temp_paths = {}
     end
 
     def call
@@ -23,10 +30,15 @@ module QrCards
       notify_progress
 
       begin
-        tracks = @playlist.tracks.ordered.to_a
+        tracks = @playlist.tracks.ordered.with_attached_qr_code_image.to_a
+
+        pre_generate_qr_attachments!(tracks)
+
         pdf_path = self.class.pdf_path(@playlist)
 
         generate_pdf(tracks, pdf_path)
+
+        attach_pdf_to_playlist!(pdf_path)
 
         @playlist.complete_qr_generation!
         notify_progress
@@ -37,6 +49,9 @@ module QrCards
         @playlist.fail_qr_generation!(e.message)
         notify_progress
         failure(e.message)
+      ensure
+        cleanup_tmp_files!(self.class.pdf_path(@playlist))
+        cleanup_cached_qr_png_tempfiles!
       end
     end
 
@@ -56,8 +71,6 @@ module QrCards
         # Generate QR pages (back of cards) - reversed order for double-sided printing
         generate_qr_pages(pdf, tracks)
       end
-
-      Rails.logger.info "[QrCards::GeneratorService] Generated PDF at #{pdf_path}"
     end
 
     def generate_info_pages(pdf, tracks)
@@ -126,7 +139,7 @@ module QrCards
       # Artist name (top)
       pdf.fill_color "666666"
       pdf.font_size(11) do
-        pdf.text_box track.artist_name.to_s.upcase,
+        pdf.text_box sanitize_for_pdf(track.artist_name.to_s.upcase),
                      at: [content_x, content_y],
                      width: content_width,
                      height: 40,
@@ -135,10 +148,9 @@ module QrCards
                      overflow: :shrink_to_fit
       end
 
-      # Song title (center)
       pdf.fill_color "000000"
       pdf.font_size(14) do
-        pdf.text_box track.title.to_s,
+        pdf.text_box sanitize_for_pdf(track.title.to_s),
                      at: [content_x, content_y - 60],
                      width: content_width,
                      height: 80,
@@ -148,7 +160,6 @@ module QrCards
                      style: :bold
       end
 
-      # Year (bottom) - if available
       if track.release_year.present?
         pdf.fill_color "333333"
         pdf.font_size(24) do
@@ -162,7 +173,6 @@ module QrCards
         end
       end
 
-      # Track number (small, bottom corner)
       pdf.fill_color "AAAAAA"
       pdf.font_size(8) do
         pdf.text_box "##{track.position}",
@@ -175,26 +185,17 @@ module QrCards
     def draw_qr_card(pdf, track, index)
       x, y = card_position(index)
 
-      # Card border
       pdf.stroke_color "CCCCCC"
       pdf.stroke_rectangle [x, y], CARD_WIDTH, CARD_HEIGHT
 
-      # Generate QR code
-      qr_url = Rails.application.routes.url_helpers.track_qr_url(
-        token: track.token,
-        **default_url_options
-      )
-
-      qr = RQRCode::QRCode.new(qr_url, level: :m)
       qr_size = CARD_WIDTH - 40
-
-      # Center QR code in card
       qr_x = x + (CARD_WIDTH - qr_size) / 2
       qr_y = y - (CARD_HEIGHT - qr_size) / 2
 
-      draw_qr_code(pdf, qr, qr_x, qr_y, qr_size)
+      path = cached_qr_png_path(track)
 
-      # Small label at bottom
+      pdf.image path, at: [qr_x, qr_y], width: qr_size, height: qr_size
+
       pdf.fill_color "999999"
       pdf.font_size(7) do
         pdf.text_box "Scan to play",
@@ -205,22 +206,71 @@ module QrCards
       end
     end
 
-    def draw_qr_code(pdf, qr, x, y, size)
-      module_count = qr.modules.size
-      module_size = size.to_f / module_count
+    def cached_qr_png_path(track)
+      @qr_png_temp_paths[track.id] ||= begin
+        f = Tempfile.new(["qr_track_#{track.id}", ".png"])
+        f.binmode
+        f.write(track.qr_code_image.download)
+        f.flush
+        f.path
+      end
+    end
 
-      pdf.fill_color "000000"
+    def pre_generate_qr_attachments!(tracks)
+      tracks.each_with_index do |track, i|
+        qr_url = Rails.application.routes.url_helpers.track_qr_url(
+          token: track.token,
+          **default_url_options
+        )
 
-      qr.modules.each_with_index do |row, row_index|
-        row.each_with_index do |cell, col_index|
-          next unless cell
+        ensure_qr_attached!(track, qr_url)
 
-          pdf.fill_rectangle(
-            [x + (col_index * module_size), y - (row_index * module_size)],
-            module_size,
-            module_size
-          )
-        end
+        notify_progress if ((i + 1) % 10).zero?
+      end
+    end
+
+    def ensure_qr_attached!(track, qr_url)
+      digest = Digest::SHA256.hexdigest(qr_url)
+      return if track.qr_code_image.attached? && track.qr_code_digest == digest
+
+      qr = RQRCode::QRCode.new(qr_url, level: :m)
+      png_bytes = qr.as_png(
+        size: QR_PNG_PIXEL_SIZE,
+        border_modules: QR_PNG_BORDER_MODULES,
+        color: "black",
+        fill: "white"
+      ).to_s
+
+      track.qr_code_image.purge_later if track.qr_code_image.attached?
+
+      track.qr_code_image.attach(
+        io: StringIO.new(png_bytes),
+        filename: "track_#{track.id}_qr.png",
+        content_type: "image/png"
+      )
+
+      track.update!(qr_code_digest: digest)
+    end
+
+    def attach_pdf_to_playlist!(pdf_path)
+      @playlist.qr_cards_pdf.purge_later if @playlist.qr_cards_pdf.attached?
+
+      File.open(pdf_path, "rb") do |file|
+        @playlist.qr_cards_pdf.attach(
+          io: file,
+          filename: "playlist_#{@playlist.id}_qr_cards.pdf",
+          content_type: "application/pdf"
+        )
+      end
+    end
+
+    def cleanup_tmp_files!(pdf_path)
+      File.delete(pdf_path) if File.exist?(pdf_path)
+    end
+
+    def cleanup_cached_qr_png_tempfiles!
+      @qr_png_temp_paths.each_value do |path|
+        File.delete(path) if path && File.exist?(path)
       end
     end
 
@@ -232,6 +282,14 @@ module QrCards
 
     def notify_progress
       @on_progress&.call(@playlist)
+    end
+
+    def sanitize_for_pdf(text)
+      return "" if text.blank?
+
+      # Use ActiveSupport's transliterate to convert accented characters to ASCII
+      # This handles most European characters gracefully
+      ActiveSupport::Inflector.transliterate(text)
     end
 
     def success(playlist, pdf_path)

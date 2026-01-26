@@ -13,7 +13,7 @@
         h3.text-white.font-semibold.truncate.group-hover:text-purple-400.transition-colors= game.playlist.name
         span class="px-2 py-0.5 text-xs rounded-full #{presenter.status_class(game.status)}"
           = presenter.status_label(game.status)
-      
+
       .flex.items-center.gap-4.text-sm.text-slate-400
         span= "#{game.tracks_played} / #{game.total_tracks} tracks"
         span= "#{game.tracks_revealed} revealed"
@@ -22,4 +22,4 @@
     / Progress indicator
     .w-16.text-right
       .text-lg.font-bold.text-purple-400= "#{game.progress_percentage}%"
-      .text-xs.text-slate-500 complete
+      .text-xs.text-slate-500 = t('.progress.completed')

@@ -5,10 +5,11 @@ module Admin
     before_action :set_role, only: [:show, :edit, :update, :destroy]
 
     def index
-      @roles = Role.all.order(:name)
+      @presenter = build_index_presenter
     end
 
     def show
+      @presenter = build_show_presenter
     end
 
     def new
@@ -18,9 +19,9 @@ module Admin
     def create
       @role = Role.new(role_params)
       if @role.save
-        redirect_to admin_roles_path, notice: "Role created successfully."
+        redirect_to admin_roles_path, notice: t(".success")
       else
-        render :new
+        render :new, status: :unprocessable_entity
       end
     end
 
@@ -29,18 +30,18 @@ module Admin
 
     def update
       if @role.update(role_params)
-        redirect_to admin_role_path(@role), notice: "Role updated successfully."
+        redirect_to admin_role_path(@role), notice: t(".success")
       else
-        render :edit
+        render :edit, status: :unprocessable_entity
       end
     end
 
     def destroy
       if @role.users.any?
-        redirect_to admin_roles_path, alert: "Cannot delete role that has users assigned."
+        redirect_to admin_roles_path, alert: t(".cannot_delete")
       else
         @role.destroy
-        redirect_to admin_roles_path, notice: "Role deleted successfully."
+        redirect_to admin_roles_path, notice: t(".success")
       end
     end
 
@@ -52,6 +53,15 @@ module Admin
 
     def role_params
       params.require(:role).permit(:name, :description, permission_ids: [])
+    end
+
+    def build_index_presenter
+      roles = Role.includes(:permissions, :users).order(:name)
+      Admin::Roles::IndexPresenter.new(roles: roles)
+    end
+
+    def build_show_presenter
+      Admin::Roles::ShowPresenter.new(role: @role)
     end
   end
 end

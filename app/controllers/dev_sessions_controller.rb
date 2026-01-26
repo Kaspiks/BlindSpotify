@@ -20,19 +20,19 @@ class DevSessionsController < ApplicationController
         u.email = params[:email].presence || "dev_#{SecureRandom.hex(4)}@example.com"
         u.name = params[:name].presence || "Dev User"
         u.spotify_access_token = "dev_token_#{SecureRandom.hex(16)}"
-        u.spotify_country = "US"
+        u.spotify_country = "LV"
       end
     end
 
     sign_in(user)
-    redirect_to root_path, notice: "Signed in as #{user.display_name} (Development Mode)"
+    redirect_to root_path, notice: t_context(".sign_in_notice", user: user.display_name)
   end
 
   private
 
   def ensure_development_environment
     unless Rails.env.development?
-      redirect_to root_path, alert: "Dev login is only available in development"
+      redirect_to root_path, alert: t_context(".dev_login_only_available_in_development")
     end
   end
 end
