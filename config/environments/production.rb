@@ -50,8 +50,9 @@ Rails.application.configure do
   # Replace the default in-process memory cache store with a durable alternative.
   # config.cache_store = :mem_cache_store
 
-  # Use solid_queue for background jobs in production
-  config.active_job.queue_adapter = :solid_queue
+  # Use async queue adapter for background jobs (runs in-process threads)
+  # Switch to :solid_queue if you need persistent jobs that survive restarts
+  config.active_job.queue_adapter = :async
 
   # Ignore bad email addresses and do not raise email delivery errors.
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.
