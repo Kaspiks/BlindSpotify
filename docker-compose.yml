@@ -18,7 +18,7 @@ x-app: &app
     DATABASE_NAME: ${DATABASE_NAME:-blind_spotify_development}
     DATABASE_USERNAME: ${DATABASE_USERNAME:-blind_spotify}
     DATABASE_PASSWORD: ${DATABASE_PASSWORD:-blind_spotify_dev}
-    REDIS_SESSION_STORE_URL: redis://redis:6379/0
+    REDIS_SESSION_STORE_URL: redis://redis:6371/0
   volumes:
     - .:/app:cached
     - bundle_cache:/usr/local/bundle
@@ -36,7 +36,7 @@ x-test: &test
     DATABASE_NAME: blind_spotify_test
     DATABASE_USERNAME: ${DATABASE_USERNAME:-blind_spotify}
     DATABASE_PASSWORD: ${DATABASE_PASSWORD:-blind_spotify_dev}
-    REDIS_SESSION_STORE_URL: redis://redis:6379/1
+    REDIS_SESSION_STORE_URL: redis://redis:6371/1
   volumes:
     - .:/app:cached
     - bundle_cache:/usr/local/bundle
@@ -55,7 +55,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      - "5421:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${DATABASE_USERNAME:-blind_spotify} -d ${DATABASE_NAME:-blind_spotify_development}"]
       interval: 10s
@@ -66,7 +66,7 @@ services:
   redis:
     image: redis:7-alpine
     ports:
-      - "6379:6379"
+      - "6371:6371"
     volumes:
       - redis_data:/data
     healthcheck:
@@ -78,9 +78,9 @@ services:
 
   web:
     <<: *app
-    command: rails server -b 0.0.0.0 -p 3000 -P /tmp/server.pid
+    command: rails server -b 0.0.0.0 -p 3024 -P /tmp/server.pid
     ports:
-      - "3000:3000"
+      - "3024:3024"
     volumes:
       - .:/app
       - rails_storage:/app/storage

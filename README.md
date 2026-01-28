@@ -34,7 +34,7 @@ docker compose up --build
 ```
 
 This starts:
-- Rails development server at http://localhost:3000
+- Rails development server at http://localhost:3024
 - PostgreSQL database
 - Redis for session storage
 
@@ -50,7 +50,7 @@ rails server
 
 For Redis session storage (recommended):
 ```bash
-export REDIS_SESSION_STORE_URL=redis://localhost:6379/0
+export REDIS_SESSION_STORE_URL=redis://localhost:6371/0
 rails server
 ```
 
@@ -67,7 +67,7 @@ bundle exec rspec
 ### Local
 
 ```bash
-export REDIS_SESSION_STORE_URL=redis://localhost:6379/0
+export REDIS_SESSION_STORE_URL=redis://localhost:6371/0
 bundle exec rspec
 ```
 
@@ -78,7 +78,7 @@ bundle exec rspec
 | `REDIS_SESSION_STORE_URL` | Yes (dev/test) | Redis URL for session storage |
 | `DATABASE_ADAPTER` | No | Set to `postgresql` to use PostgreSQL instead of SQLite |
 | `DATABASE_HOST` | If PostgreSQL | PostgreSQL host |
-| `DATABASE_PORT` | If PostgreSQL | PostgreSQL port (default: 5432) |
+| `DATABASE_PORT` | If PostgreSQL | PostgreSQL port (default: 5421) |
 | `DATABASE_NAME` | If PostgreSQL | Database name |
 | `DATABASE_USERNAME` | If PostgreSQL | Database username |
 | `DATABASE_PASSWORD` | If PostgreSQL | Database password |

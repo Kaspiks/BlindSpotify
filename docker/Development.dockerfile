@@ -57,6 +57,6 @@ ENTRYPOINT ["docker-entrypoint.sh"]
 
 USER rails
 
-EXPOSE 3000
+EXPOSE 3024
 
-CMD ["rails", "server", "-b", "0.0.0.0", "-p", "3000", "-P", "/tmp/server.pid"]
+CMD ["rails", "server", "-b", "0.0.0.0", "-p", "3024", "-P", "/tmp/server.pid"]

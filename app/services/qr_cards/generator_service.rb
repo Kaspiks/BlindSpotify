@@ -65,30 +65,24 @@ module QrCards
       FileUtils.mkdir_p(File.dirname(pdf_path))
 
       Prawn::Document.generate(pdf_path, page_size: "A4", margin: 36) do |pdf|
-        # Generate info pages first (front of cards)
-        generate_info_pages(pdf, tracks)
-
-        # Generate QR pages (back of cards) - reversed order for double-sided printing
-        generate_qr_pages(pdf, tracks)
+        generate_interleaved_pages(pdf, tracks)
       end
     end
 
-    def generate_info_pages(pdf, tracks)
+    def generate_interleaved_pages(pdf, tracks)
       tracks.each_slice(CARDS_PER_PAGE).with_index do |page_tracks, page_index|
+        # Start new page for all pages except the first
         pdf.start_new_page if page_index > 0
 
+        # Draw info cards (front side)
         page_tracks.each_with_index do |track, index|
           draw_info_card(pdf, track, index)
         end
-      end
-    end
 
-    def generate_qr_pages(pdf, tracks)
-      tracks.each_slice(CARDS_PER_PAGE).with_index do |page_tracks, _page_index|
+        # Start new page for QR codes (back side)
         pdf.start_new_page
 
-        # Reverse the row order for double-sided printing alignment
-        # When printed double-sided, the QR codes will align with info cards
+        # Reverse for double-sided printing alignment
         page_tracks_reversed = reverse_rows_for_printing(page_tracks)
 
         page_tracks_reversed.each_with_index do |track, index|
@@ -105,12 +99,11 @@ module QrCards
     end
 
     def reverse_rows_for_printing(tracks)
-      # Pad to full page
       padded = tracks + [nil] * (CARDS_PER_PAGE - tracks.size)
 
-      # Split into rows and reverse column order within each row for mirror effect
-      rows = padded.each_slice(CARDS_PER_ROW).to_a
-      rows.flat_map { |row| row.reverse }
+      # Reverse entire page for 180° rotation - ensures QR codes align perfectly
+      # when printed double-sided and flipped
+      padded.reverse
     end
 
     def card_position(index)
@@ -210,7 +203,16 @@ module QrCards
       @qr_png_temp_paths[track.id] ||= begin
         f = Tempfile.new(["qr_track_#{track.id}", ".png"])
         f.binmode
-        f.write(track.qr_code_image.download)
+
+        begin
+          f.write(track.qr_code_image.download)
+        rescue ActiveStorage::FileNotFoundError => e
+          Rails.logger.error "[QR Generator] Failed to download QR for track #{track.id}: #{e.message}"
+          # Reload the track to get fresh attachment data
+          track.reload
+          f.write(track.qr_code_image.download)
+        end
+
         f.flush
         f.path
       end
@@ -231,7 +233,15 @@ module QrCards
 
     def ensure_qr_attached!(track, qr_url)
       digest = Digest::SHA256.hexdigest(qr_url)
-      return if track.qr_code_image.attached? && track.qr_code_digest == digest
+
+      if track.qr_code_image.attached? && track.qr_code_digest == digest
+        begin
+          track.qr_code_image.blob.open { |_| } if track.qr_code_image.blob.present?
+          return
+        rescue ActiveStorage::FileNotFoundError
+          Rails.logger.info "[QR Generator] File missing for track #{track.id}, regenerating..."
+        end
+      end
 
       qr = RQRCode::QRCode.new(qr_url, level: :m)
       png_bytes = qr.as_png(
@@ -241,7 +251,7 @@ module QrCards
         fill: "white"
       ).to_s
 
-      track.qr_code_image.purge_later if track.qr_code_image.attached?
+      track.qr_code_image.purge if track.qr_code_image.attached?
 
       track.qr_code_image.attach(
         io: StringIO.new(png_bytes),
@@ -253,7 +263,7 @@ module QrCards
     end
 
     def attach_pdf_to_playlist!(pdf_path)
-      @playlist.qr_cards_pdf.purge_later if @playlist.qr_cards_pdf.attached?
+      @playlist.qr_cards_pdf.purge if @playlist.qr_cards_pdf.attached?
 
       File.open(pdf_path, "rb") do |file|
         @playlist.qr_cards_pdf.attach(

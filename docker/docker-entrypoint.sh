@@ -11,7 +11,7 @@ fi
 
 wait_for_db() {
   echo "Waiting for database..."
-  while ! pg_isready -h "$DATABASE_HOST" -p "${DATABASE_PORT:-5432}" -U "$DATABASE_USERNAME" -q; do
+  while ! pg_isready -h "$DATABASE_HOST" -p "${DATABASE_PORT:-5421}" -U "$DATABASE_USERNAME" -q; do
     echo "Database is unavailable - sleeping"
     sleep 2
   done

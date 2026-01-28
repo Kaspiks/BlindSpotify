@@ -21,8 +21,9 @@ Rails.application.configure do
   # Enable serving of images, stylesheets, and JavaScripts from an asset server.
   # config.asset_host = "http://assets.example.com"
 
-  # Store uploaded files on the local file system (see config/storage.yml for options).
-  config.active_storage.service = :local
+  # Store uploaded files on cloud storage for Heroku (local filesystem is ephemeral).
+  # Falls back to local for testing production config locally.
+  config.active_storage.service = ENV.fetch("ACTIVE_STORAGE_SERVICE", "local").to_sym
 
   # Assume all access to the app is happening through a SSL-terminating reverse proxy.
   config.assume_ssl = true
@@ -82,10 +83,12 @@ Rails.application.configure do
   config.active_record.attributes_for_inspect = [ :id ]
 
   # Enable DNS rebinding protection and other `Host` header attacks.
-  # Allow Render hosts and custom domain
+  # Allow cloud platform hosts and custom domain
   config.hosts = [
     ENV["APP_HOST"],
     /.*\.onrender\.com/,
+    /.*\.herokuapp\.com/,
+    /.*\.ondigitalocean\.app/,
     "localhost"
   ].compact
 
