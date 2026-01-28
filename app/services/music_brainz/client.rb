@@ -6,7 +6,7 @@ require "json"
 module MusicBrainz
   class Client
     BASE_URL = "https://musicbrainz.org/ws/2"
-    USER_AGENT = "BlindSpotify/1.0 (kaspars@example.com)"
+    USER_AGENT = "BeatDrop/1.0 (kaspars@example.com)"
     MAX_RETRIES = 3
 
     def recording_by_isrc(isrc)
@@ -31,13 +31,13 @@ module MusicBrainz
         http.open_timeout = 15
         http.read_timeout = 15
         http.ssl_timeout = 15
-        
+
         # In development, be more lenient with SSL if needed
         if Rails.env.development?
           http.verify_mode = OpenSSL::SSL::VERIFY_PEER
           http.ssl_version = :TLSv1_2
         end
-        
+
         request = Net::HTTP::Get.new(uri)
         request["User-Agent"] = USER_AGENT
         request["Accept"] = "application/json"

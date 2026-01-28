@@ -81,19 +81,19 @@ module Deezer
       uri.query = URI.encode_www_form(params) if params.any?
 
       attempt = 0
-      
+
       loop do
         attempt += 1
-        
+
         begin
           http = Net::HTTP.new(uri.host, uri.port)
           http.use_ssl = true
           http.open_timeout = 10
           http.read_timeout = 30
-          
+
           request = Net::HTTP::Get.new(uri)
-          request["User-Agent"] = "Hitster/1.0"
-          
+          request["User-Agent"] = "BeatDrop/1.0"
+
           response = http.request(request)
 
           case response.code.to_i

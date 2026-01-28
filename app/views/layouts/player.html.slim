@@ -1,7 +1,7 @@
 doctype html
 html
   head
-    title Hitster
+    title BeatDrop
     meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"
     meta name="apple-mobile-web-app-capable" content="yes"
     meta name="mobile-web-app-capable" content="yes"
@@ -21,7 +21,7 @@ html
         stroke-linejoin: round;
         fill: none;
       }
-      
+
       /* Pulse animation for play button */
       @keyframes pulse-ring {
         0% { transform: scale(0.95); opacity: 1; }
@@ -34,6 +34,6 @@ html
 
   body.min-h-screen.flex.flex-col class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900"
     = render_svg_icons
-    
+
     main.flex-1.flex.items-center.justify-center.p-4
       = yield

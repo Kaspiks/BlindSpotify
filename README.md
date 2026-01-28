@@ -1,4 +1,4 @@
-# Blind Spotify
+# BeatDrop
 
 A Rails application for importing Spotify playlists, generating QR codes for tracks, and playing music "blindly" without revealing track info.
 

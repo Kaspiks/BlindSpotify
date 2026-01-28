@@ -47,7 +47,7 @@ puts "  Created viewer role with #{viewer_role.permissions.count} permissions"
 # Settings
 puts "Seeding settings..."
 [
-  { key: "app.name", value: "Blind Spotify", value_type: "string", group: "general", description: "Application name" },
+  { key: "app.name", value: "BeatDrop", value_type: "string", group: "general", description: "Application name" },
   { key: "app.maintenance_mode", value: "false", value_type: "boolean", group: "general", description: "Enable maintenance mode" },
   { key: "playlist.max_tracks", value: "100", value_type: "integer", group: "playlists", description: "Maximum tracks per playlist" },
   { key: "qr.default_size", value: "300", value_type: "integer", group: "qr_codes", description: "Default QR code size in pixels" }

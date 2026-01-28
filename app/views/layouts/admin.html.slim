@@ -1,7 +1,7 @@
 doctype html
 html
   head
-    title Admin | Blind Spotify
+    title Admin | BeatDrop
     meta name="viewport" content="width=device-width,initial-scale=1"
     = csrf_meta_tags
     = csp_meta_tag
@@ -47,7 +47,7 @@ html
             = icon :music, class: "w-6 h-6 text-white"
           div
             p.font-bold.text-white Admin
-            p.text-xs.text-slate-400 Blind Spotify
+            p.text-xs.text-slate-400 BeatDrop
 
       nav.flex-1.p-4.overflow-y-auto
         - admin_navigation_presenter.navigation_sections.each do |section|

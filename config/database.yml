@@ -1,4 +1,4 @@
-# Database configuration for Blind Spotify
+# Database configuration for BeatDrop
 # Supports both SQLite (local development) and PostgreSQL (Docker/production)
 #
 # Local development (default): Uses SQLite - no setup required
@@ -21,13 +21,13 @@ postgres_defaults: &postgres_defaults
   encoding: unicode
   host: <%= ENV.fetch("DATABASE_HOST", "localhost") %>
   port: <%= ENV.fetch("DATABASE_PORT", 5421) %>
-  username: <%= ENV.fetch("DATABASE_USERNAME", "blind_spotify") %>
+  username: <%= ENV.fetch("DATABASE_USERNAME", "beatdrop") %>
   password: <%= ENV.fetch("DATABASE_PASSWORD", "") %>
 
 development:
   <% if ENV["DATABASE_ADAPTER"] == "postgresql" %>
   <<: *postgres_defaults
-  database: <%= ENV.fetch("DATABASE_NAME", "blind_spotify_development") %>
+  database: <%= ENV.fetch("DATABASE_NAME", "beatdrop_development") %>
   <% else %>
   <<: *sqlite_defaults
   database: storage/development.sqlite3
@@ -36,7 +36,7 @@ development:
 test:
   <% if ENV["DATABASE_ADAPTER"] == "postgresql" %>
   <<: *postgres_defaults
-  database: <%= ENV.fetch("DATABASE_NAME", "blind_spotify_test") %>_test
+  database: <%= ENV.fetch("DATABASE_NAME", "beatdrop_test") %>_test
   <% else %>
   <<: *sqlite_defaults
   database: storage/test.sqlite3
@@ -47,5 +47,5 @@ production:
   <% if ENV["DATABASE_URL"] %>
   url: <%= ENV["DATABASE_URL"] %>
   <% else %>
-  database: <%= ENV.fetch("DATABASE_NAME", "hitster_production") %>
+  database: <%= ENV.fetch("DATABASE_NAME", "beatdrop_production") %>
   <% end %>

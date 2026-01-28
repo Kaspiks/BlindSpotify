@@ -4,6 +4,7 @@ en:
       home: Home
   home:
     index:
+      app_name: BeatDrop
       tagline: Import Spotify playlists, generate QR codes for tracks, and play music blindly without revealing track info.
       import_playlists_title: Import Playlists
       import_playlists_desc: Connect your Spotify account and import any playlist
@@ -23,7 +24,7 @@ en:
     dashboard:
       index:
         page_title: Admin Dashboard
-        page_description: Manage your Hitster application
+        page_description: Manage your BeatDrop application
         stats:
           total_users: Total Users
           total_playlists: Playlists
