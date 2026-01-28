@@ -16,6 +16,8 @@ services:
         fromDatabase:
           name: beatdrop-db
           property: connectionString
+      - key: DATABASE_PORT
+        value: "5432"
       - key: RAILS_MASTER_KEY
         sync: false
       - key: RAILS_ENV
