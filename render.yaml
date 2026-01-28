@@ -9,8 +9,8 @@ services:
     name: beatdrop
     runtime: ruby
     plan: free
-    buildCommand: bundle install && bundle exec rails assets:precompile
-    startCommand: bundle exec puma -C config/puma.rb
+    buildCommand: bash ./bin/render-build.sh
+    startCommand: bash ./bin/render-start.sh
     envVars:
       - key: DATABASE_URL
         fromDatabase:
