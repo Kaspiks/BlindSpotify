@@ -81,3 +81,6 @@ gem "rqrcode", "~> 2.2"
 gem "rqrcode_png"
 gem "prawn", "~> 2.5"
 gem "prawn-table", "~> 0.2"
+
+gem "cloudinary", "~> 1.29"
+gem "activestorage-cloudinary-service", "~> 0.2"
