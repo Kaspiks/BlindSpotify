@@ -5,21 +5,13 @@ en:
   home:
     index:
       app_name: BeatDrop
-      tagline: Import Spotify playlists, generate QR codes for tracks, and play music blindly without revealing track info.
+      tagline: Import playlists, generate QR codes for tracks, and play music blindly without revealing track info.
       import_playlists_title: Import Playlists
-      import_playlists_desc: Connect your Spotify account and import any playlist
+      import_playlists_desc: Import any Deezer playlist by URL
       generate_qr_codes_title: Generate QR Codes
       generate_qr_codes_desc: Create unique QR codes for each track in your playlist
       blind_listening_title: Blind Listening
       blind_listening_desc: Play tracks without seeing artist, title, or album art
-      connect_deezer: Connect with Deezer
-      connect_spotify: Connect with Spotify
-      no_api: No API
-      coming_soon: Coming soon
-      oauth_unavailable: OAuth providers unavailable?
-      use_dev_login: Use Dev Login
-      sign_in_prompt: Sign in with your music account to get started
-      connected_to: Connected to %{provider}
   admin:
     dashboard:
       index:

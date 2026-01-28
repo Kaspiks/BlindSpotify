@@ -10,5 +10,29 @@ html
     / Tailwind CSS CDN for development
     script src="https://cdn.tailwindcss.com"
     = javascript_importmap_tags
-  body class=content_for(:body_class)
+
+    css:
+      .iconset { display: none; }
+      .icon {
+        stroke: currentColor;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        fill: none;
+      }
+      .icon--sm { stroke-width: 2.5; }
+      .icon--lg { stroke-width: 1.5; }
+      .icon--bold { stroke-width: 2.5; }
+      .icon--filled { fill: currentColor; stroke: none; }
+
+  body.bg-slate-900 class=content_for(:body_class)
+    = render_svg_icons
+
+    .fixed.top-4.right-4.z-50.space-y-2
+      - if flash[:notice]
+        .px-4.py-3.rounded-lg.bg-green-600.text-white.text-sm.shadow-lg
+          = flash[:notice]
+      - if flash[:alert]
+        .px-4.py-3.rounded-lg.bg-red-600.text-white.text-sm.shadow-lg
+          = flash[:alert]
     = yield

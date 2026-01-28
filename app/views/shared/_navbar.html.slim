@@ -37,14 +37,9 @@ nav.border-b class="border-white/10 bg-slate-900/50 backdrop-blur-xl sticky top-
             = icon(:logout, width: 16, height: 16)
             span Sign out
         - else
-          - if Rails.env.development?
-            = link_to dev_login_path, class: "inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-black bg-amber-400 hover:bg-amber-300 transition-all duration-200" do
-              = icon(:settings, width: 18, height: 18)
-              span Dev Login
-          - else
-            = button_to user_deezer_omniauth_authorize_path, method: :post, data: { turbo: false }, class: "inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-black bg-amber-400 hover:bg-amber-300 transition-all duration-200" do
-              = icon(:music, width: 18, height: 18)
-              span Sign in with Deezer
+          = link_to new_user_session_path, class: "inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-black bg-amber-400 hover:bg-amber-300 transition-all duration-200" do
+            = icon(:login, width: 18, height: 18)
+            span Sign in
 
       / Mobile menu button
       .flex.items-center.gap-3.md:hidden
@@ -93,11 +88,6 @@ nav.border-b class="border-white/10 bg-slate-900/50 backdrop-blur-xl sticky top-
             span Sign out
       - else
         .border-t.border-white/10.pt-3
-          - if Rails.env.development?
-            = link_to dev_login_path, class: "flex items-center gap-3 px-3 py-2 rounded-lg text-amber-400 hover:text-amber-300 hover:bg-amber-500/10 transition-colors w-full" do
-              = icon(:settings, width: 20, height: 20)
-              span Dev Login
-          - else
-            = button_to user_deezer_omniauth_authorize_path, method: :post, data: { turbo: false }, class: "flex items-center gap-3 px-3 py-2 rounded-lg text-amber-400 hover:text-amber-300 hover:bg-amber-500/10 transition-colors w-full" do
-              = icon(:music, width: 20, height: 20)
-              span Sign in with Deezer
+          = link_to new_user_session_path, class: "flex items-center gap-3 px-3 py-2 rounded-lg text-amber-400 hover:text-amber-300 hover:bg-amber-500/10 transition-colors w-full" do
+            = icon(:login, width: 20, height: 20)
+            span Sign in

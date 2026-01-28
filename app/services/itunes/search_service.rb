@@ -38,8 +38,7 @@ module Itunes
       end
 
       nil
-    rescue JSON::ParserError, Net::ReadTimeout, Net::OpenTimeout, Errno::ECONNRESET => e
-      Rails.logger.warn("[Itunes::SearchService] Failed for #{artist} - #{title}: #{e.message}")
+    rescue JSON::ParserError, Net::ReadTimeout, Net::OpenTimeout, Errno::ECONNRESET
       nil
     end
   end

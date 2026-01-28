@@ -17,7 +17,7 @@ Devise.setup do |config|
 
   # ==> OmniAuth Providers
 
-  # --- Deezer OAuth (Currently Active) ---
+  # --- Deezer OAuth (Disabled - using email/password login) ---
   # Credentials should be set via Rails credentials or environment variables:
   #   DEEZER_APP_ID
   #   DEEZER_APP_SECRET
@@ -30,10 +30,10 @@ Devise.setup do |config|
   #   - offline_access: Access data anytime (refresh token)
   #   - manage_library: Manage user's library
   #   - listening_history: Access listening history
-  config.omniauth :deezer,
-    Rails.application.credentials.dig(:deezer, :app_id) || ENV["DEEZER_APP_ID"],
-    Rails.application.credentials.dig(:deezer, :app_secret) || ENV["DEEZER_APP_SECRET"],
-    perms: "basic_access,email,offline_access,manage_library,listening_history"
+  # config.omniauth :deezer,
+  #   Rails.application.credentials.dig(:deezer, :app_id) || ENV["DEEZER_APP_ID"],
+  #   Rails.application.credentials.dig(:deezer, :app_secret) || ENV["DEEZER_APP_SECRET"],
+  #   perms: "basic_access,email,offline_access,manage_library,listening_history"
 
   # --- Spotify OAuth (Currently Disabled) ---
   # Uncomment when Spotify API is available

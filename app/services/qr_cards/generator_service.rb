@@ -64,9 +64,30 @@ module QrCards
     def generate_pdf(tracks, pdf_path)
       FileUtils.mkdir_p(File.dirname(pdf_path))
 
-      Prawn::Document.generate(pdf_path, page_size: "A4", margin: 36) do |pdf|
-        generate_interleaved_pages(pdf, tracks)
-      end
+      pdf = Prawn::Document.new(page_size: "A4", margin: 36)
+
+      setup_unicode_font(pdf)
+
+      generate_interleaved_pages(pdf, tracks)
+
+      pdf.render_file(pdf_path)
+    end
+
+    def setup_unicode_font(pdf)
+      font_dir = Rails.root.join("vendor", "fonts")
+      normal_font = font_dir.join("DejaVuSans.ttf").to_s
+      bold_font = font_dir.join("DejaVuSans-Bold.ttf").to_s
+
+      return unless File.exist?(normal_font) && File.exist?(bold_font)
+
+      pdf.font_families.update(
+        "DejaVuSans" => {
+          normal: normal_font,
+          bold: bold_font
+        }
+      )
+      pdf.font "DejaVuSans"
+    rescue StandardError
     end
 
     def generate_interleaved_pages(pdf, tracks)
@@ -297,9 +318,7 @@ module QrCards
     def sanitize_for_pdf(text)
       return "" if text.blank?
 
-      # Use ActiveSupport's transliterate to convert accented characters to ASCII
-      # This handles most European characters gracefully
-      ActiveSupport::Inflector.transliterate(text)
+      text.to_s.gsub(/[\x00-\x08\x0B\x0C\x0E-\x1F]/, "")
     end
 
     def success(playlist, pdf_path)

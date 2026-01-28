@@ -60,44 +60,46 @@
         dd.text-white.mt-1 = user.created_at.strftime("%B %d, %Y at %I:%M %p")
 
   .rounded-2xl.border.p-6 class="bg-slate-800/50 border-white/10"
-    h2.text-lg.font-semibold.text-white.mb-4 = t('.sections.oauth_provider')
+    h2.text-lg.font-semibold.text-white.mb-4 Authentication
     dl.space-y-4
       div
-        dt.text-sm.text-slate-400 = t('.fields.provider')
+        dt.text-sm.text-slate-400 Method
         dd.mt-1
           - if user.deezer?
-            span.px-2.py-1.text-xs.rounded-full class="bg-amber-500/20 text-amber-400" Deezer
+            span.px-2.py-1.text-xs.rounded-full class="bg-amber-500/20 text-amber-400" Deezer OAuth
           - elsif user.spotify?
-            span.px-2.py-1.text-xs.rounded-full class="bg-green-500/20 text-green-400" Spotify
+            span.px-2.py-1.text-xs.rounded-full class="bg-green-500/20 text-green-400" Spotify OAuth
           - else
-            span.text-white = presenter.provider
+            span.px-2.py-1.text-xs.rounded-full class="bg-blue-500/20 text-blue-400" Email / Password
 
-      div
-        dt.text-sm.text-slate-400 = t('.fields.provider_user_id')
-        dd.text-white.mt-1.font-mono.text-sm = user.uid
-
-      - if user.spotify? && user.spotify_product.present?
+      - if user.provider.present?
         div
-          dt.text-sm.text-slate-400 = t('.fields.subscription')
+          dt.text-sm.text-slate-400 = t('.fields.provider_user_id')
+          dd.text-white.mt-1.font-mono.text-sm = user.uid || "-"
+
+        - if user.spotify? && user.spotify_product.present?
+          div
+            dt.text-sm.text-slate-400 = t('.fields.subscription')
+            dd.mt-1
+              span.px-2.py-1.text-xs.rounded-full class="bg-green-500/20 text-green-400"
+                = user.spotify_product.capitalize
+
+        - if user.spotify_country.present?
+          div
+            dt.text-sm.text-slate-400 = t('.fields.country')
+            dd.text-white.mt-1 = user.spotify_country
+
+        div
+          dt.text-sm.text-slate-400 = t('.fields.token_status')
           dd.mt-1
-            span.px-2.py-1.text-xs.rounded-full class="bg-green-500/20 text-green-400"
-              = user.spotify_product.capitalize
+            - if user.access_token_expired?
+              span.px-2.py-1.text-xs.rounded-full class="bg-red-500/20 text-red-400" = t('.token_statuses.expired')
+            - elsif user.access_token_expiring_soon?
+              span.px-2.py-1.text-xs.rounded-full class="bg-amber-500/20 text-amber-400" = t('.token_statuses.expiring_soon')
+            - else
+              span.px-2.py-1.text-xs.rounded-full class="bg-green-500/20 text-green-400" = t('.token_statuses.valid')
 
-      div
-        dt.text-sm.text-slate-400 = t('.fields.country')
-        dd.text-white.mt-1 = user.spotify_country || "-"
-
-      div
-        dt.text-sm.text-slate-400 = t('.fields.token_status')
-        dd.mt-1
-          - if user.access_token_expired?
-            span.px-2.py-1.text-xs.rounded-full class="bg-red-500/20 text-red-400" = t('.token_statuses.expired')
-          - elsif user.access_token_expiring_soon?
-            span.px-2.py-1.text-xs.rounded-full class="bg-amber-500/20 text-amber-400" = t('.token_statuses.expiring_soon')
-          - else
-            span.px-2.py-1.text-xs.rounded-full class="bg-green-500/20 text-green-400" = t('.token_statuses.valid')
-
-      - if user.token_expires_at.present?
-        div
-          dt.text-sm.text-slate-400 = t('.fields.token_expires')
-          dd.text-white.mt-1 = user.token_expires_at.strftime("%B %d, %Y at %I:%M %p")
+        - if user.token_expires_at.present?
+          div
+            dt.text-sm.text-slate-400 = t('.fields.token_expires')
+            dd.text-white.mt-1 = user.token_expires_at.strftime("%B %d, %Y at %I:%M %p")

@@ -1,15 +1,15 @@
 # frozen_string_literal: true
 
 class User < ApplicationRecord
-  # Enable both providers, but Spotify is currently disabled in the UI
-  devise :rememberable, :omniauthable, omniauth_providers: [:deezer, :spotify]
+  # Using database authentication (email/password)
+  devise :database_authenticatable, :registerable, :rememberable, :validatable
 
   belongs_to :role, optional: true
   has_many :playlists, dependent: :destroy
   has_many :games, dependent: :destroy
 
-  validates :uid, presence: true, uniqueness: { scope: :provider }
-  validates :provider, presence: true
+  # uid/provider only required for OAuth users (optional now)
+  validates :uid, uniqueness: { scope: :provider }, allow_nil: true
 
   scope :admins, -> { where(admin: true) }
   scope :with_role, ->(role_name) { joins(:role).where(roles: { name: role_name }) }

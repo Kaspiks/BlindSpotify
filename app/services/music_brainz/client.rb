@@ -44,14 +44,12 @@ module MusicBrainz
 
         response = http.request(request)
         JSON.parse(response.body)
-      rescue OpenSSL::SSL::SSLError, Net::OpenTimeout, Net::ReadTimeout, Errno::ECONNRESET => e
+      rescue OpenSSL::SSL::SSLError, Net::OpenTimeout, Net::ReadTimeout, Errno::ECONNRESET
         retries += 1
         if retries <= MAX_RETRIES
-          Rails.logger.warn("[MusicBrainz::Client] Retry #{retries}/#{MAX_RETRIES} after #{e.class}: #{e.message}")
-          sleep(3 * retries)  # Longer exponential backoff
+          sleep(3 * retries)
           retry
         else
-          Rails.logger.error("[MusicBrainz::Client] Failed after #{MAX_RETRIES} retries: #{e.class}: #{e.message}")
           raise
         end
       end

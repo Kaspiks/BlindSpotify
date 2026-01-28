@@ -7,15 +7,11 @@ Rails.application.routes.draw do
     post "dev/login", to: "dev_sessions#create", as: :dev_sessions
   end
 
-  # OAuth via Devise (Deezer active, Spotify disabled)
+  # Standard Devise routes for email/password authentication
   devise_for :users, controllers: {
-    omniauth_callbacks: "users/omniauth_callbacks"
+    sessions: "users/sessions",
+    registrations: "users/registrations"
   }
-
-  # Sign out route (Devise doesn't generate this without database_authenticatable)
-  devise_scope :user do
-    delete "users/sign_out", to: "devise/sessions#destroy", as: :destroy_user_session
-  end
 
   # Admin namespace for curator/admin functionality
   namespace :admin do

@@ -7,7 +7,13 @@
       p.text-slate-400.mt-2 Create your account
 
     .rounded-2xl.border.p-6 class="bg-slate-800/50 border-white/10"
-      = form_for(resource, as: resource_name, url: registration_path(resource_name), html: { class: "space-y-6" }) do |f|
+      - if resource.errors.any?
+        .mb-6.p-4.rounded-lg.bg-red-500/20.border.border-red-500/50
+          ul.text-sm.text-red-300.space-y-1
+            - resource.errors.full_messages.each do |message|
+              li = message
+
+      = form_for(resource, as: resource_name, url: registration_path(resource_name), html: { class: "space-y-6", data: { turbo: false } }) do |f|
         .space-y-4
           div
             = f.label :email, class: "block text-sm font-medium text-slate-300 mb-2"

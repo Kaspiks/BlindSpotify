@@ -22,8 +22,7 @@ module MusicBrainz
       return nil if releases.empty?
 
       releases.min_by { |r| r["date"] }["date"][0, 4].to_i
-    rescue OpenSSL::SSL::SSLError, EOFError, Net::ReadTimeout => e
-      Rails.logger.warn("MusicBrainz failed for ISRC=#{isrc}: #{e.class}")
+    rescue OpenSSL::SSL::SSLError, EOFError, Net::ReadTimeout
       nil
     end
   end

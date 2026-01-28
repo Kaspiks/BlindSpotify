@@ -11,14 +11,12 @@ html
     = yield :head
 
     link rel="icon" href="/icon.svg" type="image/svg+xml"
-    / Apple touch icon - using SVG fallback (browsers will ignore if they don't support)
     link rel="apple-touch-icon" href="/icon.svg"
 
     script src="https://cdn.tailwindcss.com"
     = javascript_importmap_tags
 
     css:
-      /* SVG Icon styles */
       .iconset { display: none; }
       .icon {
         stroke: currentColor;

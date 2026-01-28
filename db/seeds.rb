@@ -95,58 +95,59 @@ end
 end
 puts "  Created Difficulty classification with #{difficulty.classification_values.count} values"
 
-# Development-only seeds
-# NOTE: In production, users are created via OAuth (Deezer or Spotify)
-# These seed users are for local development/testing only
-if Rails.env.development?
-  puts "Seeding development users (mock OAuth)..."
+# Admin user (created in all environments)
+# In production, set ADMIN_EMAIL and ADMIN_PASSWORD environment variables on Render
+puts "Seeding admin user..."
 
-  # Helper to find or create dev users (handles email uniqueness)
-  def find_or_create_dev_user(email:, uid:, name:, admin:, role:)
-    # Try to find by email first, then by provider+uid
-    user = User.find_by(email: email) || User.find_by(provider: "deezer", uid: uid)
+admin_email = ENV.fetch("ADMIN_EMAIL", "admin@example.com")
+admin_password = ENV.fetch("ADMIN_PASSWORD", "password123")
 
-    if user
-      # Update existing user to ensure correct attributes
-      user.update!(
-        provider: "deezer",
-        uid: uid,
-        name: name,
-        admin: admin,
-        role: role,
-        spotify_access_token: "mock_dev_token_#{uid}",
-        spotify_country: "US"
-      )
-      puts "  Updated: #{email} (Deezer ID: #{uid})"
-    else
-      # Create new user
-      user = User.create!(
-        provider: "deezer",
-        uid: uid,
-        email: email,
-        name: name,
-        admin: admin,
-        role: role,
-        spotify_access_token: "mock_dev_token_#{uid}",
-        spotify_country: "US"
-      )
-      puts "  Created: #{email} (Deezer ID: #{uid})"
-    end
-
-    user
-  end
-
-  find_or_create_dev_user(
-    email: "admin@example.com",
-    uid: "dev_admin_001",
-    name: "Dev Admin",
+admin_user = User.find_by(email: admin_email)
+if admin_user
+  admin_user.update!(
+    name: "Admin",
+    admin: true,
+    role: admin_role,
+    password: admin_password
+  )
+  puts "  Updated admin user: #{admin_email}"
+else
+  User.create!(
+    email: admin_email,
+    password: admin_password,
+    name: "Admin",
     admin: true,
     role: admin_role
   )
+  puts "  Created admin user: #{admin_email}"
+end
+
+# Development-only seeds for testing
+if Rails.env.development?
+  puts "Seeding development users..."
+
+  # Helper to find or create dev users with password auth
+  def find_or_create_dev_user(email:, password:, name:, admin:, role:)
+    user = User.find_by(email: email)
+
+    if user
+      user.update!(name: name, admin: admin, role: role, password: password)
+      puts "  Updated: #{email}"
+    else
+      User.create!(
+        email: email,
+        password: password,
+        name: name,
+        admin: admin,
+        role: role
+      )
+      puts "  Created: #{email}"
+    end
+  end
 
   find_or_create_dev_user(
     email: "curator@example.com",
-    uid: "dev_curator_001",
+    password: "password123",
     name: "Dev Curator",
     admin: false,
     role: curator_role
@@ -154,16 +155,14 @@ if Rails.env.development?
 
   find_or_create_dev_user(
     email: "user@example.com",
-    uid: "dev_user_001",
+    password: "password123",
     name: "Dev User",
     admin: false,
     role: viewer_role
   )
 
   puts ""
-  puts "  NOTE: These are mock users for development. In production,"
-  puts "  users are created automatically via Deezer OAuth."
-  puts "  Spotify OAuth is currently disabled but will be enabled later."
+  puts "  Development users created with password: password123"
 end
 
 puts "Seeds completed!"
