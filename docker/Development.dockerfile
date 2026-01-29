@@ -17,6 +17,7 @@ RUN set -eux; \
 RUN set -eux; \
   apt-get update -qq; \
   apt-get install -y --no-install-recommends --fix-missing \
+    ca-certificates \
     curl \
     gnupg2 \
     gcc \
@@ -29,6 +30,7 @@ RUN set -eux; \
     postgresql-client \
     imagemagick \
     libmagickwand-dev; \
+  update-ca-certificates 2>/dev/null || true; \
   rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 RUN set -eux; \

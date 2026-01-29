@@ -4,7 +4,8 @@ module Tracks
   class EnrichOriginalReleaseYearsJob < ApplicationJob
     queue_as :default
 
-    MUSICBRAINZ_DELAY = 1.1
+    MUSICBRAINZ_DELAY = 2.0
+    MUSICBRAINZ_RETRY_DELAY = 3.0
     ITUNES_DELAY = 0.3
 
     def perform(playlist_id)
@@ -39,7 +40,11 @@ module Tracks
 
     def musicbrainz_lookup(isrc)
       year = @musicbrainz.call(isrc)
-      sleep MUSICBRAINZ_DELAY # Rate limit compliance
+      if year.nil?
+        sleep MUSICBRAINZ_RETRY_DELAY 
+        year = @musicbrainz.call(isrc)
+      end
+      sleep MUSICBRAINZ_DELAY 
       year
     rescue StandardError
       nil
