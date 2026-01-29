@@ -13,3 +13,5 @@ en:
       outside_geofence: "You must be within %{radius} meters of %{location_name} to complete this challenge. You are currently %{distance} away."
       invalid_image_type: "must be a JPEG, PNG, GIF, or WebP"
       image_too_large: "must be less than 10MB"
+      invalid_year: "Invalid year: %{year}"
+      track_release_year_failed: "%{track_title}: %{messages}"

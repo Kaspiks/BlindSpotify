@@ -1,4 +1,10 @@
 en:
+  admin:
+    playlists:
+      release_years_actions:
+        update:
+          success: Release years updated.
+
   controllers:
     global:
       create:

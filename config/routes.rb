@@ -34,6 +34,8 @@ Rails.application.routes.draw do
         get :qr_status
       end
 
+      resource :release_years, only: [:edit, :update], controller: "playlists/release_years_actions"
+
       resources :tracks, only: [] do
         member do
           get :qr_code

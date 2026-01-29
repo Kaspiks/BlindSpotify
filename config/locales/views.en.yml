@@ -186,14 +186,46 @@ en:
           year: Year
           duration: Duration
           qr_code: QR code
+        placeholders:
+          year: Year
         buttons:
           back_to_playlists: Back to Playlists
           generate_qr_codes: Generate QR Codes
           regenerate_qr_codes: Regenerate QR Codes
           download_pdf_cards: Download PDF Cards
           download_qr_code: Download QR Code
+          edit_release_years: Edit release years
+          save_release_years: Save release years
         confirms:
           regenerate: This will regenerate all QR codes. Continue?
+      release_years:
+        edit:
+          page_title: Edit release years
+          tracks: Tracks
+          no_tracks: No tracks in this playlist.
+          columns:
+            title: Title
+            year: Year
+            duration: Duration
+          placeholders:
+            year: Year
+          buttons:
+            back: Back to playlist
+            save: Save release years
+      release_years_actions:
+        edit:
+          page_title: Edit release years
+          tracks: Tracks
+          no_tracks: No tracks in this playlist.
+          columns:
+            title: Title
+            year: Year
+            duration: Duration
+          placeholders:
+            year: Year
+          buttons:
+            back: Back to playlist
+            save: Save release years
   games:
     game_card:
       progress:
