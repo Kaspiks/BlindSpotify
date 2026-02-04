@@ -19,7 +19,7 @@ module Admin
     def create
       @role = Role.new(role_params)
       if @role.save
-        redirect_to admin_roles_path, notice: t(".success")
+        redirect_to admin_roles_path, notice: t_context(".success")
       else
         render :new, status: :unprocessable_entity
       end
@@ -30,7 +30,7 @@ module Admin
 
     def update
       if @role.update(role_params)
-        redirect_to admin_role_path(@role), notice: t(".success")
+        redirect_to admin_role_path(@role), notice: t_context(".success")
       else
         render :edit, status: :unprocessable_entity
       end
@@ -38,10 +38,10 @@ module Admin
 
     def destroy
       if @role.users.any?
-        redirect_to admin_roles_path, alert: t(".cannot_delete")
+        redirect_to admin_roles_path, alert: t_context(".cannot_delete")
       else
         @role.destroy
-        redirect_to admin_roles_path, notice: t(".success")
+        redirect_to admin_roles_path, notice: t_context(".success")
       end
     end
 

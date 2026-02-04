@@ -36,10 +36,63 @@ html
       .icon--bold { stroke-width: 2.5; }
       .icon--filled { fill: currentColor; stroke: none; }
 
-  body.min-h-screen.bg-slate-900
+  body.min-h-screen.bg-slate-900 data-controller="mobile-menu"
     = render_svg_icons
 
-    / Sidebar
+    / Mobile header (visible only on mobile)
+    header.fixed.top-0.left-0.right-0.z-50.lg:hidden.border-b class="bg-slate-800 border-slate-700"
+      .flex.items-center.justify-between.px-4.h-16
+        .flex.items-center.gap-3
+          .w-10.h-10.rounded-lg.flex.items-center.justify-center class="bg-gradient-to-br from-green-500 to-green-600"
+            = icon :music, class: "w-6 h-6 text-white"
+          div
+            p.font-bold.text-white Admin
+            p.text-xs.text-slate-400 BeatDrop
+        button.p-2.rounded-lg.text-slate-300.hover:text-white.hover:bg-slate-700.transition-colors type="button" data-action="click->mobile-menu#toggle" data-mobile-menu-target="button"
+          = icon(:menu_2, width: 24, height: 24, class: "block", data: { mobile_menu_target: "openIcon" })
+          = icon(:x, width: 24, height: 24, class: "hidden", data: { mobile_menu_target: "closeIcon" })
+
+    / Mobile sidebar overlay
+    .fixed.inset-0.z-40.lg:hidden.hidden data-mobile-menu-target="menu"
+      / Backdrop
+      .absolute.inset-0.bg-black/50 data-action="click->mobile-menu#close"
+      / Sidebar
+      aside.absolute.inset-y-0.left-0.w-64.border-r.flex.flex-col class="bg-slate-800 border-slate-700"
+        .p-4.border-b class="border-slate-700"
+          .flex.items-center.gap-3
+            .w-10.h-10.rounded-lg.flex.items-center.justify-center class="bg-gradient-to-br from-green-500 to-green-600"
+              = icon :music, class: "w-6 h-6 text-white"
+            div
+              p.font-bold.text-white Admin
+              p.text-xs.text-slate-400 BeatDrop
+
+        nav.flex-1.p-4.overflow-y-auto
+          - admin_navigation_presenter.navigation_sections.each do |section|
+            - if section.title.present?
+              .mt-6.mb-2.px-3
+                p.text-xs.font-semibold.uppercase.tracking-wider.text-slate-500 = section.title
+            .space-y-1
+              - section.items.each do |item|
+                = link_to item.url, class: "flex items-center gap-3 px-3 py-2 rounded-lg transition-colors #{item.active? ? 'bg-slate-700 text-white' : 'text-slate-400 hover:text-white hover:bg-slate-700/50'}", data: { action: "click->mobile-menu#close" } do
+                  = icon(item.icon, width: 20, height: 20)
+                  span = item.title
+
+        .p-4.border-t class="border-slate-700"
+          .flex.items-center.gap-3.mb-3
+            .w-10.h-10.rounded-full.flex.items-center.justify-center.text-sm.font-medium.text-white class="bg-gradient-to-br from-green-400 to-green-600"
+              = current_user.email[0].upcase
+            div.min-w-0
+              p.text-sm.font-medium.text-white.truncate = current_user.email
+
+          .flex.gap-2
+            = link_to root_path, class: "flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm text-slate-400 hover:text-white hover:bg-slate-700/50 transition-colors" do
+              = icon "arrow-left", class: "w-4 h-4"
+              span Back to App
+
+            = link_to destroy_user_session_path, data: { turbo_method: :delete }, class: "flex items-center justify-center px-3 py-2 rounded-lg text-sm text-slate-400 hover:text-white hover:bg-slate-700/50 transition-colors" do
+              = icon :logout, class: "w-4 h-4"
+
+    / Desktop Sidebar (hidden on mobile)
     aside.fixed.inset-y-0.left-0.z-40.w-64.border-r.flex.flex-col.hidden.lg:flex class="bg-slate-800 border-slate-700"
       .p-4.border-b class="border-slate-700"
         .flex.items-center.gap-3
@@ -76,7 +129,7 @@ html
             = icon :logout, class: "w-4 h-4"
 
     / Main content
-    main.lg:ml-64.min-h-screen
+    main.lg:ml-64.min-h-screen.pt-16.lg:pt-0
       .p-4.sm:p-6.lg:p-8
         - if flash[:notice]
           .mb-6.p-4.rounded-lg.text-sm.bg-emerald-900.text-emerald-200.border.border-emerald-700

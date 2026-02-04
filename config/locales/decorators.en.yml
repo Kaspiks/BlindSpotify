@@ -1,0 +1,22 @@
+en:
+  decorators:
+    classification:
+      resource_types: Resource Types
+      grant_types: Grant Types
+    permission:
+      playlists:
+        view: Playlists › View
+        create: Playlists › Create
+        delete: Playlists › Delete
+      administrations:
+        roles:
+          manage: Administration › Roles › Manage
+        users:
+          manage: Administration › Users › Manage
+        background_jobs:
+          manage: Administration › Background Jobs › Manage
+      configurations:
+        settings:
+          manage: Configuration › Settings › Manage
+        classifications:
+          manage: Configuration › Classifications › Manage

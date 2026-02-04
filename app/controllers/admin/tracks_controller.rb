@@ -7,7 +7,7 @@ module Admin
 
     def qr_code
       unless @track.qr_code_image.attached?
-        redirect_to admin_playlist_path(@playlist), alert: "QR code not generated for this track"
+        redirect_to admin_playlist_path(@playlist), alert: t_context(".not_generated")
         return
       end
 

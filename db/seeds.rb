@@ -4,113 +4,167 @@
 # development, test). The code here should be idempotent so that it can be executed at any point in every environment.
 # The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
 
-# Permissions
-puts "Seeding permissions..."
-[
-  { code: "users.read", description: "View users" },
-  { code: "users.write", description: "Create and edit users" },
-  { code: "users.delete", description: "Delete users" },
-  { code: "roles.read", description: "View roles" },
-  { code: "roles.write", description: "Create and edit roles" },
-  { code: "settings.read", description: "View settings" },
-  { code: "settings.write", description: "Edit settings" },
-  { code: "playlists.read", description: "View playlists" },
-  { code: "playlists.write", description: "Create and edit playlists" },
-  { code: "playlists.delete", description: "Delete playlists" }
-].each do |attrs|
-  Permission.find_or_create_by!(code: attrs[:code]) do |p|
-    p.description = attrs[:description]
+SEEDS_PATH = Rails.root.join("config", "seeds")
+
+def log(message, indent: 0)
+  puts "#{"  " * indent}#{message}"
+end
+
+def seed_classifications
+  log("Seeding classifications", indent: 1)
+
+  config_path = SEEDS_PATH.join("classifications.yml")
+  classifications_type_data = YAML.safe_load(File.read(config_path)).with_indifferent_access
+
+  classifications_type_data.each do |_type, classifications_data|
+    classifications_data.each do |data|
+      create_classification(data[:code], is_system: data[:system], name: data[:name])
+    end
   end
 end
-puts "  Created #{Permission.count} permissions"
 
-# Roles
-puts "Seeding roles..."
-admin_role = Role.find_or_create_by!(name: "administrator") do |r|
-  r.description = "Full system access"
-end
-admin_role.permissions = Permission.all
-puts "  Created administrator role with #{admin_role.permissions.count} permissions"
+def create_classification(code, is_system: false, name: nil)
+  classification = Classification.find_by(code: code)
 
-curator_role = Role.find_or_create_by!(name: "curator") do |r|
-  r.description = "Can manage playlists and content"
-end
-curator_role.permissions = Permission.where("code LIKE ?", "playlists.%")
-puts "  Created curator role with #{curator_role.permissions.count} permissions"
+  if classification
+    log("Skipping classification: #{code}", indent: 2)
+  else
+    log("Seeding classification: #{code}", indent: 2)
 
-viewer_role = Role.find_or_create_by!(name: "viewer") do |r|
-  r.description = "Read-only access"
-end
-viewer_role.permissions = Permission.where("code LIKE ?", "%.read")
-puts "  Created viewer role with #{viewer_role.permissions.count} permissions"
-
-# Settings
-puts "Seeding settings..."
-[
-  { key: "app.name", value: "BeatDrop", value_type: "string", group: "general", description: "Application name" },
-  { key: "app.maintenance_mode", value: "false", value_type: "boolean", group: "general", description: "Enable maintenance mode" },
-  { key: "playlist.max_tracks", value: "100", value_type: "integer", group: "playlists", description: "Maximum tracks per playlist" },
-  { key: "qr.default_size", value: "300", value_type: "integer", group: "qr_codes", description: "Default QR code size in pixels" }
-].each do |attrs|
-  Setting.find_or_create_by!(key: attrs[:key]) do |s|
-    s.value = attrs[:value]
-    s.value_type = attrs[:value_type]
-    s.group = attrs[:group]
-    s.description = attrs[:description]
+    Classification.create!(code: code, name: name)
   end
 end
-puts "  Created #{Setting.count} settings"
 
-# Classifications
-puts "Seeding classifications..."
+# --- Permissions ---
 
-# Genre classification
-genre = Classification.find_or_create_by!(code: "genre") do |c|
-  c.name = "Genre"
-  c.description = "Music genres for categorization"
+def seed_permissions
+  log("Seeding permissions...", indent: 1)
+
+  config_path = SEEDS_PATH.join("permissions.yml")
+  data = YAML.safe_load(File.read(config_path)).with_indifferent_access
+
+  permission_codes = permission_codes_from_data(data)
+  permission_codes.each { |code| create_permission(code) }
+  remove_extra_permissions(permission_codes)
 end
 
-%w[Rock Pop Jazz Classical Hip-Hop Electronic Country R&B].each_with_index do |value, index|
-  genre.classification_values.find_or_create_by!(value: value) do |v|
-    v.sort_order = index
+def permission_codes_from_data(permission_hash, parent_sections: [])
+  permission_hash.reduce([]) do |result, (section, section_data)|
+    permissions =
+      if section_data.is_a?(Hash)
+        permission_codes_from_data(section_data, parent_sections: parent_sections + [section])
+      else
+        Array(section_data).map { |action| [*parent_sections, section, action].join("/") }
+      end
+
+    result + permissions
   end
 end
-puts "  Created Genre classification with #{genre.classification_values.count} values"
 
-# Difficulty classification (for blind listening games)
-difficulty = Classification.find_or_create_by!(code: "difficulty") do |c|
-  c.name = "Difficulty"
-  c.description = "Difficulty levels for blind listening challenges"
-end
+def create_permission(code)
+  permission = Permission.find_by(code: code)
 
-[
-  { value: "Easy", sort_order: 1 },
-  { value: "Medium", sort_order: 2 },
-  { value: "Hard", sort_order: 3 },
-  { value: "Expert", sort_order: 4 }
-].each do |attrs|
-  difficulty.classification_values.find_or_create_by!(value: attrs[:value]) do |v|
-    v.sort_order = attrs[:sort_order]
+  if permission
+    log("Skipping permission: #{code}", indent: 2)
+  else
+    log("Seeding permission: #{code}", indent: 2)
+    i18n_key = "decorators.permission.#{code.tr('/', '.')}"
+    description = I18n.t(i18n_key, default: code.split("/").map(&:humanize).join(" - "))
+    Permission.create!(code: code, description: description)
   end
 end
-puts "  Created Difficulty classification with #{difficulty.classification_values.count} values"
+
+def remove_extra_permissions(keep_codes)
+  extra = Permission.where.not(code: keep_codes)
+  return if extra.empty?
+
+  extra.each do |p|
+    log("Removing extra permission: #{p.code}", indent: 2)
+    p.destroy!
+  end
+end
+
+# --- Roles ---
+
+def seed_roles
+  log("Seeding roles...", indent: 1)
+
+  config_path = SEEDS_PATH.join("roles.yml")
+  data = YAML.safe_load(File.read(config_path))
+
+  data.each do |role_attrs|
+    create_role(role_attrs)
+  end
+end
+
+def create_role(attrs)
+  role = Role.find_or_initialize_by(name: attrs["name"])
+  role.description = attrs["description"]
+  role.save!
+
+  permissions = resolve_role_permissions(attrs["permissions"])
+  role.permissions = permissions
+  log("Created/updated role: #{attrs["name"]} (#{permissions.count} permissions)", indent: 2)
+end
+
+def resolve_role_permissions(permission_spec)
+  spec = Array(permission_spec)
+
+  return Permission.all if spec.include?("*")
+
+  permissions = Permission.none
+  spec.each do |pattern|
+    if pattern.include?("*")
+      sql_pattern = pattern.gsub("*", "%")
+      permissions = permissions.or(Permission.where("code LIKE ?", sql_pattern))
+    else
+      perm = Permission.find_by(code: pattern)
+      permissions = permissions.or(Permission.where(id: perm.id)) if perm
+    end
+  end
+  Permission.where(id: permissions.select(:id))
+end
+
+# --- Settings ---
+
+def seed_settings
+  log("Seeding settings...", indent: 1)
+
+  config_path = SEEDS_PATH.join("settings.yml")
+  data = YAML.safe_load(File.read(config_path))
+
+  data.each do |attrs|
+    setting = Setting.find_or_initialize_by(key: attrs["key"])
+    setting.assign_attributes(
+      value: attrs["value"].to_s,
+      value_type: attrs["value_type"] || "string",
+      group: attrs["group"] || "general",
+      description: attrs["description"]
+    )
+    setting.save!
+    log("Created/updated setting: #{attrs["key"]}", indent: 2)
+  end
+end
+
+# --- Main execution ---
+
+puts "Seeding database..."
+
+seed_permissions
+seed_roles
+seed_settings
+seed_classifications
 
 # Admin user (created in all environments)
-# In production, set ADMIN_EMAIL and ADMIN_PASSWORD environment variables on Render
-puts "Seeding admin user..."
-
+log("Seeding admin user...", indent: 1)
+admin_role = Role.find_by!(name: "administrator")
 admin_email = ENV.fetch("ADMIN_EMAIL", "admin@example.com")
 admin_password = ENV.fetch("ADMIN_PASSWORD", "password123")
 
 admin_user = User.find_by(email: admin_email)
 if admin_user
-  admin_user.update!(
-    name: "Admin",
-    admin: true,
-    role: admin_role,
-    password: admin_password
-  )
-  puts "  Updated admin user: #{admin_email}"
+  admin_user.update!(name: "Admin", admin: true, role: admin_role, password: admin_password)
+  log("Updated admin user: #{admin_email}", indent: 2)
 else
   User.create!(
     email: admin_email,
@@ -119,31 +173,25 @@ else
     admin: true,
     role: admin_role
   )
-  puts "  Created admin user: #{admin_email}"
+  log("Created admin user: #{admin_email}", indent: 2)
 end
 
-# Development-only seeds for testing
-if Rails.env.development?
-  puts "Seeding development users..."
-
-  # Helper to find or create dev users with password auth
-  def find_or_create_dev_user(email:, password:, name:, admin:, role:)
-    user = User.find_by(email: email)
-
-    if user
-      user.update!(name: name, admin: admin, role: role, password: password)
-      puts "  Updated: #{email}"
-    else
-      User.create!(
-        email: email,
-        password: password,
-        name: name,
-        admin: admin,
-        role: role
-      )
-      puts "  Created: #{email}"
-    end
+def find_or_create_dev_user(email:, password:, name:, admin:, role:)
+  user = User.find_by(email: email)
+  if user
+    user.update!(name: name, admin: admin, role: role, password: password)
+    log("Updated: #{email}", indent: 2)
+  else
+    User.create!(email: email, password: password, name: name, admin: admin, role: role)
+    log("Created: #{email}", indent: 2)
   end
+end
+
+# Development-only seeds
+if Rails.env.development?
+  log("Seeding development users...", indent: 1)
+  curator_role = Role.find_by!(name: "curator")
+  viewer_role = Role.find_by!(name: "viewer")
 
   find_or_create_dev_user(
     email: "curator@example.com",
@@ -161,8 +209,7 @@ if Rails.env.development?
     role: viewer_role
   )
 
-  puts ""
-  puts "  Development users created with password: password123"
+  log("Development users created with password: password123", indent: 2)
 end
 
 puts "Seeds completed!"

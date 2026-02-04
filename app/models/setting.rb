@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Setting < ApplicationRecord
-  VALID_VALUE_TYPES = %w[string integer boolean text].freeze
+  VALID_VALUE_TYPES = %w[string integer boolean text rich_text].freeze
 
   validates :key, presence: true, uniqueness: true
   validates :value_type, presence: true, inclusion: { in: VALID_VALUE_TYPES }

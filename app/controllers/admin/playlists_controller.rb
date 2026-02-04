@@ -14,7 +14,7 @@ module Admin
 
     def generate_qr_codes
       unless @playlist.can_generate_qr_codes?
-        redirect_to admin_playlist_path(@playlist), alert: "Cannot generate QR codes for this playlist"
+        redirect_to admin_playlist_path(@playlist), alert: t_context(".cannot_generate")
         return
       end
 
@@ -23,12 +23,12 @@ module Admin
       @playlist.update!(qr_status: "generating", qr_generated_count: 0, qr_error: nil)
 
       QrCodesGenerationJob.perform_later(@playlist.id)
-      redirect_to admin_playlist_path(@playlist), notice: "QR code generation started"
+      redirect_to admin_playlist_path(@playlist), notice: t_context(".success")
     end
 
     def download_cards
       unless @playlist.qr_completed?
-        redirect_to admin_playlist_path(@playlist), alert: "QR codes have not been generated yet"
+        redirect_to admin_playlist_path(@playlist), alert: t_context(".not_generated")
         return
       end
 
@@ -43,7 +43,7 @@ module Admin
       pdf_path = QrCards::GeneratorService.pdf_path(@playlist)
 
       unless File.exist?(pdf_path)
-        redirect_to admin_playlist_path(@playlist), alert: "PDF file not found. Please regenerate QR codes."
+        redirect_to admin_playlist_path(@playlist), alert: t_context(".file_not_found")
         return
       end
 

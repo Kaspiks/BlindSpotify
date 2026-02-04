@@ -2,6 +2,8 @@
 - form = @form
 - year_input_class = "w-20 px-2 py-1.5 rounded bg-slate-700 border border-slate-600 " \
     "text-white text-sm placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+- year_input_class_mobile = "w-full px-3 py-2 rounded bg-slate-700 border border-slate-600 " \
+    "text-white text-base placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
 
 .mb-6
   = link_to admin_playlist_path(playlist), class: "flex items-center gap-2 text-slate-400 hover:text-white transition-colors" do
@@ -10,40 +12,78 @@
 
 h1.text-2xl.font-bold.text-white.mb-6 = t('.page_title')
 
-= simple_form_for form, url: admin_playlist_release_years_path(playlist), method: :patch, html: { class: "rounded-2xl border overflow-hidden bg-slate-800 border-slate-700" } do |f|
-  .px-6.py-4.border-b.border-slate-700
-    h2.text-lg.font-semibold.text-white = t('.tracks')
+= simple_form_for form, url: admin_playlist_release_years_path(playlist), method: :patch do |f|
+  / Mobile card layout
+  .lg:hidden
+    .flex.items-center.justify-between.mb-4
+      h2.text-lg.font-semibold.text-white = t('.tracks')
 
-  table.w-full
-    thead
-      tr.border-b.border-slate-700
-        th.px-6.py-3.text-left.text-xs.font-medium.text-slate-400.uppercase.tracking-wider #
-        th.px-6.py-3.text-left.text-xs.font-medium.text-slate-400.uppercase.tracking-wider = t('.columns.title')
-        th.px-6.py-3.text-left.text-xs.font-medium.text-slate-400.uppercase.tracking-wider = t('.columns.year')
-        th.px-6.py-3.text-left.text-xs.font-medium.text-slate-400.uppercase.tracking-wider = t('.columns.duration')
-
-    tbody
+    .space-y-3
       - @presenter.tracks.each do |track|
-        tr.border-b.border-slate-700.last:border-0.hover:bg-slate-750
-          td.px-6.py-4.text-slate-500 = track.position
-          td.px-6.py-4
-            .text-white = track.title
-            .text-sm.text-slate-400 = track.artist_name
-          td.px-6.py-4.text-slate-400
-            - if track.release_year.present?
-              = track.release_year
-            - else
-              = f.fields_for :tracks, OpenStruct.new(release_year: track.release_year), index: track.id do |tf|
-                - year_input_html = { class: year_input_class, min: 1900, max: Time.current.year, placeholder: t('.placeholders.year'), autocomplete: "off" }
-                = tf.input :release_year, as: :integer, label: false, input_html: year_input_html
-          td.px-6.py-4.text-slate-400
-            = track.duration_formatted || "-"
+        .rounded-xl.border.p-4.bg-slate-800.border-slate-700
+          .flex.items-start.gap-3
+            .flex-shrink-0.text-sm.text-slate-500.w-6.text-right.pt-1 = track.position
+            .flex-1.min-w-0
+              .text-white.font-medium.truncate = track.title
+              .text-sm.text-slate-400.truncate = track.artist_name
+              .flex.items-center.gap-4.mt-3
+                .flex-1
+                  - if track.release_year.present?
+                    .flex.items-center.gap-2
+                      = icon(:calendar, width: 14, height: 14, class: "text-slate-500")
+                      span.text-slate-400 = track.release_year
+                  - else
+                    = f.fields_for :tracks, OpenStruct.new(release_year: track.release_year), index: track.id do |tf|
+                      - year_input_html = { class: year_input_class_mobile, min: 1900, max: Time.current.year, placeholder: t('.placeholders.year'), autocomplete: "off" }
+                      = tf.input :release_year, as: :integer, label: false, input_html: year_input_html
+                - if track.duration_formatted.present?
+                  .flex.items-center.gap-1.text-sm.text-slate-500
+                    = icon(:clock, width: 14, height: 14)
+                    span = track.duration_formatted
 
       - if @presenter.tracks.empty?
-        tr
-          td.px-6.py-8.text-center.text-slate-500 colspan="4"
-          = t('.no_tracks')
+        .rounded-xl.border.p-8.text-center.bg-slate-800.border-slate-700
+          p.text-slate-500 = t('.no_tracks')
 
-  - if @presenter.tracks.any? { |t| t.release_year.blank? }
-    .px-6.py-4.border-t.border-slate-700.bg-slate-800
-      = f.submit t('.buttons.save'), class: "inline-flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-lg transition-colors cursor-pointer"
+    - if @presenter.tracks.any? { |t| t.release_year.blank? }
+      .mt-4
+        = f.submit t('.buttons.save'), class: "w-full inline-flex items-center justify-center gap-2 px-4 py-3 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-lg transition-colors cursor-pointer"
+
+  / Desktop table layout
+  .hidden.lg:block.rounded-2xl.border.overflow-hidden.bg-slate-800.border-slate-700
+    .px-6.py-4.border-b.border-slate-700
+      h2.text-lg.font-semibold.text-white = t('.tracks')
+
+    table.w-full
+      thead
+        tr.border-b.border-slate-700
+          th.px-6.py-3.text-left.text-xs.font-medium.text-slate-400.uppercase.tracking-wider #
+          th.px-6.py-3.text-left.text-xs.font-medium.text-slate-400.uppercase.tracking-wider = t('.columns.title')
+          th.px-6.py-3.text-left.text-xs.font-medium.text-slate-400.uppercase.tracking-wider = t('.columns.year')
+          th.px-6.py-3.text-left.text-xs.font-medium.text-slate-400.uppercase.tracking-wider = t('.columns.duration')
+
+      tbody
+        - @presenter.tracks.each do |track|
+          tr.border-b.border-slate-700.last:border-0.hover:bg-slate-750
+            td.px-6.py-4.text-slate-500 = track.position
+            td.px-6.py-4
+              .text-white = track.title
+              .text-sm.text-slate-400 = track.artist_name
+            td.px-6.py-4.text-slate-400
+              - if track.release_year.present?
+                = track.release_year
+              - else
+                = f.fields_for :tracks, OpenStruct.new(release_year: track.release_year), index: track.id do |tf|
+                  - year_input_html = { class: year_input_class, min: 1900, max: Time.current.year, placeholder: t('.placeholders.year'), autocomplete: "off" }
+                  = tf.input :release_year, as: :integer, label: false, input_html: year_input_html
+            td.px-6.py-4.text-slate-400
+              = track.duration_formatted || "-"
+
+        - if @presenter.tracks.empty?
+          tr
+            td.px-6.py-8.text-center.text-slate-500 colspan="4"
+            = t('.no_tracks')
+
+    - if @presenter.tracks.any? { |t| t.release_year.blank? }
+      .px-6.py-4.border-t.border-slate-700.bg-slate-800
+        = f.submit t('.buttons.save'), class: "inline-flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-lg transition-colors cursor-pointer"

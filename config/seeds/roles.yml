@@ -1,0 +1,17 @@
+# Roles and their permission patterns
+# Pattern format: "section/action" or "section/*" or "*/action"
+# Uses SQL LIKE (asterisk becomes %)
+
+- name: administrator
+  description: "Full system access"
+  permissions: "*"  # All permissions
+
+- name: curator
+  description: "Can manage playlists and content"
+  permissions:
+    - "playlists/*"
+
+- name: viewer
+  description: "Read-only access"
+  permissions:
+    - "*/view"

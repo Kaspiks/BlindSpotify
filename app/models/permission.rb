@@ -14,6 +14,13 @@ class Permission < ApplicationRecord
   def to_s
     code
   end
+
+  # Human-readable label from decorators.permission I18n structure
+  # Falls back to description if no decorator key is defined
+  def label
+    i18n_key = "decorators.permission.#{code.tr('/', '.')}"
+    I18n.t(i18n_key, default: description)
+  end
 end
 
 # == Schema Information

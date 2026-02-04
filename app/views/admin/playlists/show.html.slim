@@ -9,7 +9,45 @@ div data-controller="qr-modal"
       = icon("arrow-left", class: "w-5 h-5")
       span = t('.buttons.back_to_playlists')
 
-  .flex.items-start.gap-6.mb-8
+  / Mobile header layout
+  .lg:hidden.mb-8
+    .flex.items-center.gap-4.mb-4
+      - if presenter.has_image?
+        img.w-20.h-20.rounded-xl.object-cover.flex-shrink-0 src=playlist.image_url alt=playlist.name
+      - else
+        .w-20.h-20.rounded-xl.flex.items-center.justify-center.bg-slate-700.flex-shrink-0
+          = icon(:music, width: 32, height: 32, class: "text-slate-500")
+      div.min-w-0
+        h1.text-xl.font-bold.text-white.mb-1.truncate = playlist.name
+        .flex.flex-wrap.items-center.gap-x-3.gap-y-1.text-sm.text-slate-400
+          .flex.items-center.gap-1
+            = icon(:music, class: "w-4 h-4")
+            span = presenter.tracks_count_text
+          - if presenter.has_genre?
+            .flex.items-center.gap-1
+              = icon(:category, class: "w-4 h-4")
+              span = presenter.genre_name
+          .flex.items-center.gap-1
+            = icon(:user, class: "w-4 h-4")
+            span = presenter.owner_name
+
+    .flex.flex-wrap.gap-2
+      - if presenter.can_generate_qr_codes?
+        = button_to generate_qr_codes_admin_playlist_path(playlist), method: :post, class: "inline-flex items-center gap-2 px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-lg transition-colors", data: { turbo_confirm: presenter.qr_completed? ? t('.confirms.regenerate') : nil } do
+          = icon(:qrcode, class: "w-4 h-4")
+          span = presenter.qr_completed? ? t('.buttons.regenerate_qr_codes') : t('.buttons.generate_qr_codes')
+
+      - if presenter.qr_completed?
+        = link_to download_cards_admin_playlist_path(playlist), class: "inline-flex items-center gap-2 px-3 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-colors" do
+          = icon(:download, class: "w-4 h-4")
+          span = t('.buttons.download_pdf_cards')
+
+      = link_to edit_admin_playlist_release_years_path(playlist), class: "inline-flex items-center gap-2 px-3 py-2 bg-slate-600 hover:bg-slate-700 text-white text-sm font-medium rounded-lg transition-colors" do
+        = icon(:edit, class: "w-4 h-4")
+        span = t('.buttons.edit_release_years')
+
+  / Desktop header layout
+  .hidden.lg:flex.items-start.gap-6.mb-8
     - if presenter.has_image?
       img.w-32.h-32.rounded-xl.object-cover src=playlist.image_url alt=playlist.name
     - else
@@ -51,7 +89,52 @@ div data-controller="qr-modal"
   div id="playlist_#{playlist.id}_qr_progress"
     = render "admin/playlists/qr_progress", playlist: playlist
 
-  .rounded-2xl.border.overflow-hidden.bg-slate-800.border-slate-700
+  / Mobile tracks list
+  .lg:hidden
+    .flex.items-center.justify-between.mb-4
+      h2.text-lg.font-semibold.text-white = t('.tracks')
+
+    .space-y-3
+      - presenter.tracks.each do |track|
+        .rounded-xl.border.p-3.bg-slate-800.border-slate-700
+          .flex.items-start.gap-3
+            .flex-shrink-0.text-sm.text-slate-500.w-6.text-right.pt-1 = track.position
+            - if track.album_cover_url.present?
+              img.w-12.h-12.rounded.object-cover.flex-shrink-0 src=track.album_cover_url alt=track.album_name
+            - else
+              .w-12.h-12.rounded.flex.items-center.justify-center.bg-slate-700.flex-shrink-0
+                = icon(:music, width: 20, height: 20, class: "text-slate-500")
+            .flex-1.min-w-0
+              .flex.items-start.justify-between.gap-2
+                div.min-w-0
+                  .text-white.font-medium.truncate = track.title
+                  .text-sm.text-slate-400.truncate = track.artist_name
+                .flex.items-center.gap-1.flex-shrink-0
+                  - if track.qr_generated?
+                    span.px-2.py-1.text-xs.rounded-full.bg-green-900.text-green-400
+                      = icon(:check, width: 12, height: 12)
+                  - else
+                    span.px-2.py-1.text-xs.rounded-full.bg-slate-700.text-slate-500
+                      = icon(:minus, width: 12, height: 12)
+                  - if track.qr_code_image.attached?
+                    button.p-1.5.rounded-lg.hover:bg-slate-700.text-slate-400.hover:text-white.transition-colors type="button" title="View QR Code" data-action="click->qr-modal#open" data-qr-modal-url-param=rails_blob_path(track.qr_code_image, disposition: "inline") data-qr-modal-title-param="#{track.artist_name} - #{track.title}"
+                      = icon(:eye, width: 16, height: 16)
+              .flex.items-center.gap-3.mt-2.text-xs.text-slate-500
+                - if track.release_year.present?
+                  .flex.items-center.gap-1
+                    = icon(:calendar, width: 12, height: 12)
+                    span = track.release_year
+                - if track.duration_formatted.present?
+                  .flex.items-center.gap-1
+                    = icon(:clock, width: 12, height: 12)
+                    span = track.duration_formatted
+
+      - if presenter.tracks.empty?
+        .rounded-xl.border.p-8.text-center.bg-slate-800.border-slate-700
+          p.text-slate-500 = t('.no_tracks')
+
+  / Desktop tracks table
+  .hidden.lg:block.rounded-2xl.border.overflow-hidden.bg-slate-800.border-slate-700
     .px-6.py-4.border-b.border-slate-700
       h2.text-lg.font-semibold.text-white = t('.tracks')
 

@@ -7,7 +7,56 @@
       = pluralize(presenter.playlists.count, "playlist")
       = t('.statuses.ready_to_generate_qr_codes')
 
-.rounded-2xl.border.overflow-hidden.bg-slate-800.border-slate-700
+/ Mobile card layout
+.lg:hidden.space-y-4
+  - presenter.playlists.each do |playlist|
+    = link_to admin_playlist_path(playlist), class: "block rounded-2xl border p-4 bg-slate-800 border-slate-700 hover:bg-slate-750 transition-colors"
+      .flex.items-start.gap-4
+        - if playlist.image_url.present?
+          img.w-16.h-16.rounded-lg.object-cover.flex-shrink-0 src=playlist.image_url alt=playlist.name
+        - else
+          .w-16.h-16.rounded-lg.flex.items-center.justify-center.bg-slate-700.flex-shrink-0
+            = icon(:music, width: 24, height: 24, class: "text-slate-400")
+        .flex-1.min-w-0
+          .flex.items-start.justify-between.gap-2.mb-2
+            div.min-w-0
+              h3.text-white.font-medium.truncate = playlist.name
+              - if playlist.genre.present?
+                .text-xs.text-slate-500 = playlist.genre.value
+            .flex-shrink-0
+              - case playlist.qr_status
+              - when "completed"
+                span.px-2.py-1.text-xs.rounded-full.bg-green-900.text-green-400
+                  = icon(:check, width: 12, height: 12, class: "inline mr-1")
+                  = t('.statuses.generated')
+              - when "generating"
+                span.px-2.py-1.text-xs.rounded-full.animate-pulse.bg-purple-900.text-purple-400
+                  = icon(:refresh, width: 12, height: 12, class: "inline mr-1 animate-spin")
+                  = t('.statuses.generating')
+              - when "failed"
+                span.px-2.py-1.text-xs.rounded-full.bg-red-900.text-red-400
+                  = icon("alert-circle", width: 12, height: 12, class: "inline mr-1")
+                  = t('.statuses.failed')
+              - else
+                span.px-2.py-1.text-xs.rounded-full.bg-slate-700.text-slate-400
+                  = t('.statuses.not_generated')
+          .flex.flex-wrap.items-center.gap-x-4.gap-y-1.text-sm.text-slate-400
+            .flex.items-center.gap-1
+              = icon(:user, width: 14, height: 14)
+              span = playlist.user.display_name
+            .flex.items-center.gap-1
+              = icon(:music, width: 14, height: 14)
+              span = "#{playlist.tracks_count} tracks"
+            .flex.items-center.gap-1
+              = icon(:calendar, width: 14, height: 14)
+              span = playlist.created_at.strftime("%b %d, %Y")
+
+  - if presenter.playlists.empty?
+    .rounded-2xl.border.p-8.text-center.bg-slate-800.border-slate-700
+      p.text-slate-500 = t('.empty_state')
+
+/ Desktop table layout
+.hidden.lg:block.rounded-2xl.border.overflow-hidden.bg-slate-800.border-slate-700
   table.w-full
     thead
       tr.border-b.border-slate-700

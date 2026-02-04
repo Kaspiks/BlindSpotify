@@ -17,7 +17,7 @@ module Admin
 
     def update
       if @user.update(user_params)
-        redirect_to admin_user_path(@user), notice: t(".success")
+        redirect_to admin_user_path(@user), notice: t_context(".success")
       else
         render :edit, status: :unprocessable_entity
       end
@@ -25,7 +25,7 @@ module Admin
 
     def destroy
       @user.destroy
-      redirect_to admin_users_path, notice: t(".success")
+      redirect_to admin_users_path, notice: t_context(".success")
     end
 
     private

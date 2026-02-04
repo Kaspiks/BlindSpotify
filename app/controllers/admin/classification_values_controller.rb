@@ -12,9 +12,9 @@ module Admin
     def create
       @classification_value = @classification.classification_values.build(classification_value_params)
       if @classification_value.save
-        redirect_to admin_classification_path(@classification), notice: "Value created successfully."
+        redirect_to admin_classification_path(@classification), notice: t_context(".success")
       else
-        render :new
+        render :new, status: :unprocessable_entity
       end
     end
 
@@ -23,9 +23,9 @@ module Admin
 
     def update
       if @classification_value.update(classification_value_params)
-        redirect_to admin_classification_path(@classification), notice: "Value updated successfully."
+        redirect_to admin_classification_path(@classification), notice: t_context(".success")
       else
-        render :edit
+        render :edit, status: :unprocessable_entity
       end
     end
 

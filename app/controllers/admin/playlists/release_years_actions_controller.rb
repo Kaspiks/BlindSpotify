@@ -14,7 +14,7 @@ module Admin
         @form = build_form
 
         if @form.update(update_params)
-          redirect_to admin_playlist_path(@playlist), notice: t(".success")
+          redirect_to admin_playlist_path(@playlist), notice: t_context(".success")
         else
           redirect_to edit_admin_playlist_release_years_path(@playlist),
             alert: @form.errors.full_messages.join(", ")

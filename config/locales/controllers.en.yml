@@ -1,10 +1,4 @@
 en:
-  admin:
-    playlists:
-      release_years_actions:
-        update:
-          success: Release years updated.
-
   controllers:
     global:
       create:
@@ -20,7 +14,6 @@ en:
     dev_sessions:
       create:
         sign_in_notice: "Signed in as %{user} (Development Mode)"
-
       dev_login_only_available_in_development: Dev login is only available in development
 
     games:
@@ -46,34 +39,51 @@ en:
         success: Re-import started...
         failure: Could not start re-import.
 
-    users:
-      update:
-        success: User updated successfully.
-        failure: Could not update user.
-      destroy:
-        success: User deleted successfully.
-        failure: Could not delete user.
+    # Admin controllers
+    admin:
+      roles:
+        create:
+          success: Role created successfully.
+          failure: Could not create role.
+        update:
+          success: Role updated successfully.
+          failure: Could not update role.
+        destroy:
+          success: Role deleted successfully.
+          cannot_delete: Cannot delete role that has users assigned.
 
-    roles:
-      create:
-        success: Role created successfully.
-        failure: Could not create role.
-      update:
-        success: Role updated successfully.
-        failure: Could not update role.
-      destroy:
-        success: Role deleted successfully.
-        cannot_delete: Cannot delete role that has users assigned.
+      users:
+        update:
+          success: User updated successfully.
+          failure: Could not update user.
+        destroy:
+          success: User deleted successfully.
+          failure: Could not delete user.
 
-    settings:
-      update:
-        success: Setting updated successfully.
-        failure: Could not update setting.
+      settings:
+        update:
+          success: Setting updated successfully.
+          failure: Could not update setting.
 
-    classification_values:
-      create:
-        success: Value created successfully.
-        failure: Could not create value.
-      update:
-        success: Value updated successfully.
-        failure: Could not update value.
+      classification_values:
+        create:
+          success: Value created successfully.
+          failure: Could not create value.
+        update:
+          success: Value updated successfully.
+          failure: Could not update value.
+
+      playlists:
+        generate_qr_codes:
+          success: QR code generation started.
+          cannot_generate: Cannot generate QR codes for this playlist.
+        download_cards:
+          not_generated: QR codes have not been generated yet.
+          file_not_found: PDF file not found. Please regenerate QR codes.
+        release_years_actions:
+          update:
+            success: Release years updated.
+
+      tracks:
+        qr_code:
+          not_generated: QR code not generated for this track.

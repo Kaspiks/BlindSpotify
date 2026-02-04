@@ -1,0 +1,17 @@
+---
+playlists:
+  - view
+  - create
+  - delete
+administrations:
+  roles:
+    - manage
+  users:
+    - manage
+  background_jobs:
+    - manage
+configurations:
+  settings:
+    - manage
+  classifications:
+    - manage

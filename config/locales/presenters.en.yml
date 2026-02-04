@@ -4,6 +4,28 @@ en:
       inactive: inactive
 
     admin:
+      navigation:
+        sections:
+          cards:
+            title: Cards
+          configuration:
+            title: Configuration
+        items:
+          dashboard: Dashboard
+          users: Users
+          roles: Roles
+          playlists: Playlists
+          classification_items: Classifications
+          settings: Settings
+        quick_actions:
+          manage_users: Manage Users
+          manage_users_desc: View and manage user accounts
+          manage_roles: Manage Roles
+          manage_roles_desc: Configure roles and permissions
+          classifications: Classifications
+          classifications_desc: Manage classification values
+          settings: Settings
+          settings_desc: Configure application settings
       dashboard:
         index:
           page_title: Admin Dashboard

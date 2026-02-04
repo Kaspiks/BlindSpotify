@@ -17,9 +17,8 @@
               label.flex.items-start.gap-3.p-3.rounded-lg.cursor-pointer.transition-colors class="hover:bg-white/5"
                 = check_box_tag "role[permission_ids][]", permission.id, @role.permissions.include?(permission), class: "mt-0.5 w-5 h-5 rounded bg-slate-700 border-slate-600 text-green-500 focus:ring-green-500 focus:ring-offset-slate-800"
                 div
-                  span.text-sm.text-white = permission.code
-                  - if permission.description.present?
-                    p.text-xs.text-slate-500 = permission.description
+                  span.text-sm.text-white = permission.label
+                  p.text-xs.text-slate-500 = permission.code
 
     .pt-4
       = f.submit (@role.persisted? ? t('.buttons.update_role') : t('.buttons.create_role')), class: "w-full px-4 py-3 rounded-lg font-medium text-white bg-green-600 hover:bg-green-500 transition-colors cursor-pointer"

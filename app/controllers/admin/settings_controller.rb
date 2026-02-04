@@ -13,7 +13,7 @@ module Admin
 
     def update
       if @setting.update(setting_params)
-        redirect_to admin_settings_path, notice: t(".success")
+        redirect_to admin_settings_path, notice: t_context(".success")
       else
         render :edit, status: :unprocessable_entity
       end

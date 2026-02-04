@@ -16,7 +16,6 @@ module MusicBrainz
       recordings = data["recordings"] || []
       return nil if recordings.empty?
 
-      # Prefer MusicBrainz's computed first-release-date (most reliable)
       year_from_first_release_date = recordings
         .filter_map { |r| r["first-release-date"].to_s[/^\d{4}/] }
         .map(&:to_i)

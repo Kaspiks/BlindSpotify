@@ -36,7 +36,6 @@ module MusicBrainz
           if Rails.env.development?
             http.verify_mode = OpenSSL::SSL::VERIFY_PEER
             http.ssl_version = :TLSv1_2
-            # In Docker, SSL can be flaky; set MUSICBRAINZ_SSL_VERIFY=none to disable (dev only)
             if ENV["MUSICBRAINZ_SSL_VERIFY"] == "none"
               http.verify_mode = OpenSSL::SSL::VERIFY_NONE
             end
@@ -48,7 +47,6 @@ module MusicBrainz
 
           response = http.request(request)
 
-          # Retry on rate limit (503) with backoff
           if response.is_a?(Net::HTTPServiceUnavailable) && retries < MAX_RETRIES
             retries += 1
             sleep(1 + retries)
