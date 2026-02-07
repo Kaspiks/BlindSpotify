@@ -23,6 +23,9 @@ module QrCards
       @playlist = playlist
       @on_progress = on_progress
       @qr_png_temp_paths = {}
+      @aruco_resolver = QrCards::ArucoMarkerResolver.new(
+        generator_url: ENV["ARUCO_GENERATOR_URL"]
+      )
     end
 
     def call
@@ -52,6 +55,7 @@ module QrCards
       ensure
         cleanup_tmp_files!(self.class.pdf_path(@playlist))
         cleanup_cached_qr_png_tempfiles!
+        @aruco_resolver.cleanup!
       end
     end
 
@@ -95,9 +99,9 @@ module QrCards
         # Start new page for all pages except the first
         pdf.start_new_page if page_index > 0
 
-        # Draw info cards (front side)
+        # Draw info cards (front side) – ArUco marker when available, else text
         page_tracks.each_with_index do |track, index|
-          draw_info_card(pdf, track, index)
+          draw_info_card(pdf, track, index, aruco_resolver: @aruco_resolver)
         end
 
         # Start new page for QR codes (back side)
@@ -138,61 +142,86 @@ module QrCards
       [x, y]
     end
 
-    def draw_info_card(pdf, track, index)
+    def draw_info_card(pdf, track, index, aruco_resolver: nil)
       x, y = card_position(index)
 
       # Card border
       pdf.stroke_color "CCCCCC"
       pdf.stroke_rectangle [x, y], CARD_WIDTH, CARD_HEIGHT
 
-      # Content area with padding
-      content_x = x + 15
-      content_y = y - 20
-      content_width = CARD_WIDTH - 30
+      marker_id = QrCards::ArucoMarkerResolver.marker_id_for_track(track)
+      marker_path = aruco_resolver&.path_for_marker(marker_id)
 
-      # Artist name (top)
-      pdf.fill_color "666666"
-      pdf.font_size(11) do
-        pdf.text_box sanitize_for_pdf(track.artist_name.to_s.upcase),
-                     at: [content_x, content_y],
-                     width: content_width,
-                     height: 40,
-                     align: :center,
-                     valign: :top,
-                     overflow: :shrink_to_fit
-      end
+      if marker_path.present?
+        # ArUco front: center marker on card, leave small caption
+        marker_size = CARD_WIDTH - 30
+        marker_x = x + (CARD_WIDTH - marker_size) / 2
+        marker_y = y - (CARD_HEIGHT - marker_size) / 2 - 10
+        pdf.image marker_path, at: [marker_x, marker_y], width: marker_size, height: marker_size
+        pdf.fill_color "999999"
+        pdf.font_size(7) do
+          pdf.text_box "Scan deck to identify",
+                       at: [x, y - CARD_HEIGHT + 18],
+                       width: CARD_WIDTH,
+                       height: 12,
+                       align: :center
+        end
+        pdf.fill_color "AAAAAA"
+        pdf.font_size(8) do
+          pdf.text_box "##{track.position}",
+                       at: [x + 5, y - CARD_HEIGHT + 15],
+                       width: 30,
+                       height: 12
+        end
+      else
+        # Fallback: text-only card (no ArUco images available)
+        content_x = x + 15
+        content_y = y - 20
+        content_width = CARD_WIDTH - 30
 
-      pdf.fill_color "000000"
-      pdf.font_size(14) do
-        pdf.text_box sanitize_for_pdf(track.title.to_s),
-                     at: [content_x, content_y - 60],
-                     width: content_width,
-                     height: 80,
-                     align: :center,
-                     valign: :center,
-                     overflow: :shrink_to_fit,
-                     style: :bold
-      end
-
-      if track.release_year.present?
-        pdf.fill_color "333333"
-        pdf.font_size(24) do
-          pdf.text_box track.release_year.to_s,
-                       at: [content_x, y - CARD_HEIGHT + 50],
+        pdf.fill_color "666666"
+        pdf.font_size(11) do
+          pdf.text_box sanitize_for_pdf(track.artist_name.to_s.upcase),
+                       at: [content_x, content_y],
                        width: content_width,
-                       height: 30,
+                       height: 40,
                        align: :center,
-                       valign: :bottom,
+                       valign: :top,
+                       overflow: :shrink_to_fit
+        end
+
+        pdf.fill_color "000000"
+        pdf.font_size(14) do
+          pdf.text_box sanitize_for_pdf(track.title.to_s),
+                       at: [content_x, content_y - 60],
+                       width: content_width,
+                       height: 80,
+                       align: :center,
+                       valign: :center,
+                       overflow: :shrink_to_fit,
                        style: :bold
         end
-      end
 
-      pdf.fill_color "AAAAAA"
-      pdf.font_size(8) do
-        pdf.text_box "##{track.position}",
-                     at: [x + 5, y - CARD_HEIGHT + 15],
-                     width: 30,
-                     height: 12
+        if track.release_year.present?
+          pdf.fill_color "333333"
+          pdf.font_size(24) do
+            pdf.text_box track.release_year.to_s,
+                         at: [content_x, y - CARD_HEIGHT + 50],
+                         width: content_width,
+                         height: 30,
+                         align: :center,
+                         valign: :bottom,
+                         style: :bold
+          end
+        end
+
+        pdf.fill_color "AAAAAA"
+        pdf.font_size(8) do
+          pdf.text_box "##{track.position}",
+                       at: [x + 5, y - CARD_HEIGHT + 15],
+                       width: 30,
+                       height: 12
+        end
       end
     end
 
@@ -308,7 +337,7 @@ module QrCards
     def default_url_options
       # Use configured URL options (host + port) or fallback
       Rails.application.config.action_mailer.default_url_options ||
-        { host: ENV.fetch("APP_HOST", "localhost"), port: ENV.fetch("APP_PORT", 3000) }
+        { host: ENV.fetch("APP_HOST", "localhost"), port: ENV.fetch("APP_PORT", 3024) }
     end
 
     def notify_progress

@@ -39,7 +39,7 @@ Rails.application.configure do
 
   # Set host for links generated in mailer templates and QR codes.
   # Change to your local IP for phone testing (e.g., 172.20.10.5)
-  config.action_mailer.default_url_options = { host: "172.20.10.5", port: 3000 }
+  config.action_mailer.default_url_options = { host: "172.20.10.5", port: 3024 }
 
   # Print deprecation notices to the Rails logger.
   config.active_support.deprecation = :log

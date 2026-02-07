@@ -29,7 +29,12 @@ RUN set -eux; \
     libpq5 \
     postgresql-client \
     imagemagick \
-    libmagickwand-dev; \
+    libmagickwand-dev \
+    python3 \
+    python3-pip \
+    python3-venv \
+    libgl1 \
+    libglib2.0-0; \
   update-ca-certificates 2>/dev/null || true; \
   rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
@@ -51,6 +56,9 @@ RUN set -eux; \
   chown -R rails:rails "$GEM_HOME"
 
 COPY --chown=rails:rails . $APP_WORKDIR
+
+RUN set -eux; \
+  pip3 install --no-cache-dir --break-system-packages -r $APP_WORKDIR/scripts/aruco/requirements.txt
 
 COPY docker/docker-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh

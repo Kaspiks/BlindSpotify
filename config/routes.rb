@@ -63,6 +63,7 @@ Rails.application.routes.draw do
 
   # Track playback via QR code token
   get "q/:token", to: "tracks#play", as: :track_qr
+  post "q/:token/deck_scan", to: "tracks/deck_scan_actions#create", as: :deck_scan
 
   # Health check for deployment
   get "up" => "rails/health#show", as: :rails_health_check
