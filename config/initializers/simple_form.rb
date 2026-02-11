@@ -31,11 +31,9 @@ SimpleForm.setup do |config|
     b.use :error, wrap_with: { tag: :span, class: 'text-xs text-red-500 mt-1 block' }
   end
 
-  # Tom Select enhanced select wrapper
   config.wrappers(
     :vertical_tom_select,
-    tag: :div,
-    class: 'mb-4'
+    tag: :div
   ) do |b|
     b.use :html5
     b.use :placeholder

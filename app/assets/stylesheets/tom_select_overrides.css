@@ -8,25 +8,24 @@
 /* ── Control (the "input" area) ────────────────────────────── */
 .ts-wrapper.single .ts-control,
 .ts-wrapper.multi .ts-control {
-  background-color: #1e293b; /* slate-800 */
-  border: 1px solid #334155; /* slate-700 */
-  border-radius: 0.5rem;
+  background-color: #334155; 
+  border: 1px solid #475569;
   color: #f1f5f9;           /* slate-100 */
   padding: 0.5rem 0.75rem;
   font-size: 0.875rem;
   min-height: 2.5rem;
-  box-shadow: none;
-  transition: border-color 0.15s ease;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.2);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .ts-wrapper.single .ts-control:hover,
 .ts-wrapper.multi .ts-control:hover {
-  border-color: #475569; /* slate-600 */
+  border-color: #64748b; 
 }
 
 .ts-wrapper.single.focus .ts-control,
 .ts-wrapper.multi.focus .ts-control {
-  border-color: #7c3aed; /* purple-600 */
+  border-color: #7c3aed;
   box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.25);
 }
 
