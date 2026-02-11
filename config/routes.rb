@@ -72,6 +72,7 @@ Rails.application.routes.draw do
 
   # Track playback via QR code token
   get "q/:token", to: "tracks#play", as: :track_qr
+  get "q/:token/refresh_preview", to: "tracks#refresh_preview", as: :refresh_track_preview
   # Dynamic deck: slot resolves to track (allows reassigning cards to different playlists)
   get "q/d/:deck_id/:position", to: "tracks#play_by_deck_slot", as: :track_qr_deck_slot
   post "q/:token/deck_scan", to: "tracks/deck_scan_actions#create", as: :deck_scan

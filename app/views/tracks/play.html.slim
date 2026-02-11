@@ -13,10 +13,11 @@
         h2.text-2xl.font-bold.text-slate-400 ???
         p.text-slate-500 Listen and guess...
 
-      - if @track.preview_url.present?
-        .mb-6 data-controller="audio-player"
+      - if @track.preview_url.present? || @track.preview_url_valid? == false
+        .mb-6 data-controller="audio-player" data-audio-player-refresh-url-value=(refresh_track_preview_path(@track.token) unless @track.preview_url_valid?)
           audio data-audio-player-target="audio" preload="auto"
-            source src=@track.preview_url type="audio/mpeg"
+            - if @track.preview_url_valid?
+              source src=@track.preview_url type="audio/mpeg"
 
           .flex.justify-center.mb-4
             button.w-16.h-16.rounded-full.bg-purple-600.hover:bg-purple-500.text-white.flex.items-center.justify-center.transition-all.hover:scale-105.active:scale-95.shadow-lg.shadow-purple-500/30(

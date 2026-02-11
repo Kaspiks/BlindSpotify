@@ -14,8 +14,10 @@ class ArucoDeck < ApplicationRecord
   validates :qr_status, inclusion: { in: QR_STATUSES }
 
   def assign_playlist!(playlist)
-    new_tracks = playlist.tracks.ordered.to_a
-    self.slots_count = new_tracks.size
+    new_tracks = playlist.tracks.ordered.limit(slots_count).to_a
+    new_slots_count = new_tracks.size
+
+    self.slots_count = new_slots_count
     save!
 
     new_tracks.each_with_index do |track, i|
@@ -24,8 +26,7 @@ class ArucoDeck < ApplicationRecord
       slot.update!(track: track)
     end
 
-    # Remove excess slots if the new playlist is smaller
-    aruco_deck_slots.where("position > ?", new_tracks.size).destroy_all
+    aruco_deck_slots.where("position > ?", new_slots_count).destroy_all
 
     update!(playlist: playlist)
   end

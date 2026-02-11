@@ -21,12 +21,11 @@
           = link_to presenter.source_playlist.name, admin_playlist_path(presenter.source_playlist), class: "hover:text-white transition-colors"
 
   .flex-1.space-y-4
-    / Assign playlist card
     .rounded-xl.border.p-4.bg-slate-800.border-slate-700
       h2.text-sm.font-medium.text-slate-400.mb-3 = t('.assign_playlist.title')
-      = simple_form_for :assign_playlist, url: assign_playlist_admin_aruco_deck_path(deck), method: :patch, html: { class: "flex flex-wrap items-end gap-3" } do |f|
+      = simple_form_for :assign_playlist, url: assign_playlist_admin_aruco_deck_path(deck), method: :patch, html: { class: "flex flex-wrap items-center gap-3" } do |f|
         .flex-1.min-w-[200px]
-          = f.input :playlist_id, as: :tom_select, collection: presenter.playlists_for_assign, label_method: ->(pl) { "#{pl.name} (#{pl.tracks_count} tracks)" }, value_method: :id, include_blank: t('.assign_playlist.placeholder'), label: false, input_html: { name: "playlist_id" }
+          = f.input :playlist_id, as: :tom_select, wrapper: :default, collection: presenter.playlists_for_assign, label_method: ->(pl) { "#{pl.name} (#{pl.tracks_count} tracks)" }, value_method: :id, include_blank: t('.assign_playlist.placeholder'), label: false, input_html: { name: "playlist_id" }
         = f.button :submit, t('.assign_playlist.submit'), class: "inline-flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-lg transition-colors"
       p.mt-2.text-xs.text-slate-500 = t('.assign_playlist.hint')
 

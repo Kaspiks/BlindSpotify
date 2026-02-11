@@ -45,7 +45,6 @@ class PlaylistsController < ApplicationController
 
   def import
     authorize @playlist
-    # Clear existing tracks to get fresh data (including new preview URLs)
     @playlist.tracks.destroy_all
     @playlist.update!(import_status: "pending", imported_tracks_count: 0, tracks_count: 0, import_error: nil)
     PlaylistImportJob.perform_later(@playlist.id)
@@ -65,7 +64,7 @@ class PlaylistsController < ApplicationController
   private
 
   def set_playlist
-    @playlist = policy_scope(Playlist).find(params[:id])
+    @playlist = policy_scope(Playlist).includes(:tracks).find(params[:id])
   end
 
   def playlist_params
