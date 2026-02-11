@@ -2,12 +2,20 @@
 
 module Playlists
   class ShowPresenter < ::ShowPresenter
+    def initialize(playlist:, tracks: nil, **options)
+      super(object: playlist, **options)
+      @playlist = playlist
+      @tracks = tracks
+    end
+
+    attr_reader :playlist
+
     delegate :tracks, :import_status, :import_progress_percentage, :pending?,
              :importing?, :completed?, :failed?, :genre, :deezer_url, :image_url,
-             :tracks_count, :imported_tracks_count, to: :object
+             :tracks_count, :imported_tracks_count, to: :playlist
 
     def page_title
-      object.name
+      playlist.name
     end
 
     def back_label
@@ -31,7 +39,27 @@ module Playlists
     end
 
     def tracks_header
-      t_context(".tracks.header", count: tracks.size)
+      t_context(".tracks.header", count: sorted_tracks.size)
+    end
+
+    def sorted_tracks
+      base = @tracks || playlist.tracks
+      return base if base.is_a?(Array)
+
+      tracks_table = Track.arel_table
+      preview_url = tracks_table[:preview_url]
+      position = tracks_table[:position]
+      id = tracks_table[:id]
+
+      preview_url_is_null = preview_url.eq(nil)
+      sort_key = Arel::Nodes::Case.new
+        .when(preview_url_is_null, 1)
+        .else(0)
+
+      base
+        .unscope(:order)
+        .reorder(Arel::Nodes::Ascending.new(sort_key))
+        .order(position, id)
     end
 
     def empty_tracks_message

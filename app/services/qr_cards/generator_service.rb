@@ -23,9 +23,6 @@ module QrCards
       @playlist = playlist
       @on_progress = on_progress
       @qr_png_temp_paths = {}
-      @aruco_resolver = QrCards::ArucoMarkerResolver.new(
-        generator_url: ENV["ARUCO_GENERATOR_URL"]
-      )
     end
 
     def call
@@ -34,6 +31,12 @@ module QrCards
 
       begin
         tracks = @playlist.tracks.ordered.with_attached_qr_code_image.to_a
+
+        # Refresh preview URLs and skip tracks that have no Deezer preview
+        refresh_preview_urls!(tracks)
+        tracks = tracks.select { |t| t.preview_url.present? }
+
+        Rails.logger.info "[QR Generator] #{tracks.size}/#{@playlist.tracks_count} tracks have playable previews"
 
         pre_generate_qr_attachments!(tracks)
 
@@ -55,7 +58,6 @@ module QrCards
       ensure
         cleanup_tmp_files!(self.class.pdf_path(@playlist))
         cleanup_cached_qr_png_tempfiles!
-        @aruco_resolver.cleanup!
       end
     end
 
@@ -99,9 +101,9 @@ module QrCards
         # Start new page for all pages except the first
         pdf.start_new_page if page_index > 0
 
-        # Draw info cards (front side) – ArUco marker when available, else text
+        # Draw info cards (front side) – always text-only for static playlists
         page_tracks.each_with_index do |track, index|
-          draw_info_card(pdf, track, index, aruco_resolver: @aruco_resolver)
+          draw_info_card(pdf, track, index)
         end
 
         # Start new page for QR codes (back side)
@@ -142,86 +144,48 @@ module QrCards
       [x, y]
     end
 
-    def draw_info_card(pdf, track, index, aruco_resolver: nil)
+    def draw_info_card(pdf, track, index)
       x, y = card_position(index)
 
-      # Card border
       pdf.stroke_color "CCCCCC"
       pdf.stroke_rectangle [x, y], CARD_WIDTH, CARD_HEIGHT
 
-      marker_id = QrCards::ArucoMarkerResolver.marker_id_for_track(track)
-      marker_path = aruco_resolver&.path_for_marker(marker_id)
+      content_x = x + 15
+      content_y = y - 20
+      content_width = CARD_WIDTH - 30
 
-      if marker_path.present?
-        # ArUco front: center marker on card, leave small caption
-        marker_size = CARD_WIDTH - 30
-        marker_x = x + (CARD_WIDTH - marker_size) / 2
-        marker_y = y - (CARD_HEIGHT - marker_size) / 2 - 10
-        pdf.image marker_path, at: [marker_x, marker_y], width: marker_size, height: marker_size
-        pdf.fill_color "999999"
-        pdf.font_size(7) do
-          pdf.text_box "Scan deck to identify",
-                       at: [x, y - CARD_HEIGHT + 18],
-                       width: CARD_WIDTH,
-                       height: 12,
-                       align: :center
-        end
-        pdf.fill_color "AAAAAA"
-        pdf.font_size(8) do
-          pdf.text_box "##{track.position}",
-                       at: [x + 5, y - CARD_HEIGHT + 15],
-                       width: 30,
-                       height: 12
-        end
-      else
-        # Fallback: text-only card (no ArUco images available)
-        content_x = x + 15
-        content_y = y - 20
-        content_width = CARD_WIDTH - 30
+      pdf.fill_color "666666"
+      pdf.font_size(11) do
+        pdf.text_box sanitize_for_pdf(track.artist_name.to_s.upcase),
+                     at: [content_x, content_y],
+                     width: content_width, height: 40,
+                     align: :center, valign: :top, overflow: :shrink_to_fit
+      end
 
-        pdf.fill_color "666666"
-        pdf.font_size(11) do
-          pdf.text_box sanitize_for_pdf(track.artist_name.to_s.upcase),
-                       at: [content_x, content_y],
-                       width: content_width,
-                       height: 40,
-                       align: :center,
-                       valign: :top,
-                       overflow: :shrink_to_fit
-        end
+      pdf.fill_color "000000"
+      pdf.font_size(14) do
+        pdf.text_box sanitize_for_pdf(track.title.to_s),
+                     at: [content_x, content_y - 60],
+                     width: content_width, height: 80,
+                     align: :center, valign: :center,
+                     overflow: :shrink_to_fit, style: :bold
+      end
 
-        pdf.fill_color "000000"
-        pdf.font_size(14) do
-          pdf.text_box sanitize_for_pdf(track.title.to_s),
-                       at: [content_x, content_y - 60],
-                       width: content_width,
-                       height: 80,
-                       align: :center,
-                       valign: :center,
-                       overflow: :shrink_to_fit,
-                       style: :bold
+      if track.release_year.present?
+        pdf.fill_color "333333"
+        pdf.font_size(24) do
+          pdf.text_box track.release_year.to_s,
+                       at: [content_x, y - CARD_HEIGHT + 50],
+                       width: content_width, height: 30,
+                       align: :center, valign: :bottom, style: :bold
         end
+      end
 
-        if track.release_year.present?
-          pdf.fill_color "333333"
-          pdf.font_size(24) do
-            pdf.text_box track.release_year.to_s,
-                         at: [content_x, y - CARD_HEIGHT + 50],
-                         width: content_width,
-                         height: 30,
-                         align: :center,
-                         valign: :bottom,
-                         style: :bold
-          end
-        end
-
-        pdf.fill_color "AAAAAA"
-        pdf.font_size(8) do
-          pdf.text_box "##{track.position}",
-                       at: [x + 5, y - CARD_HEIGHT + 15],
-                       width: 30,
-                       height: 12
-        end
+      pdf.fill_color "AAAAAA"
+      pdf.font_size(8) do
+        pdf.text_box "##{track.position}",
+                     at: [x + 5, y - CARD_HEIGHT + 15],
+                     width: 30, height: 12
       end
     end
 
@@ -268,15 +232,22 @@ module QrCards
       end
     end
 
-    def pre_generate_qr_attachments!(tracks)
+    def refresh_preview_urls!(tracks)
       tracks.each_with_index do |track, i|
-        qr_url = Rails.application.routes.url_helpers.track_qr_url(
-          token: track.token,
-          **default_url_options
-        )
+        next if track.preview_url_valid?
 
+        track.refresh_preview_url!
+      rescue StandardError => e
+        Rails.logger.warn "[QR Generator] Could not refresh preview for track #{track.id}: #{e.message}"
+      end
+    end
+
+    def pre_generate_qr_attachments!(tracks)
+      helpers = Rails.application.routes.url_helpers
+
+      tracks.each_with_index do |track, i|
+        qr_url = helpers.track_qr_url(token: track.token, **default_url_options)
         ensure_qr_attached!(track, qr_url)
-
         notify_progress if ((i + 1) % 10).zero?
       end
     end

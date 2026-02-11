@@ -42,6 +42,15 @@ Rails.application.routes.draw do
         end
       end
     end
+
+    resources :aruco_decks, only: [:index, :show, :new, :create] do
+      member do
+        patch :assign_playlist
+        post :generate_qr_codes
+        get :download_cards
+        get :qr_status
+      end
+    end
   end
 
   # Playlists
@@ -63,6 +72,8 @@ Rails.application.routes.draw do
 
   # Track playback via QR code token
   get "q/:token", to: "tracks#play", as: :track_qr
+  # Dynamic deck: slot resolves to track (allows reassigning cards to different playlists)
+  get "q/d/:deck_id/:position", to: "tracks#play_by_deck_slot", as: :track_qr_deck_slot
   post "q/:token/deck_scan", to: "tracks/deck_scan_actions#create", as: :deck_scan
 
   # Health check for deployment

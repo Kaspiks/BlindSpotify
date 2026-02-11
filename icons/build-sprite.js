@@ -52,6 +52,7 @@ const includedIcons = [
   "player-pause",
   "player-play",
   "playlist",
+  "play-card-star",
   "plus",
   "qrcode",
   "refresh",

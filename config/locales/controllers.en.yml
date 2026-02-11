@@ -87,3 +87,16 @@ en:
       tracks:
         qr_code:
           not_generated: QR code not generated for this track.
+
+      aruco_decks:
+        create:
+          success: ArUco deck created successfully.
+        assign_playlist:
+          success: Deck slots updated to use the selected playlist.
+          playlist_not_found: Playlist not found.
+          playlist_required: Please select a playlist.
+        generate_qr_codes:
+          started: QR card generation started.
+          cannot_generate: Cannot generate QR cards — no slots assigned yet.
+        download_cards:
+          not_generated: QR cards have not been generated yet.

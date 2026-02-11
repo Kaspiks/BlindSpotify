@@ -15,7 +15,8 @@
 
       - if @track.preview_url.present?
         .mb-6 data-controller="audio-player"
-          audio data-audio-player-target="audio" src=@track.preview_url preload="auto"
+          audio data-audio-player-target="audio" preload="auto"
+            source src=@track.preview_url type="audio/mpeg"
 
           .flex.justify-center.mb-4
             button.w-16.h-16.rounded-full.bg-purple-600.hover:bg-purple-500.text-white.flex.items-center.justify-center.transition-all.hover:scale-105.active:scale-95.shadow-lg.shadow-purple-500/30(

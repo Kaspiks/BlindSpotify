@@ -6,7 +6,6 @@ class PlaylistsController < ApplicationController
   before_action :set_playlist, only: %i[show destroy import status]
 
   presents_index :playlists, presenter_class: Playlists::IndexPresenter, decorator: false
-  presents_show :playlist, presenter_class: Playlists::ShowPresenter, decorator: false
   presents_form :form, presenter_class: Playlists::FormPresenter
 
   def index
@@ -16,8 +15,7 @@ class PlaylistsController < ApplicationController
 
   def show
     authorize @playlist
-    @tracks = @playlist.tracks.ordered
-    Rails.logger.info "[PlaylistsController] Showing playlist #{@playlist.id} with #{@tracks.size} tracks (tracks_count: #{@playlist.tracks_count})"
+    @presenter = Playlists::ShowPresenter.new(playlist: @playlist)
   end
 
   def new

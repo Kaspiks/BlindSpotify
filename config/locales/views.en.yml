@@ -226,6 +226,54 @@ en:
           buttons:
             back: Back to playlist
             save: Save release years
+
+    aruco_decks:
+      index:
+        page_title: ArUco Decks
+        columns:
+          deck: Deck
+          source_playlist: Source playlist
+          slots: Slots
+          actions: Actions
+        no_source_playlist: —
+        empty_state: No ArUco decks yet. Create a deck to generate reassignable QR cards.
+        buttons:
+          new_deck: New Deck
+      new:
+        title: Create ArUco Deck
+        buttons:
+          back_to_decks: Back to ArUco Decks
+          create: Create Deck
+        fields:
+          name: Deck name
+          slots_count: Number of slots (cards)
+        placeholders:
+          name: e.g. Party Mix Deck
+          slots_count: e.g. 30
+        hints:
+          slots_count: How many physical QR cards this deck will have. You can change this later by assigning a playlist.
+      show:
+        buttons:
+          back_to_decks: Back to ArUco Decks
+        assign_playlist:
+          title: Assign playlist to this deck
+          playlist_label: Playlist
+          placeholder: Choose a playlist…
+          submit: Assign playlist
+          hint: Replaces all slot assignments with tracks from the selected playlist. Slot count adjusts automatically.
+        qr_cards:
+          title: QR Card Generation
+          generate: Generate QR Cards
+          regenerate: Regenerate QR Cards
+          download: Download PDF Cards
+          confirm_regenerate: This will regenerate all QR cards. Continue?
+          hint: Generates printable cards with ArUco markers on front and QR codes on back. QR codes point to deck slots, so you can reassign playlists without reprinting.
+        slots_title: Slot assignments
+        columns:
+          position: "#"
+          track: Track
+          playlist: Playlist
+        no_slots: No slots assigned yet. Assign a playlist to populate the slots.
   games:
     game_card:
       progress:

@@ -66,7 +66,8 @@ module Admin
 
     def cards_nav_items
       [
-        playlists_nav_item
+        playlists_nav_item,
+        aruco_decks_nav_item
       ]
     end
 
@@ -112,6 +113,16 @@ module Admin
         @controller_name == "playlists"
       )
     end
+
+    def aruco_decks_nav_item
+      NavigationItem.new(
+        t_context(".items.aruco_decks"),
+        "play-card-star",
+        @view_context.admin_aruco_decks_path,
+        @controller_name == "aruco_decks"
+      )
+    end
+
 
     def classification_items_nav_item
       return unless Admin::ClassificationItemPolicy.new(@user, nil).index?

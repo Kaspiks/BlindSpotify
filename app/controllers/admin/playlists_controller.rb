@@ -18,7 +18,6 @@ module Admin
         return
       end
 
-      # Reset QR status on tracks and start generating
       @playlist.tracks.update_all(qr_generated: false)
       @playlist.update!(qr_status: "generating", qr_generated_count: 0, qr_error: nil)
 
@@ -27,30 +26,29 @@ module Admin
     end
 
     def download_cards
+      if @playlist.qr_cards_pdf.attached?
+        redirect_to rails_blob_path(@playlist.qr_cards_pdf,
+          disposition: "attachment",
+          filename: "#{@playlist.name.parameterize}-cards.pdf"),
+          allow_other_host: true
+        return
+      end
+
       unless @playlist.qr_completed?
         redirect_to admin_playlist_path(@playlist), alert: t_context(".not_generated")
         return
       end
 
-      # Prefer ActiveStorage attachment if available
-      if @playlist.qr_cards_pdf.attached?
-        redirect_to rails_blob_path(@playlist.qr_cards_pdf, disposition: "attachment",
-          filename: "#{@playlist.name.parameterize}-cards.pdf"), allow_other_host: true
-        return
-      end
-
-      # Fallback to tmp file
       pdf_path = QrCards::GeneratorService.pdf_path(@playlist)
-
-      unless File.exist?(pdf_path)
-        redirect_to admin_playlist_path(@playlist), alert: t_context(".file_not_found")
+      if File.exist?(pdf_path)
+        send_file pdf_path,
+                  filename: "#{@playlist.name.parameterize}-cards.pdf",
+                  type: "application/pdf",
+                  disposition: "attachment"
         return
       end
 
-      send_file pdf_path,
-                filename: "#{@playlist.name.parameterize}-cards.pdf",
-                type: "application/pdf",
-                disposition: "attachment"
+      redirect_to admin_playlist_path(@playlist), alert: t_context(".file_not_found")
     end
 
     def qr_status
@@ -65,7 +63,9 @@ module Admin
     private
 
     def set_playlist
-      @playlist = Playlist.find(params[:id])
+      @playlist = Playlist
+        .with_attached_qr_cards_pdf
+        .find(params[:id])
     end
 
     def build_index_presenter
