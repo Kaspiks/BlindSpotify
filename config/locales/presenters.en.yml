@@ -15,6 +15,7 @@ en:
           users: Users
           roles: Roles
           playlists: Playlists
+          aruco_decks: Aruco Decks
           classification_items: Classifications
           settings: Settings
         quick_actions:
@@ -57,6 +58,12 @@ en:
       playlists:
         index:
           page_title: Playlists
+        show:
+          page_title: "%{name}"
+
+      aruco_decks:
+        index:
+          page_title: ArUco Decks
         show:
           page_title: "%{name}"
 

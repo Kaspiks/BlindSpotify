@@ -2,10 +2,11 @@
 
 module IconHelper
   def render_svg_icons
-    Rails.cache.fetch("asset_helper_svg_icons", expires_in: 1.hour) do
-      icon_path = Rails.root.join("vendor/assets/images/icons.svg")
-      return "" unless File.exist?(icon_path)
+    icon_path = Rails.root.join("vendor/assets/images/icons.svg")
+    return "" unless File.exist?(icon_path)
 
+    cache_key = "asset_helper_svg_icons/v#{File.mtime(icon_path).to_i}"
+    Rails.cache.fetch(cache_key, expires_in: 1.hour) do
       raw(File.read(icon_path)) # rubocop:disable Rails/OutputSafety
     end
   end

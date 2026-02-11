@@ -40,23 +40,24 @@ end
 #
 # Table name: playlists
 #
-#  id                    :bigint           not null, primary key
-#  deezer_url            :string
-#  description           :text
-#  image_url             :string
-#  import_error          :text
-#  import_status         :string           default("pending"), not null
-#  imported_tracks_count :integer          default(0), not null
-#  name                  :string           not null
-#  qr_error              :text
-#  qr_generated_count    :integer          default(0), not null
-#  qr_status             :string           default("pending"), not null
-#  tracks_count          :integer          default(0), not null
-#  created_at            :datetime         not null
-#  updated_at            :datetime         not null
-#  deezer_id             :string
-#  genre_id              :bigint
-#  user_id               :bigint           not null
+#  id                                          :bigint           not null, primary key
+#  deck_type(Deck type (e.g. static, dynamic)) :string           default("static")
+#  deezer_url                                  :string
+#  description                                 :text
+#  image_url                                   :string
+#  import_error                                :text
+#  import_status                               :string           default("pending"), not null
+#  imported_tracks_count                       :integer          default(0), not null
+#  name                                        :string           not null
+#  qr_error                                    :text
+#  qr_generated_count                          :integer          default(0), not null
+#  qr_status                                   :string           default("pending"), not null
+#  tracks_count                                :integer          default(0), not null
+#  created_at                                  :datetime         not null
+#  updated_at                                  :datetime         not null
+#  deezer_id                                   :string
+#  genre_id                                    :bigint
+#  user_id                                     :bigint           not null
 #
 # Indexes
 #

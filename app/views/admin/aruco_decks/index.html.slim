@@ -1,0 +1,60 @@
+- presenter = @presenter
+
+.flex.items-center.justify-between.mb-8
+  div
+    h1.text-2xl.font-bold.text-white = presenter.page_title
+    p.text-slate-400
+      = pluralize(presenter.decks.count, "deck")
+  = link_to new_admin_aruco_deck_path, class: "inline-flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-lg transition-colors" do
+    = icon(:plus, class: "w-5 h-5")
+    span = t('.buttons.new_deck')
+
+.lg:hidden.space-y-4
+  - presenter.decks.each do |deck|
+    = link_to admin_aruco_deck_path(deck), class: "block rounded-2xl border p-4 bg-slate-800 border-slate-700 hover:bg-slate-750 transition-colors"
+      .flex.items-start.gap-4
+        .w-16.h-16.rounded-lg.flex.items-center.justify-center.bg-slate-700.flex-shrink-0
+          = icon("play-card-star", width: 24, height: 24, class: "text-slate-400")
+        .flex-1.min-w-0
+          h3.text-white.font-medium.truncate = deck.name
+          .flex.flex-wrap.items-center.gap-x-4.gap-y-1.text-sm.text-slate-400.mt-2
+            .flex.items-center.gap-1
+              = icon(:music, width: 14, height: 14)
+              span = "#{deck.slots_count} slots"
+            - if deck.playlist.present?
+              .flex.items-center.gap-1
+                = icon(:playlist, width: 14, height: 14)
+                span = deck.playlist.name
+
+  - if presenter.decks.empty?
+    .rounded-2xl.border.p-8.text-center.bg-slate-800.border-slate-700
+      p.text-slate-500 = t('.empty_state')
+
+.hidden.lg:block.rounded-2xl.border.overflow-hidden.bg-slate-800.border-slate-700
+  table.w-full
+    thead
+      tr.border-b.border-slate-700
+        th.px-6.py-4.text-left.text-sm.font-medium.text-slate-400 = t('.columns.deck')
+        th.px-6.py-4.text-left.text-sm.font-medium.text-slate-400 = t('.columns.source_playlist')
+        th.px-6.py-4.text-left.text-sm.font-medium.text-slate-400 = t('.columns.slots')
+        th.px-6.py-4.text-right.text-sm.font-medium.text-slate-400 = t('.columns.actions')
+    tbody
+      - presenter.decks.each do |deck|
+        tr.border-b.border-slate-700.last:border-0.hover:bg-slate-750
+          td.px-6.py-4
+            .flex.items-center.gap-3
+              .w-10.h-10.rounded-lg.flex.items-center.justify-center.bg-slate-700
+                = icon("play-card-star", width: 20, height: 20, class: "text-slate-400")
+              .text-white.font-medium = deck.name
+          td.px-6.py-4.text-slate-400
+            = deck.playlist&.name || t('.no_source_playlist')
+          td.px-6.py-4.text-slate-400
+            = deck.slots_count
+          td.px-6.py-4.text-right
+            = link_to admin_aruco_deck_path(deck), class: "p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-700 transition-colors inline-flex" do
+              = icon(:eye, width: 18, height: 18)
+
+      - if presenter.decks.empty?
+        tr
+          td.px-6.py-8.text-center.text-slate-500 colspan="4"
+            = t('.empty_state')

@@ -1,0 +1,25 @@
+.mb-6
+  = link_to admin_aruco_decks_path, class: "flex items-center gap-2 text-slate-400 hover:text-white transition-colors" do
+    = icon("arrow-left", class: "w-5 h-5")
+    span = t('.buttons.back_to_decks')
+
+.max-w-lg
+  h1.text-2xl.font-bold.text-white.mb-6 = t('.title')
+
+  = simple_form_for @aruco_deck, url: admin_aruco_decks_path, html: { class: "space-y-4" } do |f|
+    .rounded-xl.border.p-6.bg-slate-800.border-slate-700.space-y-4
+      div
+        = f.label :name, t('.fields.name'), class: "block text-sm font-medium text-slate-300 mb-1"
+        = f.text_field :name, class: "w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-white placeholder-slate-500 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 outline-none", placeholder: t('.placeholders.name')
+        - if @aruco_deck.errors[:name].any?
+          p.text-xs.text-red-400.mt-1 = @aruco_deck.errors[:name].first
+
+      div
+        = f.label :slots_count, t('.fields.slots_count'), class: "block text-sm font-medium text-slate-300 mb-1"
+        = f.number_field :slots_count, class: "w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-white placeholder-slate-500 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 outline-none", min: 1, placeholder: t('.placeholders.slots_count')
+        p.text-xs.text-slate-500.mt-1 = t('.hints.slots_count')
+        - if @aruco_deck.errors[:slots_count].any?
+          p.text-xs.text-red-400.mt-1 = @aruco_deck.errors[:slots_count].first
+
+    .mt-6
+      = f.submit t('.buttons.create'), class: "inline-flex items-center gap-2 px-6 py-2.5 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-lg transition-colors cursor-pointer"

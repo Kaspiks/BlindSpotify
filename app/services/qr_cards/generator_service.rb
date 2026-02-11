@@ -32,6 +32,12 @@ module QrCards
       begin
         tracks = @playlist.tracks.ordered.with_attached_qr_code_image.to_a
 
+        # Refresh preview URLs and skip tracks that have no Deezer preview
+        refresh_preview_urls!(tracks)
+        tracks = tracks.select { |t| t.preview_url.present? }
+
+        Rails.logger.info "[QR Generator] #{tracks.size}/#{@playlist.tracks_count} tracks have playable previews"
+
         pre_generate_qr_attachments!(tracks)
 
         pdf_path = self.class.pdf_path(@playlist)
@@ -95,7 +101,7 @@ module QrCards
         # Start new page for all pages except the first
         pdf.start_new_page if page_index > 0
 
-        # Draw info cards (front side)
+        # Draw info cards (front side) – always text-only for static playlists
         page_tracks.each_with_index do |track, index|
           draw_info_card(pdf, track, index)
         end
@@ -141,37 +147,28 @@ module QrCards
     def draw_info_card(pdf, track, index)
       x, y = card_position(index)
 
-      # Card border
       pdf.stroke_color "CCCCCC"
       pdf.stroke_rectangle [x, y], CARD_WIDTH, CARD_HEIGHT
 
-      # Content area with padding
       content_x = x + 15
       content_y = y - 20
       content_width = CARD_WIDTH - 30
 
-      # Artist name (top)
       pdf.fill_color "666666"
       pdf.font_size(11) do
         pdf.text_box sanitize_for_pdf(track.artist_name.to_s.upcase),
                      at: [content_x, content_y],
-                     width: content_width,
-                     height: 40,
-                     align: :center,
-                     valign: :top,
-                     overflow: :shrink_to_fit
+                     width: content_width, height: 40,
+                     align: :center, valign: :top, overflow: :shrink_to_fit
       end
 
       pdf.fill_color "000000"
       pdf.font_size(14) do
         pdf.text_box sanitize_for_pdf(track.title.to_s),
                      at: [content_x, content_y - 60],
-                     width: content_width,
-                     height: 80,
-                     align: :center,
-                     valign: :center,
-                     overflow: :shrink_to_fit,
-                     style: :bold
+                     width: content_width, height: 80,
+                     align: :center, valign: :center,
+                     overflow: :shrink_to_fit, style: :bold
       end
 
       if track.release_year.present?
@@ -179,11 +176,8 @@ module QrCards
         pdf.font_size(24) do
           pdf.text_box track.release_year.to_s,
                        at: [content_x, y - CARD_HEIGHT + 50],
-                       width: content_width,
-                       height: 30,
-                       align: :center,
-                       valign: :bottom,
-                       style: :bold
+                       width: content_width, height: 30,
+                       align: :center, valign: :bottom, style: :bold
         end
       end
 
@@ -191,8 +185,7 @@ module QrCards
       pdf.font_size(8) do
         pdf.text_box "##{track.position}",
                      at: [x + 5, y - CARD_HEIGHT + 15],
-                     width: 30,
-                     height: 12
+                     width: 30, height: 12
       end
     end
 
@@ -239,15 +232,22 @@ module QrCards
       end
     end
 
-    def pre_generate_qr_attachments!(tracks)
+    def refresh_preview_urls!(tracks)
       tracks.each_with_index do |track, i|
-        qr_url = Rails.application.routes.url_helpers.track_qr_url(
-          token: track.token,
-          **default_url_options
-        )
+        next if track.preview_url_valid?
 
+        track.refresh_preview_url!
+      rescue StandardError => e
+        Rails.logger.warn "[QR Generator] Could not refresh preview for track #{track.id}: #{e.message}"
+      end
+    end
+
+    def pre_generate_qr_attachments!(tracks)
+      helpers = Rails.application.routes.url_helpers
+
+      tracks.each_with_index do |track, i|
+        qr_url = helpers.track_qr_url(token: track.token, **default_url_options)
         ensure_qr_attached!(track, qr_url)
-
         notify_progress if ((i + 1) % 10).zero?
       end
     end
@@ -308,7 +308,7 @@ module QrCards
     def default_url_options
       # Use configured URL options (host + port) or fallback
       Rails.application.config.action_mailer.default_url_options ||
-        { host: ENV.fetch("APP_HOST", "localhost"), port: ENV.fetch("APP_PORT", 3000) }
+        { host: ENV.fetch("APP_HOST", "localhost"), port: ENV.fetch("APP_PORT", 3024) }
     end
 
     def notify_progress

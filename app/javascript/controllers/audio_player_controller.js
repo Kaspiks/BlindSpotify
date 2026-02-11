@@ -2,21 +2,41 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   static targets = ["audio", "playButton", "playIcon", "pauseIcon", "progress", "progressBar", "currentTime", "duration"]
+  static values = { refreshUrl: String }
 
   connect() {
-    console.log("[AudioPlayer] Controller connected")
     this.isPlaying = false
+    if (this.hasRefreshUrlValue && this.refreshUrlValue) {
+      this.fetchPreviewUrlThenSetup()
+    } else {
+      this.setupAudio()
+    }
+  }
+
+  async fetchPreviewUrlThenSetup() {
+    try {
+      const res = await fetch(this.refreshUrlValue, { headers: { Accept: "application/json" } })
+      const data = await res.json()
+      if (data.preview_url && this.hasAudioTarget) {
+        const source = this.audioTarget.querySelector("source") || document.createElement("source")
+        if (!this.audioTarget.querySelector("source")) {
+          source.type = "audio/mpeg"
+          this.audioTarget.appendChild(source)
+        }
+        source.src = data.preview_url
+        this.audioTarget.load()
+      }
+    } catch (e) {
+      console.warn("[AudioPlayer] Failed to refresh preview URL:", e)
+    }
     this.setupAudio()
   }
 
   setupAudio() {
     if (!this.hasAudioTarget) {
-      console.warn("[AudioPlayer] No audio target found")
       return
     }
 
-    console.log("[AudioPlayer] Setting up audio:", this.audioTarget.src)
-    
     // Remove old listeners if any (for Turbo reconnection)
     this.audioTarget.removeEventListener("loadedmetadata", this.boundUpdateDuration)
     this.audioTarget.removeEventListener("timeupdate", this.boundUpdateProgress)
@@ -49,12 +69,7 @@ export default class extends Controller {
 
   toggle(event) {
     event.preventDefault()
-    console.log("[AudioPlayer] Toggle clicked, hasAudioTarget:", this.hasAudioTarget, "isPlaying:", this.isPlaying)
-    
-    if (!this.hasAudioTarget) {
-      console.warn("[AudioPlayer] No audio target, cannot toggle")
-      return
-    }
+    if (!this.hasAudioTarget) return
 
     if (this.isPlaying) {
       this.pause()
@@ -69,13 +84,11 @@ export default class extends Controller {
       return
     }
     
-    console.log("[AudioPlayer] Playing audio, src:", this.audioTarget.src)
     const playPromise = this.audioTarget.play()
     
     if (playPromise !== undefined) {
       playPromise
         .then(() => {
-          console.log("[AudioPlayer] Play started successfully")
           this.isPlaying = true
           this.updateButtonState()
         })

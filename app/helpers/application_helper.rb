@@ -1,5 +1,6 @@
 module ApplicationHelper
   include IconHelper
+  include FormHelper
 
   def sortable(column, label:, sort_param: :sort, direction_param: :direction)
     options = params.to_unsafe_h.except(:controller, :action)

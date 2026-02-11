@@ -1,0 +1,4 @@
+# Generate ArUco markers and detect them in images.
+# Install: pip install -r scripts/aruco/requirements.txt
+opencv-python>=4.8.0
+opencv-contrib-python>=4.8.0

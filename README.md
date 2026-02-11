@@ -84,6 +84,20 @@ bundle exec rspec
 | `DATABASE_PASSWORD` | If PostgreSQL | Database password |
 | `SPOTIFY_CLIENT_ID` | For Spotify | Spotify App Client ID |
 | `SPOTIFY_CLIENT_SECRET` | For Spotify | Spotify App Client Secret |
+| `ARUCO_GENERATOR_URL` | No | Optional URL for on-demand ArUco marker images (e.g. on Hetzner). If unset, pre-generated PNGs in `vendor/assets/aruco/` are used. |
+
+## ArUco printable cards (optional)
+
+Card fronts can use **ArUco markers** instead of (or in addition to) text. When a user scans a track QR and opens the player, they can tap **Scan deck** to take a photo of their physical cards; the app detects marker IDs and shows an overview by year (artist – song).
+
+- **Pre-generated markers** (recommended for Render): run once to create PNGs in `vendor/assets/aruco/`:
+  ```bash
+  pip install -r scripts/aruco/requirements.txt
+  python scripts/aruco/generate_markers.py --count 200
+  # or: bundle exec rake aruco:generate[200]
+  ```
+- **Deck scan** requires Python 3 and OpenCV with contrib on the server (e.g. Hetzner). The endpoint runs `scripts/aruco/detect_markers.py` on the uploaded image. If Python/OpenCV are not available, the scan returns no cards (graceful fallback).
+- **Optional generator service** (Hetzner): set `ARUCO_GENERATOR_URL` to a service that serves `GET /marker/:id.png` to generate markers on demand and avoid committing many PNGs.
 
 ## Project Structure
 

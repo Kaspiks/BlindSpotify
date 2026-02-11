@@ -33,12 +33,12 @@ div data-controller="qr-modal"
 
     .flex.flex-wrap.gap-2
       - if presenter.can_generate_qr_codes?
-        = button_to generate_qr_codes_admin_playlist_path(playlist), method: :post, class: "inline-flex items-center gap-2 px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-lg transition-colors", data: { turbo_confirm: presenter.qr_completed? ? t('.confirms.regenerate') : nil } do
+        = button_to generate_qr_codes_admin_playlist_path(playlist), method: :post, class: "inline-flex items-center gap-2 px-3 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-colors", data: { turbo_confirm: presenter.qr_completed? ? t('.confirms.regenerate') : nil } do
           = icon(:qrcode, class: "w-4 h-4")
           span = presenter.qr_completed? ? t('.buttons.regenerate_qr_codes') : t('.buttons.generate_qr_codes')
 
-      - if presenter.qr_completed?
-        = link_to download_cards_admin_playlist_path(playlist), class: "inline-flex items-center gap-2 px-3 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-colors" do
+      - if presenter.qr_completed? && playlist.qr_cards_pdf.attached?
+        = link_to download_cards_admin_playlist_path(playlist), class: "inline-flex items-center gap-2 px-3 py-2 bg-slate-600 hover:bg-slate-500 text-white text-sm font-medium rounded-lg transition-colors" do
           = icon(:download, class: "w-4 h-4")
           span = t('.buttons.download_pdf_cards')
 
@@ -73,12 +73,12 @@ div data-controller="qr-modal"
 
       .flex.items-center.gap-3
         - if presenter.can_generate_qr_codes?
-          = button_to generate_qr_codes_admin_playlist_path(playlist), method: :post, class: "inline-flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-lg transition-colors", data: { turbo_confirm: presenter.qr_completed? ? t('.confirms.regenerate') : nil } do
+          = button_to generate_qr_codes_admin_playlist_path(playlist), method: :post, class: "inline-flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors", data: { turbo_confirm: presenter.qr_completed? ? t('.confirms.regenerate') : nil } do
             = icon(:qrcode, class: "w-5 h-5")
             span = presenter.qr_completed? ? t('.buttons.regenerate_qr_codes') : t('.buttons.generate_qr_codes')
 
-        - if presenter.qr_completed?
-          = link_to download_cards_admin_playlist_path(playlist), class: "inline-flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors" do
+        - if presenter.qr_completed? && playlist.qr_cards_pdf.attached?
+          = link_to download_cards_admin_playlist_path(playlist), class: "inline-flex items-center gap-2 px-4 py-2 bg-slate-600 hover:bg-slate-500 text-white font-medium rounded-lg transition-colors" do
             = icon(:download, class: "w-5 h-5")
             span = t('.buttons.download_pdf_cards')
 

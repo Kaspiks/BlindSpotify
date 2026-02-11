@@ -5,21 +5,10 @@ html
     meta name="viewport" content="width=device-width,initial-scale=1"
     = csrf_meta_tags
     = csp_meta_tag
-    script src="https://cdn.tailwindcss.com"
-    javascript:
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              slate: {
-                750: '#293548',
-                850: '#172033'
-              }
-            }
-          }
-        }
-      }
+    = stylesheet_link_tag "tailwind"
     = javascript_importmap_tags
+    = stylesheet_link_tag "tom-select"
+    = stylesheet_link_tag "tom_select_overrides"
 
     css:
       /* SVG Icon styles */

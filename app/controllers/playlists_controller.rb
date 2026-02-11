@@ -6,7 +6,6 @@ class PlaylistsController < ApplicationController
   before_action :set_playlist, only: %i[show destroy import status]
 
   presents_index :playlists, presenter_class: Playlists::IndexPresenter, decorator: false
-  presents_show :playlist, presenter_class: Playlists::ShowPresenter, decorator: false
   presents_form :form, presenter_class: Playlists::FormPresenter
 
   def index
@@ -16,8 +15,7 @@ class PlaylistsController < ApplicationController
 
   def show
     authorize @playlist
-    @tracks = @playlist.tracks.ordered
-    Rails.logger.info "[PlaylistsController] Showing playlist #{@playlist.id} with #{@tracks.size} tracks (tracks_count: #{@playlist.tracks_count})"
+    @presenter = Playlists::ShowPresenter.new(playlist: @playlist)
   end
 
   def new
@@ -47,7 +45,6 @@ class PlaylistsController < ApplicationController
 
   def import
     authorize @playlist
-    # Clear existing tracks to get fresh data (including new preview URLs)
     @playlist.tracks.destroy_all
     @playlist.update!(import_status: "pending", imported_tracks_count: 0, tracks_count: 0, import_error: nil)
     PlaylistImportJob.perform_later(@playlist.id)
@@ -67,7 +64,7 @@ class PlaylistsController < ApplicationController
   private
 
   def set_playlist
-    @playlist = policy_scope(Playlist).find(params[:id])
+    @playlist = policy_scope(Playlist).includes(:tracks).find(params[:id])
   end
 
   def playlist_params
