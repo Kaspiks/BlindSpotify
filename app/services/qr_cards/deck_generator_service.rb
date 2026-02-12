@@ -119,10 +119,9 @@ module QrCards
           draw_front_card(pdf, slot, index)
         end
 
-        # Back side: QR codes
         pdf.start_new_page
-        reversed = reverse_rows_for_printing(page_slots)
-        reversed.each_with_index do |slot, index|
+        back_slots = reorder_for_duplex(page_slots)
+        back_slots.each_with_index do |slot, index|
           next if slot.nil?
 
           draw_qr_card(pdf, slot, index)
@@ -132,9 +131,10 @@ module QrCards
       end
     end
 
-    def reverse_rows_for_printing(slots)
-      padded = slots + [nil] * (CARDS_PER_PAGE - slots.size)
-      padded.reverse
+    def reorder_for_duplex(page_slots)
+      padded = page_slots + [nil] * (CARDS_PER_PAGE - page_slots.size)
+      grid = padded.each_slice(CARDS_PER_ROW).to_a
+      grid.map(&:reverse).flatten
     end
 
     def card_position(index)
