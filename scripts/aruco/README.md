@@ -21,3 +21,11 @@
   Same dictionary as generation (`DICT_4X4_250`).
 
 On Hetzner (or any host with Python + OpenCV), the Rails app can call `detect_markers.py` when a user uploads a photo of their deck to resolve which cards are visible.
+
+### Production (e.g. Render)
+
+Deck scan (ArUco detection) runs **server-side** and needs **Python 3** and **OpenCV with contrib** (`opencv-python`, `opencv-contrib-python`). If these are missing, scans always return "No cards detected."
+
+- **Render with Docker:** Use the project’s **Dockerfile** as the Render service image. It already installs Python and the `scripts/aruco/requirements.txt` dependencies. Deploy as a "Docker" web service, not the Ruby buildpack.
+- **Render with Ruby buildpack:** The buildpack does not install Python/OpenCV. Either switch to Docker deploy, or add a custom build step that installs Python 3 and runs `pip install -r scripts/aruco/requirements.txt` (non-trivial on the Ruby runtime).
+- **Logs:** If detection fails, the app logs `[DeckScan] ArUco script failed` and the script’s stderr (e.g. "python3: command not found" or "No module named 'cv2'") so you can confirm the cause in your host’s logs.

@@ -20,9 +20,20 @@ module QrCards
     CARD_MARGIN = 10
     CARDS_PER_ROW = 3
     CARDS_PER_PAGE = 6
+    ROWS_PER_PAGE = CARDS_PER_PAGE / CARDS_PER_ROW
 
     QR_PNG_PIXEL_SIZE = 600
     QR_PNG_BORDER_MODULES = 4
+
+    # A4 page dimensions in points
+    PAGE_WIDTH = 595.28
+    PAGE_HEIGHT = 841.89
+
+    # Center the card grid on the page for symmetric margins (important for duplex printing & cutting)
+    GRID_WIDTH  = CARDS_PER_ROW * CARD_WIDTH + (CARDS_PER_ROW - 1) * CARD_MARGIN
+    GRID_HEIGHT = ROWS_PER_PAGE * CARD_HEIGHT + (ROWS_PER_PAGE - 1) * CARD_MARGIN
+    X_OFFSET = (PAGE_WIDTH - GRID_WIDTH) / 2.0
+    Y_OFFSET = PAGE_HEIGHT - (PAGE_HEIGHT - GRID_HEIGHT) / 2.0
 
     def initialize(deck, on_progress: nil)
       @deck = deck
@@ -79,7 +90,7 @@ module QrCards
     def generate_pdf(slots, pdf_path)
       FileUtils.mkdir_p(File.dirname(pdf_path))
 
-      pdf = Prawn::Document.new(page_size: "A4", margin: 36)
+      pdf = Prawn::Document.new(page_size: "A4", margin: 0)
       setup_unicode_font(pdf)
       generate_interleaved_pages(pdf, slots)
       pdf.render_file(pdf_path)
@@ -129,8 +140,8 @@ module QrCards
     def card_position(index)
       row = index / CARDS_PER_ROW
       col = index % CARDS_PER_ROW
-      x = col * (CARD_WIDTH + CARD_MARGIN)
-      y = 720 - (row * (CARD_HEIGHT + CARD_MARGIN))
+      x = X_OFFSET + col * (CARD_WIDTH + CARD_MARGIN)
+      y = Y_OFFSET - (row * (CARD_HEIGHT + CARD_MARGIN))
       [x, y]
     end
 

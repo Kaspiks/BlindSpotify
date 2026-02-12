@@ -38,14 +38,20 @@ module Tracks
 
     def run_aruco_detection(image_path)
       script = Rails.root.join("scripts", "aruco", "detect_markers.py")
-      return [] unless File.exist?(script)
+      unless File.exist?(script)
+        Rails.logger.warn "[DeckScan] ArUco script not found: #{script}"
+        return []
+      end
 
-      out, _err, status = Open3.capture3("python3", script.to_s, image_path.to_s)
-      return [] unless status.success?
+      out, err, status = Open3.capture3("python3", script.to_s, image_path.to_s)
+      unless status.success?
+        Rails.logger.warn "[DeckScan] ArUco script failed (exit #{status.exitstatus}). stderr: #{err.presence || '(none)'}"
+        return []
+      end
 
       out.strip.split("\n").map(&:strip).reject(&:blank?).map(&:to_i).uniq
     rescue StandardError => e
-      Rails.logger.warn "[Tracks::DeckScanActionsController] ArUco detection failed: #{e.message}"
+      Rails.logger.warn "[DeckScan] ArUco detection error: #{e.message}"
       []
     end
   end

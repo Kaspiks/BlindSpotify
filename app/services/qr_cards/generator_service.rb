@@ -15,9 +15,26 @@ module QrCards
     CARD_MARGIN = 10
     CARDS_PER_ROW = 3
     CARDS_PER_PAGE = 6
+    ROWS_PER_PAGE = CARDS_PER_PAGE / CARDS_PER_ROW
 
     QR_PNG_PIXEL_SIZE = 600
     QR_PNG_BORDER_MODULES = 4
+
+    # A4 page dimensions in points
+    PAGE_WIDTH = 595.28
+    PAGE_HEIGHT = 841.89
+
+    # Center the card grid on the page for symmetric margins (important for duplex printing & cutting)
+    GRID_WIDTH  = CARDS_PER_ROW * CARD_WIDTH + (CARDS_PER_ROW - 1) * CARD_MARGIN
+    GRID_HEIGHT = ROWS_PER_PAGE * CARD_HEIGHT + (ROWS_PER_PAGE - 1) * CARD_MARGIN
+    X_OFFSET = (PAGE_WIDTH - GRID_WIDTH) / 2.0
+    Y_OFFSET = PAGE_HEIGHT - (PAGE_HEIGHT - GRID_HEIGHT) / 2.0
+
+    # IMPORTANT:
+    # Set this to match the printer duplex option you will select when printing:
+    # - :long_edge  => "Flip on long edge" (most common for portrait)
+    # - :short_edge => "Flip on short edge"
+    DUPLEX_MODE = :long_edge
 
     def initialize(playlist, on_progress: nil)
       @playlist = playlist
@@ -70,7 +87,7 @@ module QrCards
     def generate_pdf(tracks, pdf_path)
       FileUtils.mkdir_p(File.dirname(pdf_path))
 
-      pdf = Prawn::Document.new(page_size: "A4", margin: 36)
+      pdf = Prawn::Document.new(page_size: "A4", margin: 0)
 
       setup_unicode_font(pdf)
 
@@ -101,7 +118,7 @@ module QrCards
         # Start new page for all pages except the first
         pdf.start_new_page if page_index > 0
 
-        # Draw info cards (front side) – always text-only for static playlists
+        # Draw info cards (front side)
         page_tracks.each_with_index do |track, index|
           draw_info_card(pdf, track, index)
         end
@@ -109,10 +126,10 @@ module QrCards
         # Start new page for QR codes (back side)
         pdf.start_new_page
 
-        # Reverse for double-sided printing alignment
-        page_tracks_reversed = reverse_rows_for_printing(page_tracks)
+        # Reorder the back side to match the selected printer duplex flip mode
+        page_tracks_back = reorder_for_duplex(page_tracks, mode: DUPLEX_MODE)
 
-        page_tracks_reversed.each_with_index do |track, index|
+        page_tracks_back.each_with_index do |track, index|
           next if track.nil?
 
           draw_qr_card(pdf, track, index)
@@ -125,27 +142,41 @@ module QrCards
       end
     end
 
-    def reverse_rows_for_printing(tracks)
-      padded = tracks + [nil] * (CARDS_PER_PAGE - tracks.size)
+    # Reorders tracks for the back page based on printer duplex mode.
+    # For a 3x2 grid:
+    # - :long_edge mirrors left<->right within each row
+    # - :short_edge swaps rows top<->bottom
+    def reorder_for_duplex(page_tracks, mode:)
+      padded = page_tracks + [nil] * (CARDS_PER_PAGE - page_tracks.size)
 
-      # Reverse entire page for 180° rotation - ensures QR codes align perfectly
-      # when printed double-sided and flipped
-      padded.reverse
+      # 2D grid: rows of 3 columns
+      grid = padded.each_slice(CARDS_PER_ROW).to_a
+
+      reordered =
+        case mode
+        when :long_edge
+          grid.map(&:reverse)
+        when :short_edge
+          grid.reverse
+        else
+          raise ArgumentError, "Unknown duplex mode: #{mode.inspect}"
+        end
+
+      reordered.flatten
     end
 
-    def card_position(index)
+    def card_position(pdf, index)
       row = index / CARDS_PER_ROW
       col = index % CARDS_PER_ROW
 
-      x = col * (CARD_WIDTH + CARD_MARGIN)
-      # Y is from top of page content area
-      y = 720 - (row * (CARD_HEIGHT + CARD_MARGIN))
+      x = X_OFFSET + col * (CARD_WIDTH + CARD_MARGIN)
+      y = Y_OFFSET - (row * (CARD_HEIGHT + CARD_MARGIN))
 
       [x, y]
     end
 
     def draw_info_card(pdf, track, index)
-      x, y = card_position(index)
+      x, y = card_position(pdf, index)
 
       pdf.stroke_color "CCCCCC"
       pdf.stroke_rectangle [x, y], CARD_WIDTH, CARD_HEIGHT
@@ -190,7 +221,7 @@ module QrCards
     end
 
     def draw_qr_card(pdf, track, index)
-      x, y = card_position(index)
+      x, y = card_position(pdf, index)
 
       pdf.stroke_color "CCCCCC"
       pdf.stroke_rectangle [x, y], CARD_WIDTH, CARD_HEIGHT
@@ -233,7 +264,7 @@ module QrCards
     end
 
     def refresh_preview_urls!(tracks)
-      tracks.each_with_index do |track, i|
+      tracks.each do |track|
         next if track.preview_url_valid?
 
         track.refresh_preview_url!
@@ -306,7 +337,6 @@ module QrCards
     end
 
     def default_url_options
-      # Use configured URL options (host + port) or fallback
       Rails.application.config.action_mailer.default_url_options ||
         { host: ENV.fetch("APP_HOST", "localhost"), port: ENV.fetch("APP_PORT", 3024) }
     end

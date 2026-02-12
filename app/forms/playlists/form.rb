@@ -31,7 +31,7 @@ module Playlists
     end
 
     def available_genres
-      ClassificationValue.for_classification("genre").ordered
+      ClassificationValue.for_classification("genres").ordered
     end
 
     def should_import?

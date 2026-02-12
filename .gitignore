@@ -5,6 +5,7 @@
 
 /.env*
 !/.env*.erb
+deploy/.env.production
 
 /log/*
 /tmp/*

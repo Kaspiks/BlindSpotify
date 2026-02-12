@@ -3,3 +3,7 @@ root:
     name: Resource Types
   - code: grant_types
     name: Grant Types
+  - code: difficulty_levels
+    name: Difficulty Levels
+  - code: genres
+    name: Genres

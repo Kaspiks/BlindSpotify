@@ -25,6 +25,7 @@ const includedIcons = [
   "clock",
   "copy",
   "device-gamepad-2",
+  "download",
   "edit",
   "external-link",
   "eye",
