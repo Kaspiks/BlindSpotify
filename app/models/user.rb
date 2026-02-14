@@ -7,6 +7,7 @@ class User < ApplicationRecord
   belongs_to :role, optional: true
   has_many :playlists, dependent: :destroy
   has_many :games, dependent: :destroy
+  has_many :rooms, foreign_key: :host_id, dependent: :destroy
 
   # uid/provider only required for OAuth users (optional now)
   validates :uid, uniqueness: { scope: :provider }, allow_nil: true

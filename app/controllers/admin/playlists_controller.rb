@@ -19,7 +19,7 @@ module Admin
       end
 
       @playlist.tracks.update_all(qr_generated: false)
-      @playlist.update!(qr_status: "generating", qr_generated_count: 0, qr_error: nil)
+      @playlist.update!(qr_status: 'generating', qr_generated_count: 0, qr_error: nil)
 
       QrCodesGenerationJob.perform_later(@playlist.id)
       redirect_to admin_playlist_path(@playlist), notice: t_context(".success")
@@ -70,7 +70,7 @@ module Admin
 
     def build_index_presenter
       playlists = Playlist.includes(:user, :genre, :tracks)
-                          .where(import_status: "completed")
+                          .where(import_status: 'completed')
                           .order(created_at: :desc)
 
       Admin::Playlists::IndexPresenter.new(playlists: playlists)

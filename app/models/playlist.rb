@@ -2,24 +2,28 @@
 
 class Playlist < ApplicationRecord
   belongs_to :user
-  belongs_to :genre, class_name: "ClassificationValue", optional: true
+  belongs_to :genre, class_name: 'ClassificationValue', optional: true
 
   has_one_attached :qr_cards_pdf
 
   has_many :tracks, dependent: :destroy
 
   validates :name, presence: true
+  validates :import_status, inclusion: { in: ->(_) { import_status_values } }
+  validates :qr_status, inclusion: { in: ->(_) { qr_status_values } }
 
-  IMPORT_STATUSES = %w[pending importing completed failed].freeze
-  validates :import_status, inclusion: { in: IMPORT_STATUSES }
+  scope :pending, -> { where(import_status: 'pending') }
+  scope :importing, -> { where(import_status: 'importing') }
+  scope :completed, -> { where(import_status: 'completed') }
+  scope :failed, -> { where(import_status: 'failed') }
 
-  QR_STATUSES = %w[pending generating completed failed].freeze
-  validates :qr_status, inclusion: { in: QR_STATUSES }
+  def self.import_status_values
+    ClassificationValues::ImportStatus.ordered.pluck(:value)
+  end
 
-  scope :pending, -> { where(import_status: "pending") }
-  scope :importing, -> { where(import_status: "importing") }
-  scope :completed, -> { where(import_status: "completed") }
-  scope :failed, -> { where(import_status: "failed") }
+  def self.qr_status_values
+    ClassificationValues::QrStatus.ordered.pluck(:value)
+  end
 
   searchable_text_column :name
 
@@ -30,37 +34,37 @@ class Playlist < ApplicationRecord
 
   def import_progress_percentage
     return 0 if tracks_count.zero?
-    return 100 if import_status == "completed"
+    return 100 if import_status == 'completed'
 
     ((imported_tracks_count.to_f / tracks_count) * 100).round
   end
 
   def pending?
-    import_status == "pending"
+    import_status == 'pending'
   end
 
   def importing?
-    import_status == "importing"
+    import_status == 'importing'
   end
 
   def completed?
-    import_status == "completed"
+    import_status == 'completed'
   end
 
   def failed?
-    import_status == "failed"
+    import_status == 'failed'
   end
 
   def start_import!
-    update!(import_status: "importing", import_error: nil)
+    update!(import_status: 'importing', import_error: nil)
   end
 
   def complete_import!
-    update!(import_status: "completed", imported_tracks_count: tracks.count)
+    update!(import_status: 'completed', imported_tracks_count: tracks.count)
   end
 
   def fail_import!(error_message)
-    update!(import_status: "failed", import_error: error_message)
+    update!(import_status: 'failed', import_error: error_message)
   end
 
   def increment_imported_count!
@@ -69,31 +73,31 @@ class Playlist < ApplicationRecord
 
   # QR generation state machine
   def qr_pending?
-    qr_status == "pending"
+    qr_status == 'pending'
   end
 
   def qr_generating?
-    qr_status == "generating"
+    qr_status == 'generating'
   end
 
   def qr_completed?
-    qr_status == "completed"
+    qr_status == 'completed'
   end
 
   def qr_failed?
-    qr_status == "failed"
+    qr_status == 'failed'
   end
 
   def start_qr_generation!
-    update!(qr_status: "generating", qr_error: nil, qr_generated_count: 0)
+    update!(qr_status: 'generating', qr_error: nil, qr_generated_count: 0)
   end
 
   def complete_qr_generation!
-    update!(qr_status: "completed", qr_generated_count: tracks.count)
+    update!(qr_status: 'completed', qr_generated_count: tracks.count)
   end
 
   def fail_qr_generation!(error_message)
-    update!(qr_status: "failed", qr_error: error_message)
+    update!(qr_status: 'failed', qr_error: error_message)
   end
 
   def increment_qr_generated_count!
@@ -102,7 +106,7 @@ class Playlist < ApplicationRecord
 
   def qr_progress_percentage
     return 0 if tracks_count.zero?
-    return 100 if qr_status == "completed"
+    return 100 if qr_status == 'completed'
 
     ((qr_generated_count.to_f / tracks_count) * 100).round
   end
@@ -116,7 +120,7 @@ class Playlist < ApplicationRecord
     return nil if input.blank?
 
     # Handle full URLs like https://www.deezer.com/playlist/1234567890
-    if input.include?("deezer.com")
+    if input.include?('deezer.com')
       match = input.match(%r{/playlist/(\d+)})
       return match[1] if match
     end

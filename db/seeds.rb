@@ -11,9 +11,9 @@ def log(message, indent: 0)
 end
 
 def seed_classifications
-  log("Seeding classifications", indent: 1)
+  log('Seeding classifications', indent: 1)
 
-  config_path = SEEDS_PATH.join("classifications.yml")
+  config_path = SEEDS_PATH.join('classifications.yml')
   classifications_type_data = YAML.safe_load(File.read(config_path)).with_indifferent_access
 
   classifications_type_data.each do |_type, classifications_data|
@@ -30,8 +30,33 @@ def create_classification(code, is_system: false, name: nil)
     log("Skipping classification: #{code}", indent: 2)
   else
     log("Seeding classification: #{code}", indent: 2)
-
     Classification.create!(code: code, name: name)
+  end
+end
+
+def seed_classification_values
+  log('Seeding classification values', indent: 1)
+
+  %w[room_statuses import_statuses qr_statuses].each do |code|
+    classification = Classification.find_by(code: code)
+    next unless classification
+
+    config_path = SEEDS_PATH.join("#{code}.yml")
+    next unless File.exist?(config_path)
+
+    values = YAML.safe_load(File.read(config_path))
+    Array(values).each_with_index do |entry, sort_order|
+      attrs = entry.is_a?(Hash) ? entry.with_indifferent_access : { value: entry.to_s, description: nil }
+      value = attrs[:value]
+      description = attrs[:description]
+
+      if classification.classification_values.exists?(value: value)
+        log("Skipping #{code} value: #{value}", indent: 2)
+      else
+        log("Seeding #{code} value: #{value}", indent: 2)
+        classification.classification_values.create!(value: value, description: description, sort_order: sort_order)
+      end
+    end
   end
 end
 
@@ -154,6 +179,7 @@ seed_permissions
 seed_roles
 seed_settings
 seed_classifications
+seed_classification_values
 
 # Admin user (created in all environments)
 log("Seeding admin user...", indent: 1)

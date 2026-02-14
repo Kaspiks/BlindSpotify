@@ -16,6 +16,12 @@ en:
       next_track?: "You can only control your own active games."
       reveal?: "You can only reveal tracks in your own active games."
       abandon?: "You can only abandon your own active games."
+    room_policy:
+      show?: "Room not found or closed."
+      create?: "You must be signed in to create a room."
+      play_track?: "Only the host can play a track."
+      reveal?: "Only the host can reveal the track."
+      next?: "Only the host can go to the next track."
     playlist_policy:
       index?: "You must be signed in to view playlists."
       show?: "You can only view your own playlists."

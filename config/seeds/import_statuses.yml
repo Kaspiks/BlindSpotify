@@ -1,0 +1,9 @@
+# Classification values for import_statuses. Loaded by seeds.rb.
+- value: pending
+  description: Import has not started yet.
+- value: importing
+  description: Tracks are being imported from Deezer.
+- value: completed
+  description: Import finished successfully.
+- value: failed
+  description: Import failed with an error.

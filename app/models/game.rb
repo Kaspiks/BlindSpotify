@@ -2,7 +2,7 @@
 
 class Game < ApplicationRecord
   belongs_to :user
-  belongs_to :playlist
+  belongs_to :playlist, dependent: :destroy
 
   enum :status, { active: "active", completed: "completed", abandoned: "abandoned" }
 

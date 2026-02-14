@@ -1,0 +1,18 @@
+- content_for :title, t("controllers.rooms.play_track_actions.new.page_title", default: "Play track in room")
+
+.max-w-md.mx-auto.px-4.py-8
+  .bg-slate-800.rounded-2xl.p-6
+    h1.text-xl.font-bold.text-white.mb-4= t("controllers.rooms.play_track_actions.new.title", default: "Play a track in this room")
+    p.text-slate-400.mb-6= t("controllers.rooms.play_track_actions.new.description", default: "Paste a track token from a QR code, or enter deck position.")
+
+    = simple_form_for @form, url: room_play_track_actions_path(@room), method: :post, html: { class: "space-y-4" } do |f|
+      = f.input :track_token, label: t("controllers.rooms.play_track_actions.new.track_token_label", default: "Track token (from QR)"), input_html: { class: "bg-slate-700 border-slate-600 text-white rounded-lg", placeholder: "e.g. abc123..." }, required: false
+      .grid.grid-cols-2.gap-4
+        = f.input :deck_id, label: t("controllers.rooms.play_track_actions.new.deck_id_label", default: "Deck ID"), input_html: { class: "bg-slate-700 border-slate-600 text-white rounded-lg" }, required: false
+        = f.input :position, label: t("controllers.rooms.play_track_actions.new.position_label", default: "Position"), input_html: { class: "bg-slate-700 border-slate-600 text-white rounded-lg", min: 1 }, required: false
+      = f.button :submit, t("controllers.rooms.play_track_actions.create.submit", default: "Play track"), class: "w-full py-3 bg-purple-600 hover:bg-purple-500 text-white font-semibold rounded-xl"
+
+    .mt-4.text-center
+      = link_to room_join_path(@room.code), class: "text-slate-400 hover:text-white transition-colors" do
+        = icon("arrow-left", class: "w-5 h-5 inline mr-2")
+        span= t("controllers.rooms.play_track_actions.new.back", default: "Back to room")

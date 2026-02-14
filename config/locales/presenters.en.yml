@@ -130,6 +130,21 @@ en:
           play: "Play this playlist"
         uncategorized: "Uncategorized"
 
+    rooms:
+      show:
+        page_title: "Live Room %{code}"
+        share_label: "Share"
+        copied_label: "Copied!"
+        copy_code_label: "Copy code"
+        reveal_label: "Reveal"
+        next_label: "Next"
+        scan_card_label: "Scan card"
+        mystery_text: "???"
+        mystery_hint: "Listen and guess..."
+        no_track_message: "No track playing. Host will scan a card or choose a track."
+        no_preview: "Preview not available"
+        back_label: "Back"
+
     playlists:
       index:
         page_title: "My Playlists"

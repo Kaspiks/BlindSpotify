@@ -7,3 +7,9 @@ root:
     name: Difficulty Levels
   - code: genres
     name: Genres
+  - code: room_statuses
+    name: Room Statuses
+  - code: import_statuses
+    name: Import Statuses
+  - code: qr_statuses
+    name: QR Generation Statuses

@@ -70,6 +70,16 @@ Rails.application.routes.draw do
     end
   end
 
+  # Live Room / Party Mode (guest join by code)
+  get "r/:code", to: "rooms#show", as: :room_join, constraints: { code: /[A-Za-z0-9]{6}/ }
+  resources :rooms, only: [:new, :create] do
+    scope module: :rooms do
+      resources :play_track_actions, only: [:new, :create]
+      resources :reveal_actions, only: [:new, :create]
+      resources :next_actions, only: [:new, :create]
+    end
+  end
+
   # Track playback via QR code token
   get "q/:token", to: "tracks#play", as: :track_qr
   get "q/:token/refresh_preview", to: "tracks#refresh_preview", as: :refresh_track_preview

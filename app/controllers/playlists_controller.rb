@@ -46,7 +46,7 @@ class PlaylistsController < ApplicationController
   def import
     authorize @playlist
     @playlist.tracks.destroy_all
-    @playlist.update!(import_status: "pending", imported_tracks_count: 0, tracks_count: 0, import_error: nil)
+    @playlist.update!(import_status: 'pending', imported_tracks_count: 0, tracks_count: 0, import_error: nil)
     PlaylistImportJob.perform_later(@playlist.id)
     redirect_to @playlist, notice: t_context(".success")
   end

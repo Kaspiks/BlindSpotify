@@ -24,7 +24,7 @@ module Games
     def available_playlists_by_genre(user)
       Playlist.includes(:genre, :tracks)
               .where(user: user)
-              .where.not(import_status: "pending")
+              .where.not(import_status: 'pending')
               .select { |p| p.tracks.any? }
               .group_by(&:genre)
     end

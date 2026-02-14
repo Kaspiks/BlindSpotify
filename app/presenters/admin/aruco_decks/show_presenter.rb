@@ -27,7 +27,7 @@ module Admin
       end
 
       def playlists_for_assign
-        Playlist.where(import_status: "completed").where("tracks_count >= ?", 1).order(:name)
+        Playlist.where(import_status: 'completed').where("tracks_count >= ?", 1).order(:name)
       end
     end
   end

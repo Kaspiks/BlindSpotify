@@ -28,11 +28,11 @@ module Admin
       end
 
       def completed_playlists
-        Playlist.where(import_status: "completed").count
+        Playlist.where(import_status: 'completed').count
       end
 
       def playlists_with_qr
-        Playlist.where(qr_status: "completed").count
+        Playlist.where(qr_status: 'completed').count
       end
     end
   end

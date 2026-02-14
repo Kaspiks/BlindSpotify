@@ -1,0 +1,53 @@
+/ Room player area - replaced by Turbo broadcast on play/reveal/next
+div id="room_player" class="bg-slate-800 rounded-2xl overflow-hidden"
+  - track = room.current_track
+  - revealed = room.revealed
+
+  - if track
+    .aspect-video.relative.bg-gradient-to-br.from-slate-700.to-slate-800
+      - if revealed && track.album_cover_url.present?
+        img src=track.album_cover_url alt="" class="w-full h-full object-cover"
+      - else
+        .w-full.h-full.flex.flex-col.items-center.justify-center.gap-4
+          .w-24.h-24.rounded-full.bg-slate-600/50.flex.items-center.justify-center
+            = icon("music", class: "w-12 h-12 text-slate-400")
+      .absolute.bottom-0.left-0.right-0.h-16.bg-gradient-to-t.from-slate-800.to-transparent
+
+    .p-6
+      - if revealed
+        .text-center.mb-6
+          h2.text-2xl.font-bold.text-white.mb-2= track.title
+          p.text-lg.text-slate-300= track.artist_name
+          - if track.release_year.present?
+            p.text-sm.text-purple-400.mt-2= track.release_year
+      - else
+        .text-center.mb-4
+          h2.text-2xl.font-bold.text-slate-400= t("presenters.rooms.show.mystery_text", default: "???")
+          p.text-slate-500= t("presenters.rooms.show.mystery_hint", default: "Listen and guess...")
+
+      - if track.preview_url.present?
+        .mb-6 data-controller="audio-player"
+          audio data-audio-player-target="audio" src=track.preview_url preload="auto"
+          .flex.justify-center.mb-4
+            button.w-16.h-16.rounded-full.bg-purple-600.hover:bg-purple-500.text-white.flex.items-center.justify-center.transition-all.hover:scale-105.active:scale-95 type="button" data-action="click->audio-player#toggle" data-audio-player-target="playButton"
+              span data-audio-player-target="playIcon"
+                = icon("player-play", class: "w-8 h-8 ml-0.5")
+              span.hidden data-audio-player-target="pauseIcon"
+                = icon("player-pause", class: "w-8 h-8")
+          .px-2
+            .h-2.bg-slate-700.rounded-full.cursor-pointer.overflow-hidden data-action="click->audio-player#seek" data-audio-player-target="progressBar"
+              .h-full.bg-purple-500.rounded-full.transition-all.duration-100 data-audio-player-target="progress" style="width: 0%"
+            .flex.justify-between.text-xs.text-slate-500.mt-2
+              span data-audio-player-target="currentTime" 0:00
+              span data-audio-player-target="duration" 0:30
+      - else
+        .text-center.py-6
+          = icon("music-off", class: "w-10 h-10 text-slate-600 mx-auto mb-2")
+          p.text-slate-500.text-sm= t("presenters.rooms.show.no_preview", default: "Preview not available")
+  - else
+    .aspect-video.relative.bg-gradient-to-br.from-slate-700.to-slate-800
+      .w-full.h-full.flex.flex-col.items-center.justify-center.gap-4
+        .w-24.h-24.rounded-full.bg-slate-600/50.flex.items-center.justify-center
+          = icon("music", class: "w-12 h-12 text-slate-400")
+    .p-8.text-center
+      p.text-slate-400= t("presenters.rooms.show.no_track_message", default: "No track playing. Host will scan a card or choose a track.")

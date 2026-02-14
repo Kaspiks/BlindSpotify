@@ -3,12 +3,15 @@
 class ClassificationValue < ApplicationRecord
   belongs_to :classification
 
+  has_many :playlists, foreign_key: :genre_id, dependent: :nullify
+
   validates :value, presence: true
   validates :value, uniqueness: { scope: :classification_id }
 
   scope :active, -> { where(active: true) }
   scope :ordered, -> { order(:sort_order, :value) }
   scope :for_classification, ->(code) { joins(:classification).where(classifications: { code: code }) }
+  scope :by_classification_code, ->(code) { for_classification(code) }
 
   searchable_text_column :value
 

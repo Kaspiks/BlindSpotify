@@ -1,5 +1,11 @@
 en:
   decorators:
+    room:
+      anonymous_host: "Anonymous"
+      no_track: "—"
+      status_active: "Active"
+      status_closed: "Closed"
+
     classification:
       resource_types: Resource Types
       grant_types: Grant Types

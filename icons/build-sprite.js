@@ -38,6 +38,7 @@ const includedIcons = [
   "home",
   "info-circle",
   "list",
+  "link",
   "lock",
   "login",
   "logout",

@@ -538,6 +538,7 @@ DEPENDENCIES
   bootsnap
   brakeman
   capybara
+  chunky_png
   cloudinary (~> 1.29)
   database_cleaner-active_record
   debug

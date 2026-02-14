@@ -1,0 +1,5 @@
+# Classification values for room_statuses. Loaded by seeds.rb.
+- value: active
+  description: Room is open for players to join and play.
+- value: closed
+  description: Room is no longer accepting new activity.

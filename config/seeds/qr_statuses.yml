@@ -1,0 +1,9 @@
+# Classification values for qr_statuses. Loaded by seeds.rb.
+- value: pending
+  description: QR code generation has not started.
+- value: generating
+  description: QR codes are being generated.
+- value: completed
+  description: All QR codes have been generated.
+- value: failed
+  description: QR code generation failed.

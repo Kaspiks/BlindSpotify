@@ -16,6 +16,36 @@ en:
         sign_in_notice: "Signed in as %{user} (Development Mode)"
       dev_login_only_available_in_development: Dev login is only available in development
 
+    rooms:
+      show:
+        page_title: "Live Room %{code}"
+      new:
+        page_title: "Create Live Room"
+        title: "Create a Live Room"
+        description: "Start a party session. Share the room code with players so everyone sees the same track."
+        back: "Back"
+      create:
+        success: "Room created! Share the code with players."
+        submit: "Create room"
+      play_track_actions:
+        new:
+          page_title: "Play track in room"
+          title: "Play a track in this room"
+          description: "Paste a track token from a QR code, or enter deck position."
+          track_token_label: "Track token (from QR)"
+          deck_id_label: "Deck ID"
+          position_label: "Position"
+          back: "Back to room"
+        create:
+          success: "Track is now playing for everyone."
+          submit: "Play track"
+      reveal_actions:
+        create:
+          success: "Track revealed!"
+      next_actions:
+        create:
+          success: "Next track."
+
     games:
       create:
         success: Game started! Good luck!
@@ -85,6 +115,7 @@ en:
             success: Release years updated.
 
       tracks:
+        played_in_room: Track playing in room.
         qr_code:
           not_generated: QR code not generated for this track.
 

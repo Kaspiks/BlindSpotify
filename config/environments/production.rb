@@ -58,11 +58,13 @@ Rails.application.configure do
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.
   # config.action_mailer.raise_delivery_errors = false
 
-  # Set host to be used by links generated in mailer templates and QR codes.
-  config.action_mailer.default_url_options = {
+  # Set host to be used by links generated in mailer templates, QR codes, and share links.
+  default_url_options = {
     host: ENV.fetch("APP_HOST", "example.com"),
     protocol: ENV.fetch("FORCE_SSL", "true") == "true" ? "https" : "http"
   }
+  config.action_controller.default_url_options = default_url_options
+  config.action_mailer.default_url_options = default_url_options
 
   # Specify outgoing SMTP server. Remember to add smtp/* credentials via rails credentials:edit.
   # config.action_mailer.smtp_settings = {

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_02_10_160000) do
+ActiveRecord::Schema[8.0].define(version: 2026_02_15_000002) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -154,6 +154,29 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_10_160000) do
     t.index ["name"], name: "index_roles_on_name", unique: true
   end
 
+  create_table "room_participants", force: :cascade do |t|
+    t.bigint "room_id", null: false
+    t.string "session_id", null: false
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["room_id", "session_id"], name: "index_room_participants_on_room_id_and_session_id", unique: true
+    t.index ["room_id"], name: "index_room_participants_on_room_id"
+  end
+
+  create_table "rooms", force: :cascade do |t|
+    t.string "code", null: false
+    t.bigint "host_id"
+    t.bigint "current_track_id"
+    t.boolean "revealed", default: false, null: false
+    t.string "status", default: "active", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["code"], name: "index_rooms_on_code", unique: true
+    t.index ["current_track_id"], name: "index_rooms_on_current_track_id"
+    t.index ["host_id"], name: "index_rooms_on_host_id"
+  end
+
   create_table "settings", force: :cascade do |t|
     t.string "key", null: false
     t.text "value"
@@ -225,6 +248,9 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_10_160000) do
   add_foreign_key "permissions_roles", "roles"
   add_foreign_key "playlists", "classification_values", column: "genre_id"
   add_foreign_key "playlists", "users"
+  add_foreign_key "room_participants", "rooms"
+  add_foreign_key "rooms", "tracks", column: "current_track_id"
+  add_foreign_key "rooms", "users", column: "host_id"
   add_foreign_key "tracks", "playlists"
   add_foreign_key "users", "roles"
 end

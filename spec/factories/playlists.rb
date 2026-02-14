@@ -4,7 +4,7 @@ FactoryBot.define do
   factory :playlist do
     user
     sequence(:name) { |n| "Playlist #{n}" }
-    import_status { "pending" }
+    import_status { 'pending' }
     tracks_count { 0 }
     imported_tracks_count { 0 }
 
@@ -14,19 +14,19 @@ FactoryBot.define do
     end
 
     trait :importing do
-      import_status { "importing" }
+      import_status { 'importing' }
       tracks_count { 20 }
       imported_tracks_count { 5 }
     end
 
     trait :completed do
-      import_status { "completed" }
+      import_status { 'completed' }
       tracks_count { 20 }
       imported_tracks_count { 20 }
     end
 
     trait :failed do
-      import_status { "failed" }
+      import_status { 'failed' }
       import_error { "Failed to connect to Deezer API" }
     end
 
