@@ -274,6 +274,11 @@ en:
           track: Track
           playlist: Playlist
         no_slots: No slots assigned yet. Assign a playlist to populate the slots.
+  rooms:
+    players_in_session: "Players in session"
+    anonymous_player: "Player"
+    no_players_yet: "No players yet. Share the room code."
+
   games:
     game_card:
       progress:

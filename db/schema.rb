@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_02_15_000002) do
+ActiveRecord::Schema[8.0].define(version: 2026_02_15_000004) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -160,6 +160,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_15_000002) do
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "participant_id"
+    t.index ["participant_id"], name: "index_room_participants_on_participant_id"
     t.index ["room_id", "session_id"], name: "index_room_participants_on_room_id_and_session_id", unique: true
     t.index ["room_id"], name: "index_room_participants_on_room_id"
   end
@@ -172,6 +174,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_15_000002) do
     t.string "status", default: "active", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.jsonb "state_json", default: {}, null: false
     t.index ["code"], name: "index_rooms_on_code", unique: true
     t.index ["current_track_id"], name: "index_rooms_on_current_track_id"
     t.index ["host_id"], name: "index_rooms_on_host_id"
@@ -249,6 +252,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_15_000002) do
   add_foreign_key "playlists", "classification_values", column: "genre_id"
   add_foreign_key "playlists", "users"
   add_foreign_key "room_participants", "rooms"
+  add_foreign_key "room_participants", "users", column: "participant_id"
   add_foreign_key "rooms", "tracks", column: "current_track_id"
   add_foreign_key "rooms", "users", column: "host_id"
   add_foreign_key "tracks", "playlists"

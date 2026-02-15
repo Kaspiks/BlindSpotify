@@ -1,5 +1,5 @@
 # Production Dockerfile for Kamal deploy
-FROM ruby:3.3.0-slim-bookworm AS base
+FROM ruby:3.3.6-slim-bookworm AS base
 
 ENV RAILS_ENV=production
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8

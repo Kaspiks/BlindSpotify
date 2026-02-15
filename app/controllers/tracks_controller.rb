@@ -54,6 +54,8 @@ class TracksController < ApplicationController
 
     authorize room, :play_track?
     Rooms::PlayTrackService.call(room: room, track: @track)
+    Rooms::BroadcastPlayerService.call(room: room)
+    Rooms::BroadcastSessionStateService.call(room: room, event_type: "play_track")
     redirect_to room_join_path(room.code), notice: t("controllers.tracks.played_in_room", default: "Track playing in room.")
     true
   rescue Pundit::NotAuthorizedError

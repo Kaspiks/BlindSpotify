@@ -10,8 +10,32 @@ class Room < ApplicationRecord
   validates :revealed, inclusion: { in: [true, false] }
 
   before_validation :generate_code, on: :create
+  after_create :set_initial_state_json
 
   scope :active, -> { where(status: 'active') }
+
+  # Pattern B: session blob for RoomSessionChannel. Server is authoritative.
+  def state_snapshot
+    Rooms::SessionStateBuilder.call(room: self)
+  end
+
+  def sync_state_json!(event_type:, by: nil)
+    snapshot = state_snapshot
+    self.state_json = snapshot.merge(
+      "last_event" => {
+        "id" => next_event_id,
+        "at" => Time.current.to_i,
+        "type" => event_type.to_s,
+        "by" => by
+      }.compact
+    )
+    save!
+    state_json
+  end
+
+  def next_event_id
+    (state_json || {}).dig("last_event", "id").to_i + 1
+  end
 
   def self.room_status_values
     ClassificationValues::RoomStatus.ordered.pluck(:value)
@@ -32,6 +56,17 @@ class Room < ApplicationRecord
     return if code.present?
     self.code = Rooms::CodeGenerationService.call
   end
+
+  def set_initial_state_json
+    snapshot = state_snapshot
+    snapshot["last_event"] = {
+      "id" => 1,
+      "at" => Time.current.to_i,
+      "type" => "room_created",
+      "by" => host_id.present? ? "p_#{host_id}" : nil
+    }.compact
+    update_column(:state_json, snapshot)
+  end
 end
 
 # == Schema Information
@@ -41,6 +76,7 @@ end
 #  id               :bigint           not null, primary key
 #  code             :string           not null
 #  revealed         :boolean          default(FALSE), not null
+#  state_json       :jsonb            not null
 #  status           :string           default("active"), not null
 #  created_at       :datetime         not null
 #  updated_at       :datetime         not null

@@ -1,4 +1,4 @@
-FROM ruby:3.3.0-slim-bookworm
+FROM ruby:3.3.6-slim-bookworm
 
 ARG UID=1000
 ARG GID=1000

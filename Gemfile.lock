@@ -271,6 +271,13 @@ GEM
     pg (1.6.2-aarch64-linux)
     pg (1.6.2-x64-mingw-ucrt)
     pg (1.6.2-x86_64-linux)
+    phlex (2.4.1)
+      refract (~> 1.0)
+      zeitwerk (~> 2.7)
+    phlex-rails (2.4.0)
+      phlex (~> 2.4.0)
+      railties (>= 7.1, < 9)
+      zeitwerk (~> 2.7)
     pp (0.6.3)
       prettyprint
     prawn (2.5.0)
@@ -362,6 +369,9 @@ GEM
       redis-store (>= 1.2, < 2)
     redis-store (1.11.0)
       redis (>= 4, < 6)
+    refract (1.1.0)
+      prism
+      zeitwerk
     regexp_parser (2.11.3)
     reline (0.6.3)
       io-console (~> 0.5)
@@ -554,6 +564,7 @@ DEPENDENCIES
   omniauth-rails_csrf_protection
   omniauth-spotify
   pg (~> 1.5)
+  phlex-rails
   prawn (~> 2.5)
   prawn-table (~> 0.2)
   propshaft

@@ -1,6 +1,6 @@
 source "https://rubygems.org"
 
-ruby "3.3.0"
+ruby "3.3.6"
 
 gem "rails", "~> 8.0.0", ">= 8.0.0.1"
 gem "propshaft"
@@ -14,6 +14,7 @@ gem "tailwindcss-rails"
 gem "jbuilder"
 
 gem "slim-rails"
+gem "phlex-rails"
 
 gem "devise"
 gem "omniauth"

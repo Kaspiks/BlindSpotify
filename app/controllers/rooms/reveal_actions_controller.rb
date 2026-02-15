@@ -8,6 +8,7 @@ module Rooms
     def create
       Rooms::RevealService.call(room: @room)
       Rooms::BroadcastPlayerService.call(room: @room)
+      Rooms::BroadcastSessionStateService.call(room: @room, event_type: "reveal_round")
       redirect_to room_join_path(@room.code), notice: t_context(".success")
     end
 

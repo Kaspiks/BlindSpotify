@@ -14,6 +14,7 @@ module Rooms
       @form = build_form
       if @form.create(permitted_params)
         Rooms::BroadcastPlayerService.call(room: @room)
+        Rooms::BroadcastSessionStateService.call(room: @room, event_type: "play_track")
         redirect_to room_join_path(@room.code), notice: t_context(".success")
       else
         @presenter = FormPresenter.new(form: @form)

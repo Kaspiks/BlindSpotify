@@ -45,6 +45,19 @@ en:
       next_actions:
         create:
           success: "Next track."
+      join_actions:
+        new:
+          page_title: "Join room"
+          title: "Join the game"
+          description: "Enter your name to join this room. The host will share the code."
+          name_label: "Your name"
+          name_placeholder: "e.g. Alex"
+          submit: "Join"
+          back: "Back"
+          default_name: "Player"
+        create:
+          success: "You're in! Have fun."
+          already_joined: "You're already in this room."
 
     games:
       create:

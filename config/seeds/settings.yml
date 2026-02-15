@@ -121,3 +121,10 @@
   value_type: integer
   group: qr_codes
   description: "Default QR code size in pixels"
+
+# Live Room Settings
+- key: room_start_message
+  value: "Waiting for host"
+  value_type: string
+  group: live_room
+  description: "Message shown to players on their phone after joining (e.g. Waiting for host)"

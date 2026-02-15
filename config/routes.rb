@@ -71,6 +71,8 @@ Rails.application.routes.draw do
   end
 
   # Live Room / Party Mode (guest join by code)
+  get "r/:code/join", to: "rooms/join_actions#new", as: :new_room_join, constraints: { code: /[A-Za-z0-9]{6}/ }
+  post "r/:code/join", to: "rooms/join_actions#create", as: :room_join_submit, constraints: { code: /[A-Za-z0-9]{6}/ }
   get "r/:code", to: "rooms#show", as: :room_join, constraints: { code: /[A-Za-z0-9]{6}/ }
   resources :rooms, only: [:new, :create] do
     scope module: :rooms do
@@ -86,6 +88,12 @@ Rails.application.routes.draw do
   # Dynamic deck: slot resolves to track (allows reassigning cards to different playlists)
   get "q/d/:deck_id/:position", to: "tracks#play_by_deck_slot", as: :track_qr_deck_slot
   post "q/:token/deck_scan", to: "tracks/deck_scan_actions#create", as: :deck_scan
+
+  # Pattern B: state snapshot API (clients can request state, or receive via RoomSessionChannel)
+  get "r/:code/state", to: "rooms/state#show", as: :room_state, constraints: { code: /[A-Za-z0-9]{6}/ }
+
+  # ActionCable for RoomSessionChannel
+  mount ActionCable.server => "/cable"
 
   # Health check for deployment
   get "up" => "rails/health#show", as: :rails_health_check

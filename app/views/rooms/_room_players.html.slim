@@ -1,0 +1,14 @@
+/ Players in session - replaced by Turbo broadcast when someone joins
+#room_players.bg-slate-800.rounded-2xl.p-5
+  h3.text-sm.font-semibold.text-slate-400.uppercase.tracking-wide.mb-3
+    = t("views.rooms.players_in_session", default: "Players in session")
+  - participants = room.room_participants.order(created_at: :asc)
+  - if participants.any?
+    ul.space-y-2
+      - participants.each do |p|
+        li.flex.items-center.gap-3.py-2.px-3.rounded-xl.bg-slate-700/50
+          .w-8.h-8.rounded-full.bg-slate-600.flex.items-center.justify-center.text-slate-300.text-sm.font-medium
+            = (p.name.presence || "?").first.upcase
+          span.text-white.font-medium= p.name.presence || t("views.rooms.anonymous_player", default: "Player")
+  - else
+    p.text-slate-500.text-sm= t("views.rooms.no_players_yet", default: "No players yet. Share the room code.")

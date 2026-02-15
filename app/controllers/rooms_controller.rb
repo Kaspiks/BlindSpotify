@@ -11,8 +11,16 @@ class RoomsController < ApplicationController
   before_action :authorize_room_show, only: [:show]
 
   def show
-    session[:host_room_code] = @room.code if current_user && @room.host?(current_user)
-    # show_presenter built in show_presenter method below (needs current_user)
+    if current_user && @room.host?(current_user)
+      session[:host_room_code] = @room.code
+    else
+      # Option A: guests must have joined (have a participant) to see the room
+      sid = session[:room_participant_sid] ||= SecureRandom.hex(16)
+      unless @room.room_participants.exists?(session_id: sid)
+        redirect_to new_room_join_path(@room.code) and return
+      end
+    end
+    render ::Rooms::RoomShowView.new(room: @room, show_presenter: show_presenter)
   end
 
   def show_presenter
@@ -36,8 +44,11 @@ class RoomsController < ApplicationController
     authorize @room
 
     if @form.create(room_params)
-      redirect_to room_join_path(@room.code), notice: t_context(".success")
+      room = @form.object
+      Rooms::BroadcastSessionStateService.call(room: room, event_type: "room_created", by: room.host_id.present? ? "p_#{room.host_id}" : nil)
+      redirect_to room_join_path(room.code), notice: t_context(".success")
     else
+      @room = @form.object
       @presenter = FormPresenter.new(form: @form)
       render_action_with_errors(:new, object: @form)
     end
