@@ -71,13 +71,27 @@ module Deezer
           next
         end
 
+        title = track_data["title"] || "Unknown Title"
+        artist_name = track_data.dig("artist", "name") || "Unknown Artist"
+        preview_url = resolve_preview_url(
+          deezer_preview: track_data["preview"],
+          artist_name: artist_name,
+          title: title
+        )
+
+        if preview_url.blank?
+          Rails.logger.info "[PlaylistImportService] Skipping track without preview: #{artist_name} - #{title}"
+          next
+        end
+
         @playlist.tracks.create!(
           deezer_id: deezer_id,
-          title: track_data["title"] || "Unknown Title",
-          artist_name: track_data.dig("artist", "name") || "Unknown Artist",
+          title: title,
+          artist_name: artist_name,
           album_name: track_data.dig("album", "title"),
           album_cover_url: track_data.dig("album", "cover_medium"),
-          preview_url: track_data["preview"],
+          preview_url: preview_url,
+          preview_url_expires_at: preview_url_expiry(preview_url),
           duration_seconds: track_data["duration"],
           isrc: track_data["isrc"],
           position: next_position
@@ -105,6 +119,25 @@ module Deezer
     #   release_date = album_data.dig("release_date")
     #   album_year = release_date&.slice(0, 4)
     # end
+
+    def resolve_preview_url(deezer_preview:, artist_name:, title:)
+      return deezer_preview if deezer_preview.present?
+
+      # Fallback to iTunes when Deezer has no preview (e.g. geo-restricted)
+      itunes_url = Itunes::SearchService.new.preview_url(artist: artist_name, title: title)
+      if itunes_url.present?
+        Rails.logger.info "[PlaylistImportService] Using iTunes fallback for #{artist_name} - #{title}"
+        itunes_url
+      end
+    end
+
+    def preview_url_expiry(url)
+      if url.include?("itunes.apple.com")
+        24.hours.from_now
+      else
+        Track::PREVIEW_URL_CACHE_DURATION.from_now
+      end
+    end
 
     def notify_progress
       @on_progress&.call(@playlist)

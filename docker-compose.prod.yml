@@ -45,11 +45,12 @@ services:
       DATABASE_USERNAME: ${DATABASE_USERNAME:-beatdrop}
       DATABASE_PASSWORD: ${DATABASE_PASSWORD}
       REDIS_SESSION_STORE_URL: redis://redis:6379/0
+      REDIS_URL: redis://redis:6379/1
       RAILS_LOG_TO_STDOUT: "true"
       RAILS_SERVE_STATIC_FILES: "true"
       ACTIVE_STORAGE_SERVICE: ${ACTIVE_STORAGE_SERVICE:-local}
-      APP_HOST: ${APP_HOST:-89.167.37.194}
-      FORCE_SSL: ${FORCE_SSL:-false}
+      APP_HOST: ${APP_HOST:-blindjam.com}
+      FORCE_SSL: ${FORCE_SSL:-true}
       PORT: "3000"
       WEB_CONCURRENCY: "2"
     volumes:

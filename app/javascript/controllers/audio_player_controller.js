@@ -20,10 +20,10 @@ export default class extends Controller {
       if (data.preview_url && this.hasAudioTarget) {
         const source = this.audioTarget.querySelector("source") || document.createElement("source")
         if (!this.audioTarget.querySelector("source")) {
-          source.type = "audio/mpeg"
           this.audioTarget.appendChild(source)
         }
         source.src = data.preview_url
+        source.type = data.preview_url.includes(".m4a") ? "audio/mp4" : "audio/mpeg"
         this.audioTarget.load()
       }
     } catch (e) {

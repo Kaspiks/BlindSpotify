@@ -1,14 +1,6 @@
 # Caddy reverse proxy configuration for BeatDrop
-#
-# For IP-only access (no HTTPS):
-#   :80 { reverse_proxy web:3000 }
-#
-# For domain with automatic HTTPS (recommended):
-#   Replace :80 with your domain, e.g.:
-#   beatdrop.example.com {
-#       reverse_proxy web:3000
-#   }
+# Caddy automatically obtains and renews Let's Encrypt certificates for the domain.
 
-:80 {
+blindjam.com www.blindjam.com {
 	reverse_proxy web:3000
 }

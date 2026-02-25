@@ -25,6 +25,7 @@ class PlaylistPolicy < ApplicationPolicy
     owner? && record.deezer_id.present?
   end
 
+
   class Scope < ApplicationPolicy::Scope
     def resolve
       scope.where(user: user)

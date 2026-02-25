@@ -36,6 +36,9 @@ fi
 echo "==> Running database migrations..."
 ssh "${SSH_HOST}" "cd ${APP_DIR} && docker compose -f docker-compose.prod.yml exec -T web bundle exec rails db:prepare"
 
+echo "==> Running database seeds..."
+ssh "${SSH_HOST}" "cd ${APP_DIR} && docker compose -f docker-compose.prod.yml exec -T web bundle exec rails db:seed"
+
 echo ""
 echo "==> Deploy complete! App should be running at http://89.167.37.194"
 echo "    Check logs: ssh ${SSH_HOST} 'cd ${APP_DIR} && docker compose -f docker-compose.prod.yml logs -f web'"

@@ -92,7 +92,7 @@ module Deezer
           http.read_timeout = 30
 
           request = Net::HTTP::Get.new(uri)
-          request["User-Agent"] = "BeatDrop/1.0"
+          request["User-Agent"] = "BlindJam/1.0"
 
           response = http.request(request)
 

@@ -31,7 +31,7 @@ class PlaylistsController < ApplicationController
 
     if @form.create(playlist_params)
       notice = @form.should_import? ? t_context(".success_importing") : t_context(".success")
-      redirect_to @playlist, notice: notice
+      redirect_to @playlist, notice: notice, allow_other_host: true
     else
       render_action_with_errors(:new, object: @form)
     end
@@ -48,8 +48,9 @@ class PlaylistsController < ApplicationController
     @playlist.tracks.destroy_all
     @playlist.update!(import_status: 'pending', imported_tracks_count: 0, tracks_count: 0, import_error: nil)
     PlaylistImportJob.perform_later(@playlist.id)
-    redirect_to @playlist, notice: t_context(".success")
+    redirect_to @playlist, notice: t_context(".success"), allow_other_host: true
   end
+
 
   def status
     authorize @playlist, :show?

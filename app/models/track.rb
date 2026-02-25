@@ -21,6 +21,7 @@ class Track < ApplicationRecord
   searchable_text_column :artist_name
 
   PREVIEW_URL_CACHE_DURATION = 25.minutes
+  ITUNES_PREVIEW_CACHE_DURATION = 24.hours
 
   def display_name
     "#{artist_name} - #{title}"
@@ -39,15 +40,39 @@ class Track < ApplicationRecord
   end
 
   def refresh_preview_url!
-    track_data = Deezer::Client.new.track(deezer_id)
-    fresh_url = track_data["preview"]
+    fresh_url, expires_at = fetch_preview_url_from_deezer_or_itunes
 
     update!(
       preview_url: fresh_url,
-      preview_url_expires_at: PREVIEW_URL_CACHE_DURATION.from_now
+      preview_url_expires_at: expires_at
     )
 
     fresh_url
+  end
+
+  def fetch_preview_url_from_deezer_or_itunes
+    track_data = Deezer::Client.new.track(deezer_id)
+    deezer_preview = track_data["preview"]
+
+    if deezer_preview.present?
+      return [deezer_preview, PREVIEW_URL_CACHE_DURATION.from_now]
+    end
+
+    itunes_url = Itunes::SearchService.new.preview_url(artist: artist_name, title: title)
+    if itunes_url.present?
+      Rails.logger.info "[Track] Using iTunes fallback for #{id}: #{artist_name} - #{title}"
+      return [itunes_url, ITUNES_PREVIEW_CACHE_DURATION.from_now]
+    end
+
+    [nil, nil]
+  rescue Deezer::Client::NotFoundError, Deezer::Client::ApiError => e
+    Rails.logger.warn "[Track] Deezer unavailable for #{id}, trying iTunes: #{e.message}"
+    itunes_url = Itunes::SearchService.new.preview_url(artist: artist_name, title: title)
+    if itunes_url.present?
+      Rails.logger.info "[Track] Using iTunes fallback for #{id}: #{artist_name} - #{title}"
+      return [itunes_url, ITUNES_PREVIEW_CACHE_DURATION.from_now]
+    end
+    [nil, nil]
   end
 
   def duration_formatted

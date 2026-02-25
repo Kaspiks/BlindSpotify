@@ -89,6 +89,8 @@ Rails.application.configure do
   # Allow cloud platform hosts and custom domain
   config.hosts = [
     ENV["APP_HOST"],
+    "blindjam.com",
+    "www.blindjam.com",
     /.*\.onrender\.com/,
     /.*\.herokuapp\.com/,
     /.*\.ondigitalocean\.app/,

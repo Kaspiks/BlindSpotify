@@ -1,7 +1,7 @@
 doctype html
 html
   head
-    title Admin | BeatDrop
+    title Admin | BlindJam
     meta name="viewport" content="width=device-width,initial-scale=1"
     = csrf_meta_tags
     = csp_meta_tag
@@ -36,7 +36,7 @@ html
             = icon :music, class: "w-6 h-6 text-white"
           div
             p.font-bold.text-white Admin
-            p.text-xs.text-slate-400 BeatDrop
+            p.text-xs.text-slate-400 BlindJam
         button.p-2.rounded-lg.text-slate-300.hover:text-white.hover:bg-slate-700.transition-colors type="button" data-action="click->mobile-menu#toggle" data-mobile-menu-target="button"
           = icon(:menu_2, width: 24, height: 24, class: "block", data: { mobile_menu_target: "openIcon" })
           = icon(:x, width: 24, height: 24, class: "hidden", data: { mobile_menu_target: "closeIcon" })
@@ -53,7 +53,7 @@ html
               = icon :music, class: "w-6 h-6 text-white"
             div
               p.font-bold.text-white Admin
-              p.text-xs.text-slate-400 BeatDrop
+              p.text-xs.text-slate-400 BlindJam
 
         nav.flex-1.p-4.overflow-y-auto
           - admin_navigation_presenter.navigation_sections.each do |section|
@@ -89,7 +89,7 @@ html
             = icon :music, class: "w-6 h-6 text-white"
           div
             p.font-bold.text-white Admin
-            p.text-xs.text-slate-400 BeatDrop
+            p.text-xs.text-slate-400 BlindJam
 
       nav.flex-1.p-4.overflow-y-auto
         - admin_navigation_presenter.navigation_sections.each do |section|

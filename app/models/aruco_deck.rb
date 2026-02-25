@@ -12,7 +12,7 @@ class ArucoDeck < ApplicationRecord
   validates :qr_status, inclusion: { in: ->(_) { qr_status_values } }
 
   def self.qr_status_values
-    ClassificationValues::QrStatus.ordered.pluck(:value)
+    Playlist.qr_status_values
   end
 
   def assign_playlist!(playlist)

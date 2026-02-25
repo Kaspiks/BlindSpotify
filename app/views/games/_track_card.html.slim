@@ -33,7 +33,8 @@
     / Audio player
     - if track&.preview_url.present?
       .mb-6 data-controller="audio-player"
-        audio data-audio-player-target="audio" src=track.preview_url preload="auto"
+        audio data-audio-player-target="audio" preload="auto"
+          source src=track.preview_url type=(track.preview_url.include?(".m4a") ? "audio/mp4" : "audio/mpeg")
 
         / Play/Pause button
         .flex.justify-center.mb-4

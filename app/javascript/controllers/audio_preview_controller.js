@@ -33,7 +33,11 @@ export default class extends Controller {
     })
 
     if (!this.audio) {
-      this.audio = new Audio(this.urlValue)
+      this.audio = document.createElement("audio")
+      const source = document.createElement("source")
+      source.src = this.urlValue
+      source.type = this.urlValue.includes(".m4a") ? "audio/mp4" : "audio/mpeg"
+      this.audio.appendChild(source)
       this.audio.addEventListener("ended", () => this.stop())
       this.audio.addEventListener("error", (e) => {
         console.error("Audio preview error:", e)

@@ -17,12 +17,17 @@ class Playlist < ApplicationRecord
   scope :completed, -> { where(import_status: 'completed') }
   scope :failed, -> { where(import_status: 'failed') }
 
+  IMPORT_STATUS_FALLBACK = %w[pending importing completed failed].freeze
+  QR_STATUS_FALLBACK = %w[pending generating completed failed].freeze
+
   def self.import_status_values
-    ClassificationValues::ImportStatus.ordered.pluck(:value)
+    values = ClassificationValues::ImportStatus.ordered.pluck(:value)
+    values.presence || IMPORT_STATUS_FALLBACK
   end
 
   def self.qr_status_values
-    ClassificationValues::QrStatus.ordered.pluck(:value)
+    values = ClassificationValues::QrStatus.ordered.pluck(:value)
+    values.presence || QR_STATUS_FALLBACK
   end
 
   searchable_text_column :name
