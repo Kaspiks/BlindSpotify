@@ -6,7 +6,7 @@ module Admin
       class Form < ApplicationModelForm
         self.object_class_name = "Playlist"
 
-        attr_accessor :tracks
+        attr_accessor :tracks, :release_years
 
         def self.model_name
           ActiveModel::Name.new(self, nil, "AdminPlaylistsReleaseYearsActionsForm")
@@ -36,6 +36,22 @@ module Admin
         def assign_form_attributes(attributes)
           attrs = attributes.to_h.with_indifferent_access
           self.tracks = attrs[:tracks] || {}
+          save_release_years_for_tracks(attrs[:release_years])
+        end
+
+        def save_release_years_for_tracks(years_json)
+          if years_json.blank?
+            return
+          end
+
+          years_hash = JSON.parse(years_json)
+
+          years_hash.each do |y_hash|
+            track = playlist.tracks.find_by(title: y_hash["song"])
+            next unless track
+
+            track.update(release_year: y_hash["year"])
+          end
         end
 
         def save_release_years

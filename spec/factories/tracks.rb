@@ -29,6 +29,7 @@ end
 #  album_name                           :string
 #  artist_name                          :string           not null
 #  duration_seconds                     :integer
+#  external_web_url                     :string
 #  isrc(ISRC information for the track) :string
 #  position                             :integer          not null
 #  preview_url                          :string
@@ -36,6 +37,7 @@ end
 #  qr_code_digest                       :string
 #  qr_generated                         :boolean          default(FALSE), not null
 #  release_year                         :integer
+#  spotify_uri                          :string
 #  title                                :string           not null
 #  token                                :string           not null
 #  created_at                           :datetime         not null

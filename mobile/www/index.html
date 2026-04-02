@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>BlindJam</title>
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        margin: 0;
+        padding: 1.5rem;
+        line-height: 1.5;
+        max-width: 36rem;
+      }
+      code {
+        font-size: 0.95em;
+      }
+      .ok {
+        color: #166534;
+        font-weight: 600;
+      }
+    </style>
+  </head>
+  <body>
+    <p><strong>BlindJam</strong> — local <code>www/</code> shell</p>
+    <p class="ok">If you used offline sync, seeing this page means it worked.</p>
+    <p>
+      <code>mobile/www/</code> only holds this tiny placeholder. The real game UI is served by
+      <strong>Rails</strong> and is <strong>not</strong> bundled here. Offline mode is for checking
+      WebView/scroll performance without <code>10.0.2.2</code>, not for playing the full app.
+    </p>
+    <p><strong>Load the real app again (emulator + Docker Rails):</strong></p>
+    <pre style="background:#f4f4f5;padding:0.75rem;border-radius:0.5rem;overflow:auto">make capacitor-sync-docker
+# then Run ▶ in Android Studio</pre>
+    <p style="font-size:0.9rem;color:#52525b">
+      Host: <code>make capacitor-sync</code> with
+      <code>CAPACITOR_SERVER_URL=http://10.0.2.2:3024</code>
+    </p>
+  </body>
+</html>

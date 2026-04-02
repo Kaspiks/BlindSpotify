@@ -7,11 +7,13 @@ export default class extends Controller {
     label: String
   }
 
-  static targets = ["label"]
+  static targets = ["label", "source"]
 
   copy(event) {
     event.preventDefault()
-    const text = this.textValue
+    const text = this.hasSourceTarget
+      ? this.sourceTarget.textContent.trim()
+      : this.textValue
     if (!text) return
 
     navigator.clipboard.writeText(text).then(() => {
@@ -22,22 +24,33 @@ export default class extends Controller {
   }
 
   showFeedback() {
+    const button = this.element.querySelector("button")
+    if (button) {
+      button.disabled = true
+    } else {
+      this.element.disabled = true
+    }
     if (this.hasLabelTarget && this.labelValue) {
       const labelEl = this.labelTarget
-      const originalText = labelEl.textContent
       labelEl.textContent = this.successMessageValue
-      this.element.disabled = true
       setTimeout(() => {
         labelEl.textContent = this.labelValue
-        this.element.disabled = false
+        if (button) {
+          button.disabled = false
+        } else {
+          this.element.disabled = false
+        }
       }, 1500)
     } else {
       const originalContent = this.element.innerHTML
       this.element.innerHTML = this.successMessageValue
-      this.element.disabled = true
       setTimeout(() => {
         this.element.innerHTML = originalContent
-        this.element.disabled = false
+        if (button) {
+          button.disabled = false
+        } else {
+          this.element.disabled = false
+        }
       }, 1500)
     }
   }

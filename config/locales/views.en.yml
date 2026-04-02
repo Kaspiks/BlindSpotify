@@ -215,6 +215,8 @@ en:
       release_years_actions:
         edit:
           page_title: Edit release years
+          labels:
+            release_years: Release years
           tracks: Tracks
           no_tracks: No tracks in this playlist.
           columns:
@@ -283,4 +285,29 @@ en:
     game_card:
       progress:
         completed: Completed
+    playback_settings:
+      title: Playback (mobile)
+      saved_locally_hint: Saved on this device only (browser or app WebView).
+      mode_label: How to listen
+      mode_preview: In-app preview (default)
+      mode_preview_hint: Short clips stay inside BlindJam.
+      mode_external: External app (Spotify)
+      mode_external_hint: Opens Spotify; return here when you are ready.
+      provider_label: External provider
+      provider_spotify: Spotify (more later)
     track_card:
+      playback:
+        listen_round: Start listening
+        open_spotify_only: Open in Spotify only
+        loading_track: Loading track…
+        loading_preview: Loading preview…
+        opening_spotify: Opening Spotify…
+        external_hint: If Spotify opens, start playback, then return here to continue.
+        manual_controls_hint: Or use the player below for manual preview controls.
+        dismiss_resume: OK
+        resume_message: "Back from Spotify — %{artist} – %{title}. Continue when you're ready."
+        manual_hint: Use Reveal or Skip when you are ready, or try Open in Spotify only.
+        error_resolve: Could not load this track. Check your connection and try again.
+        error_preview: Preview is not available. Try external playback or skip.
+        error_network: Network error. Try again.
+        error_spotify: Could not open Spotify. Install the app or use a browser search link.

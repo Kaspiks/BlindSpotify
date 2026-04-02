@@ -60,6 +60,8 @@ en:
           page_title: Playlists
         show:
           page_title: "%{name}"
+          copy_button_label: Copy year data
+          copied_label: Copied!
 
       aruco_decks:
         index:

@@ -11,13 +11,15 @@ class RoomsController < ApplicationController
   before_action :authorize_room_show, only: [:show]
 
   def show
-    if current_user && @room.host?(current_user)
-      session[:host_room_code] = @room.code
-    else
-      # Option A: guests must have joined (have a participant) to see the room
-      sid = session[:room_participant_sid] ||= SecureRandom.hex(16)
-      unless @room.room_participants.exists?(session_id: sid)
-        redirect_to new_room_join_path(@room.code) and return
+    unless stitch_public_preview?
+      if current_user && @room.host?(current_user)
+        session[:host_room_code] = @room.code
+      else
+        # Option A: guests must have joined (have a participant) to see the room
+        sid = session[:room_participant_sid] ||= SecureRandom.hex(16)
+        unless @room.room_participants.exists?(session_id: sid)
+          redirect_to new_room_join_path(@room.code) and return
+        end
       end
     end
     render ::Rooms::RoomShowView.new(room: @room, show_presenter: show_presenter)

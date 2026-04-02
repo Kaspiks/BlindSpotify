@@ -4,13 +4,7 @@ module ApplicationHelper
 
   def room_share_full_url(room)
     path = room_join_path(room.code)
-    if Rails.env.development?
-      host = ENV.fetch("APP_HOST", "172.20.10.5")
-      port = ENV.fetch("APP_PORT", "3024")
-      "http://#{host}:#{port}#{path}"
-    else
-      request.base_url + path
-    end
+    request.base_url + path
   end
 
   def sortable(column, label:, sort_param: :sort, direction_param: :direction)

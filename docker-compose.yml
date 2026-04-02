@@ -116,10 +116,26 @@ services:
       - .:/app:cached
       - node_modules:/app/icons/node_modules
 
+  # Capacitor CLI + npm for mobile/ — isolated from Rails (web) and from icons (node).
+  # Does not start with `docker compose up` (profile: capacitor).
+  capacitor:
+    image: node:22-bookworm
+    profiles:
+      - capacitor
+    working_dir: /app/mobile
+    volumes:
+      - .:/app:cached
+      - capacitor_node_modules:/app/mobile/node_modules
+    environment:
+      # Baked into capacitor.config at sync time. Set CAPACITOR_OFFLINE=1 on `docker compose run`
+      # to omit server.url and load mobile/www only (see Makefile capacitor-sync-offline-docker).
+      CAPACITOR_SERVER_URL: ${CAPACITOR_SERVER_URL:-http://10.0.2.2:3024}
+
 volumes:
   postgres_data:
   bundle_cache:
   rails_cache:
   redis_data:
   node_modules:
+  capacitor_node_modules:
   rails_storage:

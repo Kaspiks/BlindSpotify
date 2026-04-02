@@ -10,12 +10,14 @@
   / Main game area
   = render "games/game_area", game: @game, revealed: @revealed, presenter: show_presenter
 
+  = render "games/playback_settings"
+
   / Playlist info at bottom
   .mt-12.pt-8.border-t.border-slate-700
     .flex.items-center.gap-4
       .w-12.h-12.rounded-lg.overflow-hidden.bg-slate-700
         - if show_presenter.playlist.image_url.present?
-          img src=show_presenter.playlist.image_url alt="" class="w-full h-full object-cover"
+          img src=show_presenter.playlist.image_url alt="" class="w-full h-full object-cover" onerror="this.remove()"
         - else
           .w-full.h-full.flex.items-center.justify-center
             = icon("playlist", class: "w-6 h-6 text-slate-500")

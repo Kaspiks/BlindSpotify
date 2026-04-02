@@ -46,10 +46,13 @@ services:
       DATABASE_PASSWORD: ${DATABASE_PASSWORD}
       REDIS_SESSION_STORE_URL: redis://redis:6379/0
       REDIS_URL: redis://redis:6379/1
+      SENTRY_DSN: ${SENTRY_DSN:-}
       RAILS_LOG_TO_STDOUT: "true"
       RAILS_SERVE_STATIC_FILES: "true"
       ACTIVE_STORAGE_SERVICE: ${ACTIVE_STORAGE_SERVICE:-local}
       APP_HOST: ${APP_HOST:-blindjam.com}
+      # Google Stitch / anonymous crawl: set STITCH_PUBLIC_PREVIEW=true in .env, then set false or remove after.
+      STITCH_PUBLIC_PREVIEW: ${STITCH_PUBLIC_PREVIEW:-false}
       FORCE_SSL: ${FORCE_SSL:-true}
       PORT: "3000"
       WEB_CONCURRENCY: "2"
@@ -76,6 +79,42 @@ services:
       - caddy_config:/config
     depends_on:
       - web
+      - glitchtip-web
+
+  # GlitchTip - self-hosted error tracking (Sentry-compatible)
+  glitchtip-db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${GLITCHTIP_DB_USER:-glitchtip}
+      POSTGRES_PASSWORD: ${GLITCHTIP_DB_PASSWORD}
+      POSTGRES_DB: ${GLITCHTIP_DB_NAME:-glitchtip}
+    volumes:
+      - glitchtip_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${GLITCHTIP_DB_USER:-glitchtip} -d ${GLITCHTIP_DB_NAME:-glitchtip}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  glitchtip-web:
+    image: glitchtip/glitchtip:6
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgres://${GLITCHTIP_DB_USER:-glitchtip}:${GLITCHTIP_DB_PASSWORD}@glitchtip-db:5432/${GLITCHTIP_DB_NAME:-glitchtip}
+      SECRET_KEY: ${GLITCHTIP_SECRET_KEY}
+      GLITCHTIP_DOMAIN: https://errors.blindjam.com
+      DEFAULT_FROM_EMAIL: ${GLITCHTIP_FROM_EMAIL:-noreply@blindjam.com}
+      EMAIL_URL: ${GLITCHTIP_EMAIL_URL:-consolemail://}
+      SERVER_ROLE: all_in_one
+      ALLOWED_HOSTS: "errors.blindjam.com,localhost"
+      CSRF_TRUSTED_ORIGINS: "https://errors.blindjam.com"
+    volumes:
+      - glitchtip_uploads:/code/uploads
+    depends_on:
+      glitchtip-db:
+        condition: service_healthy
 
 volumes:
   postgres_data:
@@ -83,3 +122,5 @@ volumes:
   rails_storage:
   caddy_data:
   caddy_config:
+  glitchtip_postgres_data:
+  glitchtip_uploads:

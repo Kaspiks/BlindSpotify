@@ -85,6 +85,28 @@ bundle exec rspec
 | `SPOTIFY_CLIENT_ID` | For Spotify | Spotify App Client ID |
 | `SPOTIFY_CLIENT_SECRET` | For Spotify | Spotify App Client Secret |
 | `ARUCO_GENERATOR_URL` | No | Optional URL for on-demand ArUco marker images (e.g. on Hetzner). If unset, pre-generated PNGs in `vendor/assets/aruco/` are used. |
+| `SENTRY_DSN` | No (prod) | GlitchTip DSN for error tracking. Get from https://errors.blindjam.com after creating a project. |
+
+## GlitchTip Error Tracking (Production)
+
+BeatDrop uses [GlitchTip](https://glitchtip.com) for error tracking at https://errors.blindjam.com. It runs alongside the app in Docker.
+
+**First-time setup on the server:**
+
+1. Add GlitchTip env vars to `.env` (see `deploy/.env.production`):
+   - `GLITCHTIP_DB_PASSWORD` – strong password for GlitchTip's PostgreSQL
+   - `GLITCHTIP_SECRET_KEY` – run `openssl rand -hex 32` to generate
+2. Deploy: `docker compose -f docker-compose.prod.yml up -d`
+3. Open https://errors.blindjam.com, create an account and organization
+4. Create a project (e.g. "beatdrop"), copy the DSN
+5. Add `SENTRY_DSN=https://xxx@errors.blindjam.com/123` to `.env`
+6. Restart the web container: `docker compose -f docker-compose.prod.yml up -d web`
+
+**Heartbeat (uptime monitoring):** GlitchTip can monitor your site's uptime. Add a cron job on the server:
+```bash
+(crontab -l 2>/dev/null; echo "* * * * * /opt/beatdrop/deploy/heartbeat.sh") | crontab -
+chmod +x /opt/beatdrop/deploy/heartbeat.sh
+```
 
 ## ArUco printable cards (optional)
 

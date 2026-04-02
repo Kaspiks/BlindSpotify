@@ -3,7 +3,7 @@ div id="playlist_#{playlist.id}"
     / Playlist image
     .aspect-video.relative.bg-slate-700
       - if playlist.image_url.present?
-        img src=playlist.image_url alt=playlist.name class="w-full h-full object-cover"
+        img src=playlist.image_url alt=playlist.name class="w-full h-full object-cover" onerror="this.remove()"
       - else
         .w-full.h-full.flex.items-center.justify-center
           = icon("playlist", class: "w-16 h-16 text-slate-500")

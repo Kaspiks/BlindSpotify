@@ -83,6 +83,43 @@ class Track < ApplicationRecord
     format("%d:%02d", minutes, seconds)
   end
 
+  # Spotify app deep link: explicit track/album URI, or search for "Artist Title".
+  def spotify_app_open_uri
+    return spotify_uri.strip if spotify_uri.present?
+
+    q = "#{artist_name} #{title}".strip
+    return nil if q.blank?
+
+    encoded = ERB::Util.url_encode(q)
+    "spotify:search:#{encoded}"
+  end
+
+  # Web fallback when the native app is missing or custom scheme is blocked.
+  def spotify_web_open_url
+    return external_web_url.strip if external_web_url.present?
+
+    q = ERB::Util.url_encode("#{artist_name} #{title}".strip)
+    "https://open.spotify.com/search/#{q}"
+  end
+
+  # JSON for playback coordinator (Capacitor + web).
+  def playback_client_json(refresh_preview_path:)
+    {
+      id: id,
+      token: token,
+      title: title,
+      artist_name: artist_name,
+      preview_url: preview_url,
+      preview_url_valid: preview_url_valid?,
+      preview_refresh_url: refresh_preview_path,
+      spotify_uri: spotify_uri,
+      spotify_app_uri: spotify_app_open_uri,
+      spotify_web_url: spotify_web_open_url,
+      deezer_id: deezer_id,
+      isrc: isrc
+    }
+  end
+
   def mark_qr_generated!
     update!(qr_generated: true)
   end
@@ -116,7 +153,9 @@ end
 #  updated_at                           :datetime         not null
 #  deezer_album_id                      :string
 #  deezer_id                            :string           not null
+#  external_web_url                     :string
 #  playlist_id                          :bigint           not null
+#  spotify_uri                          :string
 #
 # Indexes
 #

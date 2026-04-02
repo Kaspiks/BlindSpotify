@@ -86,3 +86,7 @@ gem "chunky_png"
 
 gem "cloudinary", "~> 1.29"
 gem "activestorage-cloudinary-service", "~> 0.2"
+
+# Error tracking (GlitchTip/Sentry compatible)
+gem "sentry-ruby"
+gem "sentry-rails"

@@ -2,7 +2,8 @@
 
 module Admin
   class BaseController < ApplicationController
-    before_action :authenticate_user!
+    # Login enforced by ApplicationController unless STITCH_PUBLIC_PREVIEW=true (temporary Stitch access).
+    # before_action :authenticate_user!
     before_action :authorize_admin!
 
     layout "admin"

@@ -1,0 +1,11 @@
+---
+description: BeatDrop Capacitor shell — read AGENTS.md before editing mobile/ or Makefile
+globs: Makefile,mobile/**/*
+alwaysApply: false
+---
+
+Before changing the root `Makefile` or anything under `mobile/`, read **`AGENTS.md`** at the repo root.
+
+- **Rails + Hotwire** own player UI and game logic; Capacitor loads that app via `server.url` (see `mobile/capacitor.config.js` + `CAPACITOR_SERVER_URL` at `cap sync` time).
+- After adding/removing Capacitor plugins or editing `capacitor.config.js`, run **`make capacitor-sync`**.
+- Do not introduce a duplicate SPA in `mobile/` unless the user explicitly asks for it.

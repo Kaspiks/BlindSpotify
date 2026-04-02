@@ -30,7 +30,8 @@ html
       .icon--bold { stroke-width: 2.5; }
       .icon--filled { fill: currentColor; stroke: none; }
 
-  body.min-h-screen class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900"
+  / Solid background — multi-stop gradients are costly to composite on Android WebView while scrolling.
+  body.min-h-screen.bg-slate-900
     = render_svg_icons
     = render 'shared/navbar'
 

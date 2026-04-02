@@ -23,7 +23,7 @@
     .mt-4
       - if playlist.tracks_count.to_i > 0
         .h-2.bg-slate-700.rounded-full.overflow-hidden data-import-progress-target="progressBar"
-          .h-full.bg-purple-600.transition-all.duration-300 style="width: #{playlist.import_progress_percentage}%"
+          .h-full.bg-purple-600.transition-[width].duration-300.ease-out style="width: #{playlist.import_progress_percentage}%"
         .text-xs.text-slate-500.mt-2.text-right data-import-progress-target="progressText"
           = "#{playlist.imported_tracks_count} / #{playlist.tracks_count} tracks imported"
       - else

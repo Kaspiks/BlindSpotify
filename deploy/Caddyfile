@@ -4,3 +4,7 @@
 blindjam.com www.blindjam.com {
 	reverse_proxy web:3000
 }
+
+errors.blindjam.com {
+	reverse_proxy glitchtip-web:8000
+}

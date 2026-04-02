@@ -30,7 +30,7 @@ class TracksController < ApplicationController
   end
 
   def refresh_preview
-    @track = Track.find_by!(token: params[:token])
+    @track = Track.find_by(token: params[:token])
     head :not_found and return unless @track
 
     url = @track.fresh_preview_url
@@ -38,6 +38,16 @@ class TracksController < ApplicationController
   rescue Deezer::Client::ApiError => e
     Rails.logger.error "[TracksController#refresh_preview] Deezer API error: #{e.message}"
     render json: { error: "Unable to load preview" }, status: :service_unavailable
+  end
+
+  # GET /q/:token/playback — JSON for Capacitor/web playback coordinator (preview + external handoff).
+  def playback
+    @track = Track.find_by(token: params[:token])
+    head :not_found and return unless @track
+
+    render json: @track.playback_client_json(
+      refresh_preview_path: refresh_track_preview_path(@track.token)
+    )
   end
 
   private

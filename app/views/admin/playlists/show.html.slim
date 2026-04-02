@@ -46,6 +46,13 @@ div data-controller="qr-modal"
         = icon(:edit, class: "w-4 h-4")
         span = t('.buttons.edit_release_years')
 
+      - if @presenter.playlist_qr_code_text.present?
+        span.inline-flex data-controller="clipboard" data-clipboard-success-message-value=@presenter.copied_label data-clipboard-label-value=@presenter.copy_button_label data-action="click->clipboard#copy"
+          span.hidden data-clipboard-target="source"= @presenter.playlist_qr_code_text
+          button type="button" class="inline-flex items-center gap-2 px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white font-medium rounded-lg transition-colors"
+            = icon("link", class: "w-5 h-5")
+            span data-clipboard-target="label"= @presenter.copy_button_label
+
   / Desktop header layout
   .hidden.lg:flex.items-start.gap-6.mb-8
     - if presenter.has_image?
@@ -85,6 +92,13 @@ div data-controller="qr-modal"
         = link_to edit_admin_playlist_release_years_path(playlist), class: "inline-flex items-center gap-2 px-4 py-2 bg-slate-600 hover:bg-slate-700 text-white font-medium rounded-lg transition-colors" do
           = icon(:edit, class: "w-5 h-5")
           span = t('.buttons.edit_release_years')
+
+        - if @presenter.playlist_qr_code_text.present?
+          span.inline-flex data-controller="clipboard" data-clipboard-success-message-value=@presenter.copied_label data-clipboard-label-value=@presenter.copy_button_label data-action="click->clipboard#copy"
+            span.hidden data-clipboard-target="source"= @presenter.playlist_qr_code_text
+            button type="button" class="inline-flex items-center gap-2 px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white font-medium rounded-lg transition-colors"
+              = icon("link", class: "w-5 h-5")
+              span data-clipboard-target="label"= @presenter.copy_button_label
 
   div id="playlist_#{playlist.id}_qr_progress"
     = render "admin/playlists/qr_progress", playlist: playlist

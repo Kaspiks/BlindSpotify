@@ -18,12 +18,8 @@ export default class extends Controller {
       const res = await fetch(this.refreshUrlValue, { headers: { Accept: "application/json" } })
       const data = await res.json()
       if (data.preview_url && this.hasAudioTarget) {
-        const source = this.audioTarget.querySelector("source") || document.createElement("source")
-        if (!this.audioTarget.querySelector("source")) {
-          this.audioTarget.appendChild(source)
-        }
-        source.src = data.preview_url
-        source.type = data.preview_url.includes(".m4a") ? "audio/mp4" : "audio/mpeg"
+        this.audioTarget.crossOrigin = "anonymous"
+        this.audioTarget.src = data.preview_url
         this.audioTarget.load()
       }
     } catch (e) {
@@ -36,6 +32,8 @@ export default class extends Controller {
     if (!this.hasAudioTarget) {
       return
     }
+
+    this.audioTarget.crossOrigin = "anonymous"
 
     // Remove old listeners if any (for Turbo reconnection)
     this.audioTarget.removeEventListener("loadedmetadata", this.boundUpdateDuration)
@@ -56,8 +54,7 @@ export default class extends Controller {
     this.audioTarget.addEventListener("ended", this.boundOnEnded)
     this.audioTarget.addEventListener("canplay", this.boundUpdateDuration)
     this.audioTarget.addEventListener("error", this.boundOnError)
-    
-    // Force load the audio
+
     this.audioTarget.load()
   }
 
@@ -93,6 +90,7 @@ export default class extends Controller {
           this.updateButtonState()
         })
         .catch((error) => {
+          if (error.name === "AbortError") return
           console.error("[AudioPlayer] Audio playback failed:", error)
           this.isPlaying = false
           this.updateButtonState()

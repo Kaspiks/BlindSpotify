@@ -1,0 +1,25 @@
+.mt-10.rounded-2xl.border.border-slate-600.p-5.bg-slate-800/50(
+  data-controller="playback-settings"
+)
+  h3.text-sm.font-semibold.text-white.mb-1= t("games.playback_settings.title")
+  p.text-xs.text-slate-500.mb-4= t("games.playback_settings.saved_locally_hint")
+  fieldset.space-y-3
+    legend.sr-only= t("games.playback_settings.mode_label")
+    p.text-xs.font-medium.text-slate-400.uppercase.tracking-wide= t("games.playback_settings.mode_label")
+    label.flex.items-center.gap-3.cursor-pointer
+      input.sr-only.peer type="radio" name="playback_mode" data-playback-settings-target="modePreview" data-action="change->playback-settings#setModePreview"
+      span.w-4.h-4.rounded-full.border-2.border-slate-500.peer-checked:border-green-500.peer-checked:bg-green-500.flex-shrink-0
+      span.text-sm.text-slate-200
+        span.font-medium= t("games.playback_settings.mode_preview")
+        span.hidden.sm:inline.text-slate-500.ml-1 — #{t("games.playback_settings.mode_preview_hint")}
+    label.flex.items-center.gap-3.cursor-pointer
+      input.sr-only.peer type="radio" name="playback_mode" data-playback-settings-target="modeExternal" data-action="change->playback-settings#setModeExternal"
+      span.w-4.h-4.rounded-full.border-2.border-slate-500.peer-checked:border-purple-500.peer-checked:bg-purple-500.flex-shrink-0
+      span.text-sm.text-slate-200
+        span.font-medium= t("games.playback_settings.mode_external")
+        span.hidden.sm:inline.text-slate-500.ml-1 — #{t("games.playback_settings.mode_external_hint")}
+  .mt-5.pt-4.border-t.border-slate-700
+    p.text-xs.font-medium.text-slate-400.uppercase.tracking-wide.mb-2= t("games.playback_settings.provider_label")
+    label.flex.items-center.gap-3.cursor-pointer.opacity-80
+      input type="radio" checked="checked" name="playback_provider" data-playback-settings-target="providerSpotify" data-action="change->playback-settings#setProviderSpotify"
+      span.text-sm.text-slate-300= t("games.playback_settings.provider_spotify")

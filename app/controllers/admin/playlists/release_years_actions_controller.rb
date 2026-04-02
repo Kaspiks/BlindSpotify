@@ -37,7 +37,6 @@ module Admin
       end
 
       def update_params
-        # Accept either param key (form model_name or Simple Form's object)
         raw = params[:admin_playlists_release_years_actions_form] || params[:playlist] || {}
         tracks_raw = raw[:tracks] || raw["tracks"] || {}
         allowed_ids = @playlist.tracks.pluck(:id).map(&:to_s)
@@ -45,11 +44,14 @@ module Admin
         filtered = {}
         tracks_raw.each do |id, attrs|
           next unless allowed_ids.include?(id.to_s)
-          
+
           attrs = attrs.permit(:release_year).to_h if attrs.respond_to?(:permit)
           filtered[id.to_s] = attrs.with_indifferent_access
         end
-        { "tracks" => filtered }
+
+        result = { "tracks" => filtered }
+        result["release_years"] = raw[:release_years] if raw.key?(:release_years)
+        result
       end
     end
   end

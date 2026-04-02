@@ -2,6 +2,7 @@
 - form = @form
 - year_input_class = "w-20 px-2 py-1.5 rounded bg-slate-700 border border-slate-600 " \
     "text-white text-sm placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+/ - json_class = "w-20 text-white text-sm placeholder-slate-500 focuss:outline-none focus:ring-2 border border-slate-600 bg-slate-700 rounded px-2 py-1.5"
 - year_input_class_mobile = "w-full px-3 py-2 rounded bg-slate-700 border border-slate-600 " \
     "text-white text-base placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
 
@@ -13,6 +14,9 @@
 h1.text-2xl.font-bold.text-white.mb-6 = t('.page_title')
 
 = simple_form_for form, url: admin_playlist_release_years_path(playlist), method: :patch do |f|
+  .mb-6
+    = f.input :release_years, as: :text, label: t('.labels.release_years'), label_html: { class: "text-slate-300" }, input_html: { class: "w-full px-3 py-2 rounded bg-slate-700 border border-slate-600 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent", rows: 3 }
+
   / Mobile card layout
   .lg:hidden
     .flex.items-center.justify-between.mb-4
@@ -84,6 +88,6 @@ h1.text-2xl.font-bold.text-white.mb-6 = t('.page_title')
             td.px-6.py-8.text-center.text-slate-500 colspan="4"
             = t('.no_tracks')
 
-    - if @presenter.tracks.any? { |t| t.release_year.blank? }
-      .px-6.py-4.border-t.border-slate-700.bg-slate-800
-        = f.submit t('.buttons.save'), class: "inline-flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-lg transition-colors cursor-pointer"
+    / - if @presenter.tracks.any? { |t| t.release_year.blank? }
+    .px-6.py-4.border-t.border-slate-700.bg-slate-800
+      = f.submit t('.buttons.save'), class: "inline-flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-lg transition-colors cursor-pointer"

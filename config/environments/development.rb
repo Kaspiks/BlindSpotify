@@ -37,14 +37,15 @@ Rails.application.configure do
   # Make template changes take effect immediately.
   config.action_mailer.perform_caching = false
 
-  # Set host for links generated in mailer templates, QR codes, and share links.
-  # Default 172.20.10.5:3024 so the share link works for other devices on the network; override with APP_HOST/APP_PORT.
-  config.action_controller.default_url_options = {
-    host: ENV.fetch("APP_HOST", "172.20.10.5"),
-    port: ENV.fetch("APP_PORT", "3024").to_i
-  }
+  # Controllers derive host from the incoming request automatically — no hardcoded
+  # host here, so redirects work regardless of how the client reaches Rails
+  # (emulator via 10.0.2.2, LAN device via 192.168.x.x, browser via localhost).
+  #
+  # Mailers have no request context, so they need a static host.
+  # QR-code / share-link helpers that must produce a LAN-reachable URL also read
+  # APP_HOST explicitly (see ApplicationHelper#room_share_full_url, QR generator).
   config.action_mailer.default_url_options = {
-    host: ENV.fetch("APP_HOST", "172.20.10.5"),
+    host: ENV.fetch("APP_HOST", "localhost"),
     port: ENV.fetch("APP_PORT", "3024").to_i
   }
 

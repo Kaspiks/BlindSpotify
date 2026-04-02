@@ -29,9 +29,9 @@ html
 
     .fixed.top-4.right-4.z-50.space-y-2
       - if flash[:notice]
-        .px-4.py-3.rounded-lg.bg-green-600.text-white.text-sm.shadow-lg
+        .px-4.py-3.rounded-lg.bg-green-600.text-white.text-sm
           = flash[:notice]
       - if flash[:alert]
-        .px-4.py-3.rounded-lg.bg-red-600.text-white.text-sm.shadow-lg
+        .px-4.py-3.rounded-lg.bg-red-600.text-white.text-sm
           = flash[:alert]
     = yield

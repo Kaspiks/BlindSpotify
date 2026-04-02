@@ -29,12 +29,12 @@
           - playlists.each do |playlist|
             = form_with model: Game.new, url: games_path, method: :post, class: "group" do |f|
               = f.hidden_field :playlist_id, value: playlist.id
-              button.w-full.bg-slate-800.hover:bg-slate-700.rounded-xl.p-4.text-left.transition-all.hover:ring-2.hover:ring-purple-500 type="submit"
+              button.w-full.bg-slate-800.hover:bg-slate-700.rounded-xl.p-4.text-left.transition-colors.hover:ring-2.hover:ring-purple-500 type="submit"
                 .flex.gap-4
                   / Playlist image
                   .w-20.h-20.flex-shrink-0.rounded-lg.overflow-hidden.bg-slate-700
                     - if playlist.image_url.present?
-                      img src=playlist.image_url alt=playlist.name class="w-full h-full object-cover"
+                      img src=playlist.image_url alt=playlist.name class="w-full h-full object-cover" onerror="this.remove()"
                     - else
                       .w-full.h-full.flex.items-center.justify-center
                         = icon("playlist", class: "w-8 h-8 text-slate-500")

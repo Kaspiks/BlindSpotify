@@ -1,26 +1,69 @@
 .w-full.max-w-md data-controller="track-reveal deck-scan" data-deck-scan-scan-url-value=deck_scan_path(token: @track.token)
 
-  .bg-slate-800.rounded-2xl.overflow-hidden
-    .aspect-video.relative.bg-gradient-to-br.from-slate-700.to-slate-800
+  .bg-slate-800.rounded-2xl.overflow-hidden.relative(
+    data-controller="playback-host"
+    data-playback-host-resolve-url-value=track_playback_path(@track.token)
+    data-playback-host-game-id-value="standalone"
+    data-playback-host-loading-track-value=t("games.track_card.playback.loading_track")
+    data-playback-host-loading-preview-value=t("games.track_card.playback.loading_preview")
+    data-playback-host-opening-spotify-value=t("games.track_card.playback.opening_spotify")
+    data-playback-host-external-hint-value=t("games.track_card.playback.external_hint")
+    data-playback-host-error-resolve-value=t("games.track_card.playback.error_resolve")
+    data-playback-host-error-preview-value=t("games.track_card.playback.error_preview")
+    data-playback-host-error-network-value=t("games.track_card.playback.error_network")
+    data-playback-host-error-spotify-value=t("games.track_card.playback.error_spotify")
+    data-playback-host-resume-message-value=t("games.track_card.playback.resume_message")
+    data-playback-host-manual-hint-value=t("games.track_card.playback.manual_hint")
+  )
+    .hidden.absolute.inset-0.z-30.flex.items-center.justify-center.bg-slate-950/95.rounded-2xl.p-6 data-playback-host-target="transitionOverlay"
+      .max-w-sm.text-center.space-y-3
+        p.text-white.font-semibold data-playback-host-target="transitionMessage"
+        p.text-slate-400.text-sm.leading-relaxed data-playback-host-target="transitionHint"
+
+    .hidden.absolute.top-0.left-0.right-0.z-20.p-4.bg-emerald-950/95.border-b.border-emerald-700/50.rounded-t-2xl data-playback-host-target="resumeBanner"
+      .flex.flex-col.sm:flex-row.sm:items-center.sm:justify-between.gap-3
+        p.text-emerald-100.text-sm.flex-1 data-playback-host-target="resumeMessage"
+        button.text-sm.font-medium.px-3.py-1.5.rounded-lg.bg-emerald-700.text-white.hover:bg-emerald-600 type="button" data-action="click->playback-host#dismissResume"
+          = t("games.track_card.playback.dismiss_resume")
+
+    .aspect-video.relative.bg-slate-800
       .w-full.h-full.flex.flex-col.items-center.justify-center.gap-4
         .w-24.h-24.rounded-full.bg-slate-600/50.flex.items-center.justify-center
           = icon("music", class: "w-12 h-12 text-slate-400")
 
-      .absolute.bottom-0.left-0.right-0.h-16.bg-gradient-to-t.from-slate-800.to-transparent
+      .absolute.bottom-0.left-0.right-0.h-16.bg-slate-900/70
 
     .p-6
+      .hidden.mb-4.p-3.rounded-xl.bg-red-950/40.border.border-red-800/50 data-playback-host-target="errorPanel"
+        p.text-red-200.text-sm data-playback-host-target="errorMessage"
+
       .text-center.mb-4
         h2.text-2xl.font-bold.text-slate-400 ???
         p.text-slate-500 Listen and guess...
 
+      .flex.flex-col.gap-3.mb-6
+        button.w-full.py-3.rounded-xl.bg-green-600.hover:bg-green-500.text-white.font-semibold.transition-colors.inline-flex.items-center.justify-center.gap-2(
+          type="button"
+          data-playback-host-target="listenButton"
+          data-action="click->playback-host#startListening"
+        )
+          = icon("player-play", class: "w-5 h-5")
+          span= t("games.track_card.playback.listen_round")
+        button.w-full.py-2.5.rounded-xl.border.border-slate-600.text-slate-300.hover:bg-slate-700.text-sm.font-medium(
+          type="button"
+          data-playback-host-target="externalOnlyButton"
+          data-action="click->playback-host#openExternalOnly"
+        )
+          = t("games.track_card.playback.open_spotify_only")
+
       - if @track.preview_url.present? || @track.preview_url_valid? == false
         .mb-6 data-controller="audio-player" data-audio-player-refresh-url-value=(refresh_track_preview_path(@track.token) unless @track.preview_url_valid?)
-          audio data-audio-player-target="audio" preload="auto"
+          audio data-audio-player-target="audio" data-playback-host-target="previewAudio" preload="auto" crossorigin="anonymous"
             - if @track.preview_url_valid?
               source src=@track.preview_url type=(@track.preview_url.include?(".m4a") ? "audio/mp4" : "audio/mpeg")
 
           .flex.justify-center.mb-4
-            button.w-16.h-16.rounded-full.bg-purple-600.hover:bg-purple-500.text-white.flex.items-center.justify-center.transition-all.hover:scale-105.active:scale-95.shadow-lg.shadow-purple-500/30(
+            button.w-16.h-16.rounded-full.bg-purple-600.hover:bg-purple-500.text-white.flex.items-center.justify-center.transition-colors(
               type="button"
               data-action="click->audio-player#toggle"
               data-audio-player-target="playButton"
@@ -32,7 +75,7 @@
 
           .px-2
             .h-2.bg-slate-700.rounded-full.cursor-pointer.overflow-hidden data-action="click->audio-player#seek" data-audio-player-target="progressBar"
-              .h-full.bg-purple-500.rounded-full.transition-all.duration-100 data-audio-player-target="progress" style="width: 0%"
+              .h-full.bg-purple-500.rounded-full data-audio-player-target="progress" style="width: 0%"
             .flex.justify-between.text-xs.text-slate-500.mt-2
               span data-audio-player-target="currentTime" 0:00
               span data-audio-player-target="duration" 0:30

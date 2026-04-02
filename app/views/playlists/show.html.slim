@@ -14,7 +14,7 @@
     / Playlist image
     .w-48.h-48.flex-shrink-0.rounded-xl.overflow-hidden.bg-slate-700
       - if @presenter.image_url.present?
-        img src=@presenter.image_url alt=@presenter.page_title class="w-full h-full object-cover"
+        img src=@presenter.image_url alt=@presenter.page_title class="w-full h-full object-cover" onerror="this.remove()"
       - else
         .w-full.h-full.flex.items-center.justify-center
           = icon("playlist", class: "w-16 h-16 text-slate-500")

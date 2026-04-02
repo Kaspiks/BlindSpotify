@@ -24,6 +24,8 @@ deploy/.env.production
 
 /node_modules
 
+/mobile/node_modules
+
 /public/assets
 
 /yarn-error.log

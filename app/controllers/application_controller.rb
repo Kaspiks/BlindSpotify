@@ -6,8 +6,9 @@ class ApplicationController < ActionController::Base
 
   allow_browser versions: :modern
 
-  # Authentication - skip for public pages as needed
-  before_action :authenticate_user!, unless: :devise_controller?
+  # Authentication — restore when Google Stitch preview is done (unset STITCH_PUBLIC_PREVIEW).
+  # before_action :authenticate_user!, unless: :devise_controller?
+  before_action :authenticate_user!, unless: -> { devise_controller? || stitch_public_preview? }
 
   rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
 
@@ -23,6 +24,30 @@ class ApplicationController < ActionController::Base
   end
 
   private
+
+  # Set STITCH_PUBLIC_PREVIEW=true to allow anonymous access site-wide (Pundit skipped; guest user falls back to first User for forms).
+  def stitch_public_preview?
+    ActiveModel::Type::Boolean.new.cast(ENV.fetch("STITCH_PUBLIC_PREVIEW", "false"))
+  end
+
+  def authorize(record, query = nil, **kwargs)
+    return if stitch_public_preview?
+
+    super
+  end
+
+  def policy_scope(scope, policy_scope_class: nil)
+    return scope.all if stitch_public_preview?
+
+    super
+  end
+
+  def current_user
+    return super unless stitch_public_preview?
+
+    warden_user = warden.user(:user)
+    warden_user.presence || User.order(:id).first
+  end
 
   def flash_errors_for(object)
     flash.now[:alert] = error_message_list(object)
