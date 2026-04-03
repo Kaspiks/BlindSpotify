@@ -1,0 +1,27 @@
+- host_participant = @room.host_id.present? ? @room.room_participants.find_by(participant_id: @room.host_id) : nil
+- host_key = host_participant ? "p_#{host_participant.id}" : (current_user&.id&.to_s.presence || "guest")
+- host_display = host_participant&.name.presence || current_user.try(:email) || "Host"
+- self_key = @room_participant.present? ? "p_#{@room_participant.id}" : nil
+- is_host = @room.host?(current_user)
+- has_playlist = @room.playlist_id.present?
+#live-room-root.min-h-screen(
+  data-room-code=@room.code
+  data-room-id=@room.id.to_s
+  data-host-id=host_key
+  data-host-display-name=host_display.to_s
+  data-is-host=(is_host ? "true" : "false")
+  data-player-id=self_key
+  data-room-mode=@live_room_mode
+  data-state-url=room_state_path(@room.code)
+  data-csrf-token=form_authenticity_token
+  data-share-url=room_share_full_url(@room)
+  data-back-url=root_path
+  data-reveal-url=room_reveal_actions_path(@room)
+  data-next-url=room_next_actions_path(@room)
+  data-has-track=(@room.current_track_id.present? ? "true" : "false")
+  data-origin=request.base_url
+  data-has-playlist=(has_playlist ? "true" : "false")
+  data-random-track-url=(has_playlist ? room_random_track_path(@room) : "")
+  data-playlist-name=(@room.playlist&.name || "")
+  data-playlist-track-count=(@room.playlist&.tracks&.count.to_i.to_s)
+)

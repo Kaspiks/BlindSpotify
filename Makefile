@@ -133,3 +133,17 @@ clean-mobile:
 clean-mobile-docker:
 	@docker volume rm -f $(COMPOSE_PROJECT_NAME)_capacitor_node_modules 2>/dev/null || \
 		echo "Volume $(COMPOSE_PROJECT_NAME)_capacitor_node_modules not found (try: docker volume ls | grep capacitor)."
+
+# Live room (root React bundle — not mobile/)
+.PHONY: js-install js-build js-build-prod js-watch
+js-install:
+	npm install
+
+js-build: js-install
+	npm run build
+
+js-build-prod: js-install
+	npm run build:prod
+
+js-watch: js-install
+	npm run build:watch

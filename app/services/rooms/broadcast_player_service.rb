@@ -2,19 +2,12 @@
 
 module Rooms
   class BroadcastPlayerService < ApplicationService
-    TARGET_DOM_ID = "room_player"
-
     def initialize(room:)
-      @room = room
+      @room = room # retained for call-site compatibility
     end
 
     def call
-      Turbo::StreamsChannel.broadcast_replace_to(
-        "room_#{@room.id}",
-        target: TARGET_DOM_ID,
-        partial: "rooms/room_player",
-        locals: { room: @room }
-      )
+      # Live room UI is React + RoomSessionChannel; Turbo replace for legacy Slim partial removed.
     end
   end
 end

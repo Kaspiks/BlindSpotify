@@ -1,0 +1,26 @@
+{
+  "name": "beatdrop-live-room",
+  "private": true,
+  "scripts": {
+    "build": "esbuild app/javascript/live_room/entry.tsx --bundle --sourcemap --format=esm --outfile=app/assets/builds/live_room.js --jsx=automatic --loader:.tsx=tsx --loader:.ts=ts",
+    "build:watch": "esbuild app/javascript/live_room/entry.tsx --bundle --sourcemap --format=esm --outfile=app/assets/builds/live_room.js --jsx=automatic --loader:.tsx=tsx --loader:.ts=ts --watch",
+    "build:prod": "esbuild app/javascript/live_room/entry.tsx --bundle --minify --format=esm --outfile=app/assets/builds/live_room.js --jsx=automatic --loader:.tsx=tsx --loader:.ts=ts",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@rails/actioncable": "^8.0.0",
+    "esbuild": "^0.24.2",
+    "fast-fuzzy": "^1.12.0",
+    "fuse.js": "^7.2.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "zustand": "^5.0.3"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  }
+}

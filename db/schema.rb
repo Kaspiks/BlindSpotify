@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_03_29_120000) do
+ActiveRecord::Schema[8.0].define(version: 2026_04_02_180000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -175,9 +175,11 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_29_120000) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.jsonb "state_json", default: {}, null: false
+    t.bigint "playlist_id"
     t.index ["code"], name: "index_rooms_on_code", unique: true
     t.index ["current_track_id"], name: "index_rooms_on_current_track_id"
     t.index ["host_id"], name: "index_rooms_on_host_id"
+    t.index ["playlist_id"], name: "index_rooms_on_playlist_id"
   end
 
   create_table "settings", force: :cascade do |t|
@@ -255,6 +257,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_29_120000) do
   add_foreign_key "playlists", "users"
   add_foreign_key "room_participants", "rooms"
   add_foreign_key "room_participants", "users", column: "participant_id"
+  add_foreign_key "rooms", "playlists"
   add_foreign_key "rooms", "tracks", column: "current_track_id"
   add_foreign_key "rooms", "users", column: "host_id"
   add_foreign_key "tracks", "playlists"

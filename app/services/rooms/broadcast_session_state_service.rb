@@ -2,7 +2,7 @@
 
 module Rooms
   # Updates room state_json and broadcasts to RoomSessionChannel (Pattern B).
-  # Also broadcasts the players list via Turbo Stream so host/players see updates.
+  # Live room UI is React + ActionCable; Turbo player-list replace removed (was tied to Phlex room show).
   # Call after any action that changes room state (play_track, reveal, next, join).
   class BroadcastSessionStateService < ApplicationService
     def initialize(room:, event_type:, by: nil)
@@ -15,7 +15,6 @@ module Rooms
       room.reload # fresh participants (e.g. after join)
       room.sync_state_json!(event_type: @event_type, by: @by)
       broadcast_state
-      broadcast_players_list
       room
     end
 
@@ -30,13 +29,5 @@ module Rooms
       )
     end
 
-    def broadcast_players_list
-      Turbo::StreamsChannel.broadcast_replace_to(
-        "room_#{room.id}",
-        target: "room_players",
-        partial: "rooms/room_players",
-        locals: { room: room }
-      )
-    end
   end
 end

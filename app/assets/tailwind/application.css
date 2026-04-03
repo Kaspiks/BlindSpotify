@@ -1,5 +1,10 @@
 @import "tailwindcss";
 
+/* Live Room (esbuild React) and Stimulus — classes here are not in Slim/ERB, so they must be scanned */
+@source "../../javascript/**/*.tsx";
+@source "../../javascript/**/*.jsx";
+@source "../../javascript/controllers/**/*.js";
+
 @theme {
   --color-slate-750: #293548;
   --color-slate-850: #172033;

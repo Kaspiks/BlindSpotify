@@ -8,8 +8,14 @@ module Rooms
     before_action :authorize_room_join
 
     def new
-      # If already a participant (e.g. re-visit), go straight to room
+      # Room host always enters via show; never needs the nickname step here.
+      redirect_to room_join_path(@room.code) and return if current_user.present? && @room.host?(current_user)
+      # Already in this room (session or same logged-in account)
       redirect_to room_join_path(@room.code) and return if current_participant.present?
+
+      @prefill_display_name =
+        current_user.try(:email).to_s.split("@").first.presence ||
+        current_user.try(:name).to_s.presence
     end
 
     def create
@@ -18,13 +24,25 @@ module Rooms
         return
       end
 
-      participant = @room.room_participants.find_or_initialize_by(session_id: participant_session_id)
+      sid = participant_session_id
+      # Logged-in: one row per user in this room (avoid duplicate host + nickname rows)
+      participant =
+        if current_user.present?
+          @room.room_participants.find_by(participant_id: current_user.id) ||
+            @room.room_participants.find_or_initialize_by(session_id: sid)
+        else
+          @room.room_participants.find_or_initialize_by(session_id: sid)
+        end
 
+      participant.session_id = sid
       if current_user.present?
         participant.participant = current_user
       end
 
-      participant.name = join_params[:name].to_s.strip.presence || t_context(".default_name")
+      participant.name =
+        join_params[:name].to_s.strip.presence ||
+        current_user.try(:email).to_s.split("@").first.presence ||
+        t_context(".default_name")
 
       if participant.save
         Rooms::BroadcastSessionStateService.call(
@@ -52,7 +70,11 @@ module Rooms
     end
 
     def current_participant
-      @current_participant ||= @room.room_participants.find_by(session_id: participant_session_id)
+      @current_participant ||= begin
+        sid = session[:room_participant_sid]
+        by_sid = sid.present? ? @room.room_participants.find_by(session_id: sid) : nil
+        by_sid || (current_user && @room.room_participants.find_by(participant_id: current_user.id))
+      end
     end
 
     def participant_session_id

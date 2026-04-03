@@ -58,9 +58,9 @@
 
       - if @track.preview_url.present? || @track.preview_url_valid? == false
         .mb-6 data-controller="audio-player" data-audio-player-refresh-url-value=(refresh_track_preview_path(@track.token) unless @track.preview_url_valid?)
-          audio data-audio-player-target="audio" data-playback-host-target="previewAudio" preload="auto" crossorigin="anonymous"
+          audio data-audio-player-target="audio" data-playback-host-target="previewAudio" preload="auto"
             - if @track.preview_url_valid?
-              source src=@track.preview_url type=(@track.preview_url.include?(".m4a") ? "audio/mp4" : "audio/mpeg")
+              source src=track_preview_stream_path(@track.token) type="audio/mpeg"
 
           .flex.justify-center.mb-4
             button.w-16.h-16.rounded-full.bg-purple-600.hover:bg-purple-500.text-white.flex.items-center.justify-center.transition-colors(

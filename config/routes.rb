@@ -79,11 +79,13 @@ Rails.application.routes.draw do
       resources :play_track_actions, only: [:new, :create]
       resources :reveal_actions, only: [:new, :create]
       resources :next_actions, only: [:new, :create]
+      resource :random_track, only: [:show], controller: "random_tracks"
     end
   end
 
   # Track playback via QR code token
   get "q/:token", to: "tracks#play", as: :track_qr
+  get "q/:token/preview_stream", to: "tracks#preview_stream", as: :track_preview_stream
   get "q/:token/playback", to: "tracks#playback", as: :track_playback
   get "q/:token/refresh_preview", to: "tracks#refresh_preview", as: :refresh_track_preview
   # Dynamic deck: slot resolves to track (allows reassigning cards to different playlists)

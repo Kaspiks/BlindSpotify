@@ -3,10 +3,15 @@
 .max-w-md.mx-auto.px-4.py-12
   .bg-slate-800.rounded-2xl.p-8
     h1.text-2xl.font-bold.text-white.mb-2= t("controllers.rooms.new.title", default: "Create a Live Room")
-    p.text-slate-400.mb-6= t("controllers.rooms.new.description", default: "Start a party session. Share the room code with players so everyone sees the same track.")
+    p.text-slate-400.mb-6= t("controllers.rooms.new.description", default: "Start a party session. Pick a playlist for online play, or use QR cards for physical play.")
 
     = simple_form_for @form, url: rooms_path, method: :post, html: { class: "space-y-4" } do |f|
       = f.hidden_field :host_id, value: current_user&.id
+
+      - playlists = Playlist.where(import_status: "completed").order(:name)
+      - if playlists.any?
+        = f.input :playlist_id, collection: playlists.map { |p| ["#{p.name} (#{p.tracks.count} tracks)", p.id] }, include_blank: "No playlist (QR cards only)", label: "Playlist for online play", label_html: { class: "text-purple-300 font-medium" }, input_html: { class: "w-full rounded-lg border border-purple-500/50 bg-slate-700 px-3 py-2.5 text-white focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-slate-800" }
+
       = f.button :submit, t("controllers.rooms.create.submit", default: "Create room"), class: "w-full py-4 bg-purple-600 hover:bg-purple-500 text-white font-semibold rounded-xl"
 
     .mt-6.text-center

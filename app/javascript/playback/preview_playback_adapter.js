@@ -64,7 +64,7 @@ export class PreviewPlaybackAdapter {
     }
 
     this._bindAudio(audio)
-    audio.crossOrigin = "anonymous"
+    audio.removeAttribute("crossorigin")
     audio.src = url
     audio.load()
 

@@ -20,6 +20,12 @@ class RoomSessionChannel < ApplicationCable::Channel
   def receive(data)
     return unless @room
     action = data["type"].to_s
+
+    if action == "game_state"
+      ActionCable.server.broadcast(stream_name, data)
+      return
+    end
+
     payload = data["payload"] || {}
     Rooms::ApplyRoomActionService.call(room: @room, action: action, payload: payload, connection: self)
   end

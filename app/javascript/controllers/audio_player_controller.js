@@ -18,7 +18,7 @@ export default class extends Controller {
       const res = await fetch(this.refreshUrlValue, { headers: { Accept: "application/json" } })
       const data = await res.json()
       if (data.preview_url && this.hasAudioTarget) {
-        this.audioTarget.crossOrigin = "anonymous"
+        this.audioTarget.removeAttribute("crossorigin")
         this.audioTarget.src = data.preview_url
         this.audioTarget.load()
       }
@@ -33,7 +33,8 @@ export default class extends Controller {
       return
     }
 
-    this.audioTarget.crossOrigin = "anonymous"
+    // Deezer CDN often 403s CORS-mode requests; drop any crossorigin from markup.
+    this.audioTarget.removeAttribute("crossorigin")
 
     // Remove old listeners if any (for Turbo reconnection)
     this.audioTarget.removeEventListener("loadedmetadata", this.boundUpdateDuration)

@@ -8,7 +8,7 @@ import android.webkit.WebView;
 import com.getcapacitor.BridgeActivity;
 
 /**
- * Capacitor entry with WebView performance tuning.
+ * Capacitor entry with WebView performance tuning and Audio support.
  * <p>
  * "on a destroyed WebView" in Logcat usually means async work (live reload, plugin callback, or
  * activity recreate) touched the bridge after teardown — avoid {@code cap run -l} when profiling;
@@ -29,9 +29,13 @@ public class MainActivity extends BridgeActivity {
             ws.setDomStorageEnabled(true);
             ws.setCacheMode(WebSettings.LOAD_DEFAULT);
             ws.setDatabaseEnabled(true);
+            
             // Render immediately, don't wait for full page load.
             ws.setRenderPriority(WebSettings.RenderPriority.HIGH);
             ws.setBlockNetworkImage(false);
+
+            // AUDIO FIX: Allow media to play without a user click/gesture
+            ws.setMediaPlaybackRequiresUserGesture(false);
         }
     }
 }

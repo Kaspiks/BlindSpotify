@@ -67,14 +67,13 @@ export default class extends Controller {
     this.updateIcon()
   }
 
-  // Set crossOrigin *before* src — required for CORB-safe cross-origin audio.
-  // Use audio.src directly instead of <source> children so the browser treats
-  // it as a proper CORS media request from the start.
+  // Do not set crossOrigin for Deezer/iTunes preview URLs: their CDNs often return
+  // 403 when the request is CORS-mode (anonymous) from arbitrary Origins.
+  // Playback without crossOrigin still works; we are not reading samples via canvas/Web Audio.
   ensureAudio(url) {
     if (!this.audio) {
       this.audio = new Audio()
       this.audio.preload = "auto"
-      this.audio.crossOrigin = "anonymous"
       this.boundOnEnded = () => this.stop()
       this.boundOnError = () => this.attemptRefreshAndRetry()
       this.audio.addEventListener("ended", this.boundOnEnded)

@@ -1,0 +1,23 @@
+doctype html
+html
+  head
+    title BlindJam · Room
+    meta name="viewport" content="width=device-width,initial-scale=1"
+    meta name="apple-mobile-web-app-capable" content="yes"
+    meta name="mobile-web-app-capable" content="yes"
+    = csrf_meta_tags
+    = csp_meta_tag
+    = action_cable_meta_tag
+    = stylesheet_link_tag "tailwind"
+    = javascript_include_tag "live_room", type: "module", defer: true
+    css:
+      .iconset { display: none; }
+      .icon {
+        stroke: currentColor;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        fill: none;
+      }
+  body.min-h-screen.bg-slate-900.text-slate-100
+    = yield

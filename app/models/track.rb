@@ -20,7 +20,7 @@ class Track < ApplicationRecord
   searchable_text_column :title
   searchable_text_column :artist_name
 
-  PREVIEW_URL_CACHE_DURATION = 25.minutes
+  PREVIEW_URL_CACHE_DURATION = 15.minutes
   ITUNES_PREVIEW_CACHE_DURATION = 24.hours
 
   def display_name

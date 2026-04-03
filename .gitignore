@@ -24,6 +24,10 @@ deploy/.env.production
 
 /node_modules
 
+# esbuild live_room bundle (generate with `npm run build` or assets:precompile)
+/app/assets/builds/*
+!/app/assets/builds/.keep
+
 /mobile/node_modules
 
 /public/assets

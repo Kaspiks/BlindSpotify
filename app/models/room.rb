@@ -3,6 +3,7 @@
 class Room < ApplicationRecord
   belongs_to :host, class_name: 'User', optional: true
   belongs_to :current_track, class_name: 'Track', optional: true
+  belongs_to :playlist, optional: true
   has_many :room_participants, dependent: :destroy
 
   validates :code, presence: true, uniqueness: true
@@ -82,15 +83,18 @@ end
 #  updated_at       :datetime         not null
 #  current_track_id :bigint
 #  host_id          :bigint
+#  playlist_id      :bigint
 #
 # Indexes
 #
 #  index_rooms_on_code              (code) UNIQUE
 #  index_rooms_on_current_track_id  (current_track_id)
 #  index_rooms_on_host_id           (host_id)
+#  index_rooms_on_playlist_id       (playlist_id)
 #
 # Foreign Keys
 #
 #  fk_rails_...  (current_track_id => tracks.id)
 #  fk_rails_...  (host_id => users.id)
+#  fk_rails_...  (playlist_id => playlists.id)
 #

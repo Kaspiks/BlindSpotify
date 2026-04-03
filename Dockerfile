@@ -45,8 +45,11 @@ RUN bundle config set --local deployment true && \
     rm -rf "$GEM_HOME/cache"
 
 # Install app and Python deps (for aruco scripts if needed)
+COPY package.json package-lock.json ./
+RUN npm ci
 COPY . .
 RUN pip3 install --no-cache-dir --break-system-packages -r scripts/aruco/requirements.txt 2>/dev/null || true
+RUN npm run build:prod
 
 # Precompile assets
 RUN SECRET_KEY_BASE=placeholder bundle exec rails assets:precompile && \
