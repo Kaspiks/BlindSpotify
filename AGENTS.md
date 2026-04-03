@@ -48,6 +48,8 @@ flowchart LR
 | `mobile/www/` | Minimal static fallback (`index.html`) |
 | `mobile/android/` | Gradle project, manifest, resources; run `make capacitor-sync` after plugin or config changes |
 | `config/routes.rb` | Player routes: `root`, `games`, `rooms`, `r/:code`, `q/:token`, etc. |
+| Root `package.json` | **Live room** React bundle: `npm install`, `npm run build` (or `build:prod`); output `app/assets/builds/live_room.js`. Dev: `npm run build:watch` via `Procfile.dev` + `bin/dev`. |
+| `app/javascript/live_room/` | TypeScript + React + Zustand live room (guessing, steal, timers, QR, ActionCable). |
 | `app/views/`, `app/javascript/controllers/` | Player UI—optimize for **mobile viewport** and touch |
 
 ## Agent skills you are expected to use
