@@ -99,4 +99,11 @@ Rails.application.configure do
 
   # Skip DNS rebinding protection for the default health check endpoint.
   config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
+
+  # ActionCable: allow WebSocket connections from the production domain.
+  config.action_cable.allowed_request_origins = [
+    "https://blindjam.com",
+    "https://www.blindjam.com",
+    %r{https?://localhost(:\d+)?}
+  ]
 end
